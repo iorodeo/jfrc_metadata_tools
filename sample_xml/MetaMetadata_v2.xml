@@ -1,0 +1,296 @@
+<?xml version="1.0"?>
+
+<metadata>
+<experiment>
+  <assay 
+      range="{'Fly Bowl'}"
+      range_basic="{'Fly Bowl'}"
+      units=""
+      default="'Fly Bowl'" 
+      appear_advanced="0"
+      appear_basic="0"
+      entry="MANUAL"
+      description="'Name of assay'"
+      /> 
+  <protocol 
+      range_advanced="{'ExperimentProtocol0001'}"
+      range_basic="{'ExperimentProtocol0001'}"
+      units=""
+      default="'ExperimentProtocol0001'"
+      appear_advanced="1"
+      appear_basic="0"
+      entry="MANUAL"
+      description="'Name of file describing experiment protocol'"
+      />
+  <datetime
+      range_advanced="DATETIME"
+      range_basic="DATETIME"
+      units=""
+      default=""
+      appear_advanced="0"
+      appear_basic="0"
+      entry="AUTO"
+      description="'Date and time that the experiment is started at'"
+      />
+  <experimenter 
+      range_advanced="LDAP"
+      range_basic="{'hirokawaj','bransonk','robiea'}"
+      units=""
+      default="LAST"
+      appear_advanced="1"
+      appear_basic="1"
+      entry="MANUAL"
+      description="'LDAP of person conducting the experiment'"
+      />
+  <shiftflytemp_time 
+      range_advanced="FLOAT(0,INF)"
+      range_basic="FLOAT(0,INF)"
+      units="'seconds'"
+      default=""
+      appear_advanced="0"
+      appear_basic="0"
+      entry="AUTO"
+      description="'Number of seconds before experiment start that flies are brought into the hot room'"
+      />
+  <fliesloaded_time 
+      range_advanced="FLOAT(0,INF)"
+      range_basic="FLOAT(0,INF)"
+      units="'seconds'"
+      default=""
+      appear_advanced="0"
+      appear_basic="0"
+      entry="AUTO"
+      description="'Number of seconds before experiment start that flies are loaded into the arena'"
+      />
+  <apparatus type="rig" 
+      range_advanced="INT[1,INF)"
+      range_basic="INT[1,INF)"
+      units=""
+      default="LAST"
+      appear_advanced="1"
+      appear_basic="1"
+      entry="MANUAL"
+      description="'Which rig the FlyBowl is placed on'"
+      >
+    <apparatus type="plate" 
+	range_advanced="INT[1,40]"
+	range_basic="INT[1,40]"
+	units=""
+	default="LAST"
+	appear_advanced="1"
+	appear_basic="1"
+	entry="MANUAL"
+	description="'Which plate the FlyBowl is part of'"
+	>
+      <apparatus type="bowl"
+	  range_advanced="INT[1,4]"
+	  range_basic="INT[1,4]"
+	  units=""
+	  default="LAST"
+	  appear_advanced="1"
+	  appear_basic="1"
+	  entry="MANUAL"
+	  description="'Which bowl of the plate the experiment was conducted in'"
+	  >
+	<flies>
+	  <line 
+	      range_advanced="LINENAME"
+	      range_basic="LINENAME"
+	      units=""
+	      default="LAST"
+	      appear_advanced="1"
+	      appear_basic="1"
+	      entry="MANUAL"
+	      description="'Type of fly. Should match a line name in Sage.'"
+	      />
+	  <effector 
+	      range_advanced="EFFECTOR"
+	      range_basic="{'TrpA'}"
+	      units=""
+	      default="'TrpA'"
+	      appear_advanced="1"
+	      appear_basic="1"
+	      entry="MANUAL"
+	      description="'Effector'"
+	      />
+	  <gender
+	      range_advanced="{'m','f','b','x'}"
+	      range_basic="{'b'}"
+	      units=""
+	      default="'b'"
+	      appear_advanced="1"
+	      appear_basic="0"
+	      entry="MANUAL"
+	      description="'Sex of flies. m = male, f = female, b = both, x = unknown'"
+	      />
+	  <cross-date 
+	      range_advanced="DATE[NOW-5,NOW-3]"
+	      range_basic="DATE[NOW-5,NOW-3]"
+	      units=""
+	      default="LAST"
+	      appear_advanced="1"
+	      appear_basic="1"
+	      entry="MANUAL"
+	      description="'Date flies were crossed'"
+	      />
+	  <count 
+	      range_advanced="INT[0,INF)"
+	      range_basic="INT[0,25]"
+	      units="flies"
+	      default="0"
+	      appear_advanced="1"
+	      appear_basic="0"
+	      entry="AUTO"
+	      description="'Number of flies placed in arena'"
+	      />
+	  <rearing_protocol 
+	      range_advanced="{'RearingProtocol0001_Morning','RearingProtocol0001_Afternoon'}"
+	      range_basic="{'RearingProtocol0001_Morning','RearingProtocol0001_Afternoon'}"
+	      units=""
+	      default="LAST"
+	      appear_advanced="1"
+	      appear_basic="1"
+	      entry="OTHER"
+	      description="'File describing the rearing protocol'"
+	      >
+	    <incubator 
+		range_advanced="INT[1,2]"
+		range_basic="INT[1,2]"
+		units=""
+		default="LAST"
+		appear_advanced="1"
+		appear_basic="1"
+		entry="OTHER"
+		description="'Which incubator the flies were raised in'"
+		/>
+	  </rearing_protocol>
+	  <handling_protocol type="sorting" 
+	      range_advanced="{'SortingProtocol0001'}"
+	      range_basic="{'SortingProtocol0001'}"
+	      units=""
+	      default="LAST"
+	      appear_advanced="1"
+	      appear_basic="0"
+	      entry="MANUAL"
+	      description="'File describing the sorting protocol'"
+	      >
+	    <handler 
+		range_advanced="LDAP"
+		range_basic="{'hirokawaj','bransonk','robiea'}"
+		units=""
+		default="LAST"
+		appear_advanced="1"
+		appear_basic="1"
+		entry="MANUAL"
+		description="'LDAP of person who sorted the flies'"
+		/>
+	    <time
+		range_advanced="FLOAT[0,INF)"
+		range_basic="FLOAT[0,INF)"
+		units="'hours'"
+		default="LAST"
+		appear_advanced="1"
+		appear_basic="1"
+		entry="OTHER"
+		description="'Number of hours between sorting the flies and the experiment start'"
+		/>
+	  </handling_protocol>
+	  <handling_protocol type="starvation" 
+	      range_advanced="{'StarvationProtocol0001'}"
+	      range_basic="{'StarvationProtocol0001'}"
+	      units=""
+	      default="'StarvationProtocol0001'"
+	      appear_advanced="1"
+	      appear_basic="0"
+	      entry="MANUAL"
+	      description="'File describing the starvation protocol'"
+	      >
+	    <handler 
+		range_advanced="LDAP"
+		range_basic="{'hirokawaj','bransonk','robiea'}"
+		units=""
+		default="LAST"
+		appear_advanced="1"
+		appear_basic="1"
+		entry="MANUAL"
+		description="'LDAP of person who moved the flies to starvation material'"
+		/>		
+	    <time
+		range_advanced="FLOAT[0,INF)"
+		range_basic="FLOAT[0,INF)"
+		units="'hours'"
+		default="LAST"
+		appear_advanced="1"
+		appear_basic="1"
+		entry="OTHER"
+		description="'Number of hours the flies had been starved at the start of the experiment'"
+		/>
+	  </handling_protocol>
+	</flies>
+	<environment>
+	  <temperature 
+	      range_advanced="FLOAT[-INF,INF]"
+	      range_basic="FLOAT[-INF,INF]"
+	      units="'degrees Celsius'"
+	      default=""
+	      appear_advanced="0"
+	      appear_basic="0"
+	      entry="AUTO"
+	      description="'Temperature in degrees Celsius at the start of the experiment'"
+	      />
+	  <humidity 
+	      range_advanced="FLOAT[0,100]"
+	      range_basic="FLOAT[0,100]"
+	      units="'percent'"
+	      default=""
+	      appear_advanced="0"
+	      appear_basic="0"
+	      entry="AUTO"
+	      description="'Humidity at the start of the experiment'"
+	      />
+	</environment>
+	<behavior-notes
+	    range_advanced="STRING"
+	    range_basic="STRING"
+	    units=""
+	    default="''"
+	    appear_advanced="1"
+	    appear_basic="1"
+	    entry="MANUAL"
+	    description="'Observations of behavior by experimenter'"
+	    />
+	<technical-notes
+	    range_advanced="STRING"
+	    range_basic="STRING"
+	    units=""
+	    default="''"
+	    appear_advanced="1"
+	    appear_basic="1"
+	    entry="MANUAL"
+	    description="'Observations of behavior by experimenter'"
+	    />
+	<redo-flag
+	    range_advanced="{'None','Rearing problem','Flies look sick','See behavioral notes','See technical notes'}"
+	    range_basic="{'None','Rearing problem','Flies look sick','See behavioral notes','See technical notes'}"
+	    units=""
+	    default="''"
+	    appear_advanced="1"
+	    appear_basic="1"
+	    entry="MANUAL"
+	    description="'Whether the experiment should be redone, and why'"
+	    />
+	<redo-flag
+	    range_advanced="{'None','Rearing problem','Flies look sick','See behavioral notes','See technical notes'}"
+	    range_basic="{'None','Rearing problem','Flies look sick','See behavioral notes','See technical notes'}"
+	    units=""
+	    default="''"
+	    appear_advanced="1"
+	    appear_basic="1"
+	    entry="MANUAL"
+	    description="'Whether the experiment should be reviewed, and why'"
+	    />
+      </apparatus>
+    </apparatus>
+  </apparatus>
+</experiment>
+</metadata>

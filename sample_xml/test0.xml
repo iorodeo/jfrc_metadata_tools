@@ -1,0 +1,685 @@
+<?xml version="1.0" standalone="yes"?>
+
+<?xml-stylesheet type="text/css" href="baseballstats.css"?>
+
+<SEASON>
+
+  <YEAR>1998</YEAR>
+
+  <LEAGUE>
+
+    <LEAGUE_NAME>National</LEAGUE_NAME>
+
+    <DIVISION>
+
+       <DIVISION_NAME>East</DIVISION_NAME>
+
+         <TEAM>
+
+           <TEAM_CITY>Atlanta</TEAM_CITY>
+
+           <TEAM_NAME>Braves</TEAM_NAME>
+
+           <PLAYER>
+
+             <SURNAME>Malloy</SURNAME>
+
+            <GIVEN_NAME>Marty</GIVEN_NAME>
+
+            <POSITION>Second Base</POSITION>             
+
+            <GAMES>11</GAMES>
+
+            <GAMES_STARTED>8</GAMES_STARTED>
+
+            <AT_BATS>28</AT_BATS>
+
+            <RUNS>3</RUNS>
+
+            <HITS>5</HITS>
+
+            <DOUBLES>1</DOUBLES>
+
+            <TRIPLES>0</TRIPLES>
+
+            <HOME_RUNS>1</HOME_RUNS>
+
+            <RBI>1</RBI>
+
+            <STEALS>0</STEALS>
+
+            <CAUGHT_STEALING>0</CAUGHT_STEALING>
+
+            <SACRIFICE_HITS>0</SACRIFICE_HITS>
+
+            <SACRIFICE_FLIES>0</SACRIFICE_FLIES>
+
+            <ERRORS>0</ERRORS>
+
+            <WALKS>2</WALKS>
+
+            <STRUCK_OUT>2</STRUCK_OUT>
+
+            <HIT_BY_PITCH>0</HIT_BY_PITCH>
+
+           </PLAYER>
+
+           <PLAYER>
+
+             <SURNAME>Guillen</SURNAME>
+
+            <GIVEN_NAME>Ozzie </GIVEN_NAME>
+
+            <POSITION>Shortstop</POSITION>
+
+            <GAMES>83</GAMES>
+
+            <GAMES_STARTED>59</GAMES_STARTED>
+
+            <AT_BATS>264</AT_BATS>
+
+            <RUNS>35</RUNS>
+
+            <HITS>73</HITS>
+
+            <DOUBLES>15</DOUBLES>
+
+            <TRIPLES>1</TRIPLES>
+
+            <HOME_RUNS>1</HOME_RUNS>
+
+            <RBI>22</RBI>
+
+            <STEALS>1</STEALS>
+
+            <CAUGHT_STEALING>4</CAUGHT_STEALING>
+
+            <SACRIFICE_HITS>4</SACRIFICE_HITS>
+
+            <SACRIFICE_FLIES>2</SACRIFICE_FLIES>
+
+            <ERRORS>6</ERRORS>
+
+            <WALKS>24</WALKS>
+
+            <STRUCK_OUT>25</STRUCK_OUT>
+
+            <HIT_BY_PITCH>1</HIT_BY_PITCH>
+
+          </PLAYER>
+
+          <PLAYER>
+
+          <SURNAME>Bautista</SURNAME>
+
+            <GIVEN_NAME>Danny</GIVEN_NAME>
+
+            <POSITION>Outfield</POSITION>
+
+            <GAMES>82</GAMES>
+
+            <GAMES_STARTED>27</GAMES_STARTED>
+
+            <AT_BATS>144</AT_BATS>
+
+            <RUNS>17</RUNS>
+
+            <HITS>36</HITS>
+
+            <DOUBLES>11</DOUBLES>
+
+            <TRIPLES>0</TRIPLES>
+
+            <HOME_RUNS>3</HOME_RUNS>
+
+            <RBI>17</RBI>
+
+            <STEALS>1</STEALS>
+
+            <CAUGHT_STEALING>0</CAUGHT_STEALING>
+
+            <SACRIFICE_HITS>3</SACRIFICE_HITS>
+
+            <SACRIFICE_FLIES>2</SACRIFICE_FLIES>
+
+            <ERRORS>2</ERRORS>
+
+            <WALKS>7</WALKS>
+
+            <STRUCK_OUT>21</STRUCK_OUT>
+
+            <HIT_BY_PITCH>0</HIT_BY_PITCH>
+
+          </PLAYER>
+
+          <PLAYER>
+
+            <SURNAME>Williams</SURNAME>
+
+            <GIVEN_NAME>Gerald</GIVEN_NAME>
+
+            <POSITION>Outfield</POSITION>
+
+            <GAMES>129</GAMES>
+
+            <GAMES_STARTED>51</GAMES_STARTED>
+
+            <AT_BATS>266</AT_BATS>
+
+            <RUNS>46</RUNS>
+
+            <HITS>81</HITS>
+
+            <DOUBLES>18</DOUBLES>
+
+            <TRIPLES>3</TRIPLES>
+
+            <HOME_RUNS>10</HOME_RUNS>
+
+            <RBI>44</RBI>
+
+            <STEALS>11</STEALS>
+
+            <CAUGHT_STEALING>5</CAUGHT_STEALING>
+
+            <SACRIFICE_HITS>2</SACRIFICE_HITS>
+
+            <SACRIFICE_FLIES>1</SACRIFICE_FLIES>
+
+            <ERRORS>5</ERRORS>
+
+            <WALKS>17</WALKS>
+
+            <STRUCK_OUT>48</STRUCK_OUT>
+
+            <HIT_BY_PITCH>3</HIT_BY_PITCH>
+
+          </PLAYER>
+
+          <PLAYER>
+
+            <SURNAME>Glavine</SURNAME>
+
+            <GIVEN_NAME>Tom</GIVEN_NAME>
+
+            <POSITION>Starting Pitcher</POSITION>
+
+            <WINS>20</WINS>
+
+            <LOSSES>6</LOSSES>
+
+            <SAVES>0</SAVES>
+
+            <GAMES>33</GAMES>
+
+            <GAMES_STARTED>33</GAMES_STARTED>
+
+            <COMPLETE_GAMES>4</COMPLETE_GAMES>
+
+            <SHUT_OUTS>3</SHUT_OUTS>
+
+            <ERA>2.47</ERA>
+
+            <INNINGS>229.1</INNINGS>
+
+            <HOME_RUNS>202</HOME_RUNS>
+
+            <RUNS>13</RUNS>
+
+            <EARNED_RUNS>67</EARNED_RUNS>
+
+            <HIT_BATTER>63</HIT_BATTER>
+
+            <WILD_PITCHES>2</WILD_PITCHES>
+
+            <BALK>3</BALK>
+
+            <WALKED_BATTER>0</WALKED_BATTER>
+
+            <STRUCK_OUT_BATTER>74</STRUCK_OUT_BATTER>
+
+          </PLAYER>
+
+          <PLAYER>
+
+            <SURNAME>Lopez</SURNAME>
+
+            <GIVEN_NAME>Javier</GIVEN_NAME>
+
+            <POSITION>Catcher</POSITION>
+
+            <GAMES>133</GAMES>
+
+            <GAMES_STARTED>124</GAMES_STARTED>
+
+            <AT_BATS>489</AT_BATS>
+
+            <RUNS>73</RUNS>
+
+            <HITS>139</HITS>
+
+            <DOUBLES>21</DOUBLES>
+
+            <TRIPLES>1</TRIPLES>
+
+            <HOME_RUNS>34</HOME_RUNS>
+
+            <RBI>106</RBI>
+
+            <STEALS>5</STEALS>
+
+            <CAUGHT_STEALING>3</CAUGHT_STEALING>
+
+            <SACRIFICE_HITS>1</SACRIFICE_HITS>
+
+            <SACRIFICE_FLIES>8</SACRIFICE_FLIES>
+
+            <ERRORS>5</ERRORS>
+
+            <WALKS>30</WALKS>
+
+            <STRUCK_OUT>85</STRUCK_OUT>
+
+            <HIT_BY_PITCH>6</HIT_BY_PITCH></PLAYER>
+
+          <PLAYER>
+
+            <SURNAME>Klesko</SURNAME>
+
+            <GIVEN_NAME>Ryan</GIVEN_NAME>
+
+            <POSITION>Outfield</POSITION>
+
+            <GAMES>129</GAMES>
+
+            <GAMES_STARTED>124</GAMES_STARTED>
+
+            <AT_BATS>427</AT_BATS>
+
+            <RUNS>69</RUNS>
+
+            <HITS>117</HITS>
+
+            <DOUBLES>29</DOUBLES>
+
+            <TRIPLES>1</TRIPLES>
+
+            <HOME_RUNS>18</HOME_RUNS>
+
+            <RBI>70</RBI>
+
+            <STEALS>5</STEALS>
+
+            <CAUGHT_STEALING>3</CAUGHT_STEALING>
+
+            <SACRIFICE_HITS>0</SACRIFICE_HITS>
+
+            <SACRIFICE_FLIES>4</SACRIFICE_FLIES>
+
+            <ERRORS>2</ERRORS>
+
+            <WALKS>56</WALKS>
+
+            <STRUCK_OUT>66</STRUCK_OUT>
+
+            <HIT_BY_PITCH>3</HIT_BY_PITCH></PLAYER>
+
+          <PLAYER>
+
+            <SURNAME>Galarraga</SURNAME>
+
+            <GIVEN_NAME>Andres</GIVEN_NAME>
+
+            <POSITION>First Base</POSITION>
+
+            <GAMES>153</GAMES>
+
+            <GAMES_STARTED>151</GAMES_STARTED>
+
+            <AT_BATS>555</AT_BATS>
+
+            <RUNS>103</RUNS>
+
+            <HITS>169</HITS>
+
+            <DOUBLES>27</DOUBLES>
+
+            <TRIPLES>1</TRIPLES>
+
+            <HOME_RUNS>44</HOME_RUNS>
+
+            <RBI>121</RBI>
+
+            <STEALS>7</STEALS>
+
+            <CAUGHT_STEALING>6</CAUGHT_STEALING>
+
+            <SACRIFICE_HITS>0</SACRIFICE_HITS>
+
+            <SACRIFICE_FLIES>5</SACRIFICE_FLIES>
+
+            <ERRORS>11</ERRORS>
+
+            <WALKS>63</WALKS>
+
+            <STRUCK_OUT>146</STRUCK_OUT>
+
+            <HIT_BY_PITCH>25</HIT_BY_PITCH></PLAYER>
+
+          <PLAYER>
+
+            <SURNAME>Helms</SURNAME>
+
+            <GIVEN_NAME>Wes</GIVEN_NAME>
+
+            <POSITION>Third Base</POSITION>
+
+            <GAMES>7</GAMES>
+
+            <GAMES_STARTED>2</GAMES_STARTED>
+
+            <AT_BATS>13</AT_BATS>
+
+            <RUNS>2</RUNS>
+
+            <HITS>4</HITS>
+
+            <DOUBLES>1</DOUBLES>
+
+            <TRIPLES>0</TRIPLES>
+
+            <HOME_RUNS>1</HOME_RUNS>
+
+            <RBI>2</RBI>
+
+            <STEALS>0</STEALS>
+
+            <CAUGHT_STEALING>0</CAUGHT_STEALING>
+
+            <SACRIFICE_HITS>0</SACRIFICE_HITS>
+
+            <SACRIFICE_FLIES>0</SACRIFICE_FLIES>
+
+            <ERRORS>1</ERRORS>
+
+            <WALKS>0</WALKS>
+
+            <STRUCK_OUT>4</STRUCK_OUT>
+
+            <HIT_BY_PITCH>0</HIT_BY_PITCH></PLAYER>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Florida</TEAM_CITY>
+
+          <TEAM_NAME>Marlins</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Montreal</TEAM_CITY>
+
+          <TEAM_NAME>Expos</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>New York</TEAM_CITY>
+
+          <TEAM_NAME>Mets</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Philadelphia</TEAM_CITY>
+
+        <TEAM_NAME>Phillies</TEAM_NAME>
+
+        </TEAM>
+
+    </DIVISION>
+
+    <DIVISION>
+
+       <DIVISION_NAME>Central</DIVISION_NAME>
+
+        <TEAM>
+
+          <TEAM_CITY>Chicago</TEAM_CITY>
+
+          <TEAM_NAME>Cubs</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Cincinatti</TEAM_CITY>
+
+          <TEAM_NAME>Reds</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Houston</TEAM_CITY>
+
+          <TEAM_NAME>Astros</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Milwaukee</TEAM_CITY>
+
+          <TEAM_NAME>Brewers</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Pittsburgh</TEAM_CITY>
+
+          <TEAM_NAME>Pirates</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>St. Louis</TEAM_CITY>
+
+          <TEAM_NAME>Cardinals</TEAM_NAME>
+
+        </TEAM>
+
+    </DIVISION>
+
+    <DIVISION>
+
+       <DIVISION_NAME>West</DIVISION_NAME>
+
+        <TEAM>
+
+          <TEAM_CITY>Arizona</TEAM_CITY>
+
+          <TEAM_NAME>Diamondbacks</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Colorado</TEAM_CITY>
+
+          <TEAM_NAME>Rockies</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Los Angeles</TEAM_CITY>
+
+          <TEAM_NAME>Dodgers</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>San Diego</TEAM_CITY>
+
+          <TEAM_NAME>Padres</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>San Francisco</TEAM_CITY>
+
+          <TEAM_NAME>Giants</TEAM_NAME>
+
+        </TEAM>
+
+    </DIVISION>
+
+  </LEAGUE>
+
+  <LEAGUE>
+
+    <LEAGUE_NAME>American</LEAGUE_NAME>
+
+    <DIVISION>
+
+       <DIVISION_NAME>East</DIVISION_NAME>
+
+        <TEAM>
+
+          <TEAM_CITY>Baltimore</TEAM_CITY>
+
+          <TEAM_NAME>Orioles</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Boston</TEAM_CITY>
+
+          <TEAM_NAME>Red Sox</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>New York</TEAM_CITY>
+
+          <TEAM_NAME>Yankees</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Tampa Bay</TEAM_CITY>
+
+          <TEAM_NAME>Devil Rays</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Toronto</TEAM_CITY>
+
+          <TEAM_NAME>Blue Jays</TEAM_NAME>
+
+        </TEAM>
+
+    </DIVISION>
+
+    <DIVISION>
+
+       <DIVISION_NAME>Central</DIVISION_NAME>
+
+        <TEAM>
+
+          <TEAM_CITY>Chicago</TEAM_CITY>
+
+          <TEAM_NAME>White Sox</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Kansas City</TEAM_CITY>
+
+          <TEAM_NAME>Royals</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Detroit</TEAM_CITY>
+
+          <TEAM_NAME>Tigers</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Cleveland</TEAM_CITY>
+
+          <TEAM_NAME>Indians</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Minnesota</TEAM_CITY>
+
+          <TEAM_NAME>Twins</TEAM_NAME>
+
+        </TEAM>
+
+    </DIVISION>
+
+    <DIVISION>
+
+       <DIVISION_NAME>West</DIVISION_NAME>
+
+        <TEAM>
+
+          <TEAM_CITY>Anaheim</TEAM_CITY>
+
+          <TEAM_NAME>Angels</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Oakland</TEAM_CITY>
+
+          <TEAM_NAME>Athletics</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Seattle</TEAM_CITY>
+
+          <TEAM_NAME>Mariners</TEAM_NAME>
+
+        </TEAM>
+
+        <TEAM>
+
+          <TEAM_CITY>Texas</TEAM_CITY>
+
+          <TEAM_NAME>Rangers</TEAM_NAME>
+
+       </TEAM>
+
+     </DIVISION>
+
+  </LEAGUE>
+
+</SEASON>
