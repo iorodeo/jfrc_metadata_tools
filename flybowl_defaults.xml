@@ -2,8 +2,15 @@
 <experiment>
     <attributes>
         <assay
+            dtype = ""
             range_advanced = "{FlyBowl}"
             range_basic = "{FlyBowl}"
+            default = "1"
+            units = ""
+            appear_basic = "true"
+            appear_advanced = "true"
+            entry_basic = "readonly"
+            entry_advanced = "readonly"
          />
         <protocol>
         </protocol>

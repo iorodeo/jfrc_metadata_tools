@@ -8,6 +8,8 @@ classdef XMLDataNode < handle
         attribute = struct;
         content =[];
         uniqueName;
+        attributeListener;
+        contentListener;
     end
    
     properties (Dependent)
