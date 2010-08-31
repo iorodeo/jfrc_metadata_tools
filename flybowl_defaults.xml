@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<experiment>
+    <attributes>
+        <assay
+            range_advanced = "{FlyBowl}"
+            range_basic = "{FlyBowl}"
+         />
+        <protocol>
+        </protocol>
+    </attributes>
+    <content>
+        <apparatus>
+        </apparatus>
+    </content>
+</experiment>

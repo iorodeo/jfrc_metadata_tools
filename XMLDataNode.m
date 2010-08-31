@@ -27,7 +27,7 @@ classdef XMLDataNode < handle
         printIndentNum = 3;
     end
     
-    properties (Access=private)
+    properties %(Access=private)
         mark = false;  
     end
      
@@ -40,7 +40,7 @@ classdef XMLDataNode < handle
                 self.name = name;
             end
             if nargin >= 2
-                % Creates a root node with name=name and parent=parent.
+                % Creates a root node with parent=parent.
                 self.parent = parent;
             end
             if nargin == 3
@@ -52,28 +52,38 @@ classdef XMLDataNode < handle
             end
         end
         
-        function addChild(self,childNode)
+        function addChild(self,childNode,assignUnique)
+            % Adds a child node to the current node of the tree. The
+            % optional argment assignUnique specifies whether or not unique
+            % names are assigned/reassigned to the children (and their
+            % children) of the current node. In general when adding alot of
+            % nodes, say when building the tree, users will want to use
+            % assignUnique = false and then explicitly call the method
+            % assignUniqueNames to give uniques names to the nodes at each
+            % level of the tree. This reduced significantly the amount of 
+            % computation done. The default value for assignUnique is
+            % false.
+            if nargin == 2
+                assignUnique = false;
+            end  
             % Adds a child node to the current node.
             self.children(self.numChildren+1) = childNode;
             childNode.parent = self;
-            
-            % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            % Note, currently this may break the uniqueNames and
-            % assignUniqueNames should be run after calling this function.
-            %
-            % May want to add a call to assignUniqueNames to this function.
-            % Or maybe a call to assignChildrenUniqueNames. 
-            % However, we might the ability to turn it of for cases 
-            % where we are adding alot of children - building a tree as
-            % there is quite a bit of overhead in traversing the tree and
-            % given all children unique names.
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            
+            % Assign unique names to all child nodes.
+            if assignUnique == true
+                self.assignUniqueChildren();
+            end 
         end
         
-        function rmChild(self,index)
+        function rmChild(self,index,assignUnique)
             % Removes a child node (and all nodes beneath it) from the
-            % tree.
+            % the current node. The optional argment assignUnique specifies 
+            % whether or not the unique names are recalculated for the
+            % current node after removal of the child node. The defualt
+            % value for assignUnique is false.
+            if nargin == 2
+                assignUnique = false;
+            end
             if self.numChildren >= index
                 childNode = self.children(index);
                 for i = childNode.numChildren:-1:1
@@ -82,11 +92,9 @@ classdef XMLDataNode < handle
                 delete(childNode);
                 self.children = XMLDataNode.empty();
             end
-            
-            % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            % Note, currently this may break the uniqueNames and
-            % assignUniqueNames should be run after calling this function.
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            if assignUnique == true
+                self.assignUniqueChildren();
+            end
         end
         
         function children = getChildrenByName(self,name)
@@ -254,6 +262,29 @@ classdef XMLDataNode < handle
                     child.assignChildrenUniqueName();
                 end
             end
+        end
+        
+        function setMarks(self,value)
+            % Sets all marks on the tree given by the current node and all 
+            % nodes below its to the logical (true/false) value.
+            assert(islogical(value), 'value must be locigal (true/false)');
+            self.mark = value;
+            for i = 1:self.numChildren
+               child = self.children(i);
+               child.setMarks(value);
+            end
+        end
+        
+        function setMarksTrue(self)
+            % Sets all marks on the tree given by the current node and all
+            % marks below it to true.
+            self.setMarks(true);
+        end
+        
+        function setMarksFalse(self)
+            % Sets all marks on the tree given by the current node and all 
+            % nodes below it to false.
+            self.setMarks(false);
         end
         
         function value = getValueByPath(self,path)
@@ -552,13 +583,13 @@ for i = 1:length(fields)
                 child_xmlStruct = data{j};
             end
             childNode = nodeFromStruct(fieldname, node, child_xmlStruct); 
-            node.addChild(childNode);
+            node.addChild(childNode,false);
         end
     else
         % Data is not an array - create single child node.
         child_node = XMLDataNode(fieldname,node);
         child_node.content = data;
-        node.addChild(child_node);
+        node.addChild(child_node,false);
     end
 end
 end
