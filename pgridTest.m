@@ -1,10 +1,11 @@
-function g = pgridTest
+function tree = pgridTest
 
 sampleXMLDir = [pwd, filesep, 'sample_xml'];
-%tree = loadXMLDataTree([sampleXMLDir, filesep, 'flybowl.xml']);
+tree = loadXMLDataTree([sampleXMLDir, filesep, 'flybowl.xml']);
 % tree = loadXMLDataTree([sampleXMLDir, filesep, 'trikinetics.xml']);
 %tree = loadXMLDataTree([sampleXMLDir, filesep, 'test0.xml']);
-tree = loadXMLDataTree([sampleXMLDir, filesep, 'MetaMetaData_v2.xml'])
+%tree = loadXMLDataTree([sampleXMLDir, filesep, 'MetaMetaData_v2.xml']);
+%tree = loadXMLDataTree('flybowl_defaults.xml');
 
 properties = tree.getJIDEGridProperties();
 properties = properties.GetHierarchy();
@@ -12,7 +13,7 @@ properties = properties.GetHierarchy();
 % create figure
 f = figure( ...
     'MenuBar', 'none', ...
-    'Name', 'Property grid demo - Copyright 2010 Levente Hunyadi', ...
+    'Name', 'pgridTest', ...
     'NumberTitle', 'off', ...
     'Toolbar', 'none');
 

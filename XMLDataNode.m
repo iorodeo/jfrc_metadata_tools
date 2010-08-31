@@ -195,7 +195,7 @@ classdef XMLDataNode < handle
             else
                 name = self.name;
             end
-            msg = sprintf('%sNode(%d): %s',self.indent, self.depth, name);
+            msg = sprintf('%s* Node(d%d): %s',self.indent, self.depth, name);
             disp(msg);
             self.printAttribute();
             self.printContent();
@@ -213,7 +213,7 @@ classdef XMLDataNode < handle
                 for i = 1:self.numAttribute
                     name = self.attributeNames{i};
                     value = self.attribute.(name);
-                    disp([self.indent,'Attribute: ', name, ', ', value]);
+                    disp([self.indent,'  Attribute: ', name, ', ', value]);
                 end
             else
                 disp([self.indent,'Attribute: ']);
