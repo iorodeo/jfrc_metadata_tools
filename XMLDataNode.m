@@ -3,13 +3,11 @@ classdef XMLDataNode < handle
     % designed to be used to represent an XML file as a tree.
     properties
         name = '';
-        parent = XMLDataNode.empty();
-        children = XMLDataNode.empty();
+        parent; 
+        children; 
         attribute = struct;
         content =[];
         uniqueName;
-        attributeListener;
-        contentListener;
     end
    
     properties (Dependent)
@@ -32,28 +30,90 @@ classdef XMLDataNode < handle
     properties %(Access=private)
         mark = false;  
     end
-     
+    
     methods
         
-        function self = XMLDataNode(name,parent,xmlStruct)
-            % Node constructor function. 
-            if nargin >= 1
-                % Creates a root node with name=name.
-                self.name = name;
-            end
-            if nargin >= 2
-                % Creates a root node with parent=parent.
-                self.parent = parent;
-            end
-            if nargin == 3
-                % Creates a root node with name=name and parent=parent and
-                % loads xml file tree from the xmlStruct returned by the 
-                % xml_read function in the xml_io_tools library.
-                self = nodeFromStruct(name,parent,xmlStruct);
-                self.assignUniqueNames();
-            end
+        function self = XMLDataNode()
+            % Class constructor. 
+            self.parent = self.createEmptyNode();
+            self.children = self.createEmptyNode();
         end
         
+        function child = createChild(self)
+            % Creates a child node. This is method should be implemented by
+            % classes which inherit from the XMLDataNode class so that
+            % child nodes of the same class are created when using
+            % nodeFromStruct to create trees, etc.
+            child = XMLDataNode();
+        end
+        
+        function node = createEmptyNode(self)
+            % Creates an empty object array. This method should be
+            % implemented by classes which inherit from the XMLDataNode so
+            % that the empty oject arrays, of children for example, are of 
+            % the same class as the parent.
+            node = XMLDataNode.empty();
+        end
+        
+        function nodeFromStruct(self, xmlStruct)
+            % Creates nodes given the xml structure loaded via the xml_read
+            % function in the xml_io_tools library.
+            
+            % Set attribute, content, etc. Note, I'm ignoring CDATA and
+            % PROCESSING_INSTRUCTIONS fields. As they should not be present
+            % if the structure from the xml file was read with
+            % Pref.ReadSpec = false.
+            if isfield(xmlStruct,'ATTRIBUTE')
+                self.attribute = xmlStruct.ATTRIBUTE;
+            end
+            if isfield(xmlStruct, 'CONTENT')
+                self.content = xmlStruct.CONTENT;
+            end
+            
+            % Use remaining fields (other than ATTRIBUTE, CONTENT, etc) to create child
+            % nodes by recursively call nodeFromStruct to create entire tree.
+            fields = fieldnames(xmlStruct);
+            for i = 1:length(fields)
+                fieldname = fields{i};
+                if strcmp(fieldname,'ATTRIBUTE')
+                    continue;
+                end
+                if strcmp(fieldname,'CONTENT')
+                    continue;
+                end
+                if strcmp(fieldname,'CDATA_SECTION')
+                    continue;
+                end
+                if strcmp(fieldname,'PROCESSING_INSTRUCTIONS')
+                    continue;
+                end
+                
+                data = xmlStruct.(fieldname);
+                if isstruct(data) || iscell(data)
+                    % Data is struct array or cell array - loop over to get children.
+                    for j = 1:length(data)
+                        if isstruct(data)
+                            child_xmlStruct = data(j);
+                        else
+                            child_xmlStruct = data{j};
+                        end
+                        childNode = self.createChild();
+                        childNode.name = fieldname;
+                        childNode.parent = self;
+                        childNode.nodeFromStruct(child_xmlStruct);
+                        self.addChild(childNode,false);
+                    end
+                else
+                    % Data is not an array - create single child node.
+                    childNode = self.createChild();
+                    childNode.name = fieldname;
+                    childNode.parent = self;
+                    childNode.content = data;
+                    self.addChild(childNode,false);
+                end
+            end
+        end
+               
         function addChild(self,childNode,assignUnique)
             % Adds a child node to the current node of the tree. The
             % optional argment assignUnique specifies whether or not unique
@@ -68,7 +128,7 @@ classdef XMLDataNode < handle
             if nargin == 2
                 assignUnique = false;
             end  
-            % Adds a child node to the current node.
+            % Adds a child node to the current node.   
             self.children(self.numChildren+1) = childNode;
             childNode.parent = self;
             % Assign unique names to all child nodes.
@@ -91,8 +151,8 @@ classdef XMLDataNode < handle
                 for i = childNode.numChildren:-1:1
                     childNode.rmChild(i);
                 end
-                delete(childNode);
-                self.children = XMLDataNode.empty();
+                delete(childNode);        
+                self.children = self.createEmptyNode();
             end
             if assignUnique == true
                 self.assignUniqueChildren();
@@ -103,7 +163,7 @@ classdef XMLDataNode < handle
             % Returns an object array of all children of the current node 
             % with the given name.
             cnt = 0;
-            children = XMLDataNode.empty();
+            children = self.createEmptyNode();
             for i = 1:self.numChildren
                 childname = self.children(i).name;
                 if strcmp(childname,name)
@@ -363,15 +423,16 @@ classdef XMLDataNode < handle
             indent = blanks(self.depth*self.printIndentNum);
         end
         
-        function walk(self, fhandle)
+        function walk(self, fhandle, varargin)
             % Walks tree in depth first manner apply function fhandle to
             % each node in the tree below and including the current node.
-            fhandle(self);
+            fhandle(self,varargin{:});
             for i=1:self.numChildren
                 child = self.children(i);
-                child.walk(fhandle);
+                child.walk(fhandle,varargin{:});
             end
         end
+       
         
         function [xmlStruct, name] = getXMLStruct(self)
             % Returns a structure (xmlStruct) which represents the tree
@@ -421,7 +482,7 @@ classdef XMLDataNode < handle
             else
                 % If this isn't the root node create a entry in the
                 % property grid field containing the nodes content.
-                nestedName = getNestedName(self,'');
+                nestedName = self.getNestedName('');
                 properties = PropertyGridField( ...
                     nestedName, self.content, ...
                     'Category', self.root.name, ...
@@ -435,7 +496,7 @@ classdef XMLDataNode < handle
             for i = 1:self.numAttribute
                 attributeName = self.attributeNames{i};
                 attributeValue = self.attribute.(attributeName);
-                propertyName = getNestedName(self,attributeName);
+                propertyName = self.getNestedName(attributeName);
                 % DEBUGGING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 if strcmp(attributeName, 'gender')
                     propType = PropertyType('char', 'row', {'m', 'f', 'b'});
@@ -473,7 +534,55 @@ classdef XMLDataNode < handle
             end
         end
         
-
+        function nestedName = getNestedName(self,name)
+            % Creates a nested name for use in JIDE Property Grids.
+            pathFromRoot = self.uniquePathFromRoot;
+            if isempty(name)
+                nameCell = {pathFromRoot{2:end}};
+            else
+                nameCell = {pathFromRoot{2:end}, name};
+            end
+            nestedName = nameCell{1};
+            for i=2:length(nameCell)
+                nestedName = [nestedName, '.', nameCell{i}];
+            end
+        end
+        
+        function pathString = getPathString(self)
+            % Creates a nested name for use in JIDE Property Grids.
+            pathFromRoot = self.uniquePathFromRoot;  
+            pathString = pathFromRoot{1};
+            for i=2:length(self.uniquePathFromRoot)
+                pathString = [pathString, '.', self.uniquePathFromRoot{i}];
+            end
+        end
+        
+        function test = isLeaf(self)
+            % Test whether or not a node is a leaf of the tree.
+            if self.numChildren == 0
+                test = true;
+            else
+                test = false;
+            end
+        end
+        
+        function leaves = getLeaves(self)
+            % Get object array containing all leaves below the current node
+           if self.isLeaf()
+               leaves = self;
+           else
+               leaves = self.createEmptyNode();
+               cnt = 0;
+               for i = 1:self.numChildren
+                  child = self.children(i);
+                  childLeaves = child.getLeaves();
+                  for j = 1:length(childLeaves)
+                      cnt = cnt + 1;
+                      leaves(cnt) = childLeaves(j);
+                  end
+               end
+           end
+        end
         
         % set/get methods -------------------------------------------------
         function depth = get.depth(self)
@@ -560,81 +669,5 @@ end % classdef XMLDataNode
 
 % Utility functions
 % -------------------------------------------------------------------------
-function node = nodeFromStruct(name, parent, xmlStruct)
-% Creates nodes given the xml structure loaded using 
-% xml_read functin from the xml_io_tools library.
-%
-% Arguments:
-%  name      = the name of the node
-%  parent    = the parent node, or XMLDataNode.empty() is this is the root
-%              node of a tree.
-%  xmlStruct = the nested data structure obtained from the xml file by
-%              the xml_read function
-% ------------------------------------------------------------------------
-
-% Create top level node and set attribute, content, etc.
-%
-% Note, I'm ignoring CDATA and PROCESSING_INSTRUCTIONS fields. They
-% shouldn't be present if the xml file was read with Pref.ReadSpec =
-% false.
-node = XMLDataNode(name,parent);
-if isfield(xmlStruct,'ATTRIBUTE')
-    node.attribute = xmlStruct.ATTRIBUTE;
-end
-if isfield(xmlStruct, 'CONTENT')
-    node.content = xmlStruct.CONTENT;
-end
-
-% Use remaining fields (other than ATTRIBUTE, CONTENT, etc) to create child 
-% nodes by recursively call nodeFromStruct to create entire tree.
-fields = fieldnames(xmlStruct);
-for i = 1:length(fields)
-    fieldname = fields{i};
-    if strcmp(fieldname,'ATTRIBUTE')
-        continue;
-    end
-    if strcmp(fieldname,'CONTENT')
-        continue;
-    end
-    if strcmp(fieldname,'CDATA_SECTION')
-        continue;
-    end
-    if strcmp(fieldname,'PROCESSING_INSTRUCTIONS')
-        continue;
-    end
-    
-    data = xmlStruct.(fieldname);
-    if isstruct(data) || iscell(data)
-        % Data is struct array or cell array - loop over to get children. 
-        for j = 1:length(data)
-            if isstruct(data)
-                child_xmlStruct = data(j);
-            else
-                child_xmlStruct = data{j};
-            end
-            childNode = nodeFromStruct(fieldname, node, child_xmlStruct); 
-            node.addChild(childNode,false);
-        end
-    else
-        % Data is not an array - create single child node.
-        child_node = XMLDataNode(fieldname,node);
-        child_node.content = data;
-        node.addChild(child_node,false);
-    end
-end
-end
 
 
-function nestedName = getNestedName(node,name)
-% Creates a nested name for use in JIDE Property Grids.
-pathFromRoot = node.uniquePathFromRoot;
-if isempty(name)
-    nameCell = {pathFromRoot{2:end}};
-else
-    nameCell = {pathFromRoot{2:end}, name};
-end
-nestedName = nameCell{1};
-for i=2:length(nameCell)
-    nestedName = [nestedName, '.', nameCell{i}];
-end
-end

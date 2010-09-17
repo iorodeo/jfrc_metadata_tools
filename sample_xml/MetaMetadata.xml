@@ -1,6 +1,4 @@
 <?xml version="1.0"?>
-
-<metadata>
 <experiment>
   <assay 
       range="{'Fly Bowl'}"
@@ -293,4 +291,3 @@
     </apparatus>
   </apparatus>
 </experiment>
-</metadata>

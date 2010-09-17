@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<experiment>
+  <assay datatype="select_string" range_basic="{'FlyBowl'}" range_advanced="{'FlyBowl'}" default="1" units="" appear_basic="true" appear_advanced="true" entry="manual" readonly_basic="true" readonly_advanced="true" description="Name of assay" required="true" />
+  <protocol datatype="select_string" range_basic="{'ExperimentProtocol0001'}" range_advanced="{'ExperimentProtocol0001'}" units="" default="1" appear_basic="false" appear_advanced="true" entry="manual" readonly_basic="true" readonly_advanced="false" description="Name of file describing experiment protocol" required="true" />
+  <datetime datatype="datetime" range_basic="" range_advanced="" units="" default="" appear_basic="false" appear_advanced="false" entry="acquire" readonly_basic="true" readonly_advanced="true" description="Date and time at which experiment is started" required="true" />
+  <experimenter datatype="select_string" range_basic="{'hirokawaj','bransonk','robiea'}" range_advanced="LDAP" units="" default="$last" appear_basic="true" appear_advanced="true" entry="manual" readonly_basic="false" readonly_advanced="false" description="LDAP username of person conducting the experiment" required="true" />
+  <shiftflytemp_time datatype="float" range_basic="[0,Inf]" range_advanced="[0,Inf]" units="seconds" default="" appear_basic="false" appear_advanced="false" entry="acquired" readonly_basic="true" readonly_advanced="true" description="Time (in seconds) relative to the start of the experiment that flies are brought into the hot room" required="true" />
+  <fliesloaded_time datatype="float" range_basic="[0,Inf]" range_advanced="[0,Inf]" units="seconds" default="" appear_basic="false" appear_advanced="false" entry="acquired" readonly_basic="true" readonly_advanced="true" description="Time (in seconds) relative to the start of the experimet that flies are loaded into the arena'" required="true" />
+  <apparatus>
+    <type datatype="select_string" range_basic="{'rig'}" range_advance="{rig'}" units="na" default="1" appear_basic="false" appear_advanced="false" entry="auto" readonly_basic="true" readonly_advanced="true" description="Experimental apparatus " />
+    <id datatype="integer" range_basic="[1,Inf]" range_advanced="[1,Inf]" units="na" default="1" appear_basic="false" appear_advanced="false" entry="auto" readonly_basic="na" readonly_advanced="na" description="Apparatus identification number" />
+    <apparatus>
+      <type datatype="select_string" range_basic="{'plate'}" range_advanced="{'plate'}" units="na" default="2" appear_basic="false" appear_advanced="false" entry="auto" readonly_basic="na" readonly_advanced="na" description="Experimental apparatus " />
+      <id datatype="integer" range_basic="[1,Inf]" range_advanced="[1,Inf]" units="na" default="3" appear_basic="false" appear_advanced="false" entry="auto" readonly_basic="na" readonly_advanced="na" description="Apparatus identification numbe" />
+      <apparatus>
+        <type datatype="select_string" range_baisc="{'bowl'}" range_advanced="{'bowl'}" units="na" default="1" appear_basic="false" appear_advanced="false" entry="auto" readonly_basic="na" readonly_advanced="na" description="Experimental apparatus" />
+        <id datatype="integer" range_basic="[1,Inf]" range_advanced="[1,Inf]" units="na" default="3" appear_basic="false" appear_advanced="false" entry="auto" readonly_basic="na" readonly_advanced="na" description="Apparatus identification number"></id>
+        <environment>
+          <temperature datatype="float" range_basic="[-Inf, Inf]" range_advanced="[-Inf, Inf]" units="degrees Celsius" default="" appear_basic="false" appear_advanced="false" entry="acquired" readonly_basic="true" readonly_advanced="true" description="Temperature in degrees Celsius at the start of the experiment" />
+          <humidity datatype="float" range_basic="[0,100]" range_advanced="[0,100]" units="percent" default="" appear_basic="false" appear_advanced="false" entry="acquired" readonly_basic="true" readonly_advanced="true" description="Humidity at the start of the experiment" />
+        </environment>
+        <flies>
+          <line />
+          <effector />
+          <cross_date />
+          <age />
+          <count />
+          <hours_starved />
+          <gender />
+          <genotype>
+            <content datatype="select_string" range_basic="na" range_advanced="na" units="na" default="$last" appear_basic="true" appear_advanced="true" entry="manual" readonly_basic="false" readonly_advanced="false" description="Genotype of flies" />
+          </genotype>
+          <rearing />
+          <handling />
+        </flies>
+      </apparatus>
+    </apparatus>
+  </apparatus>
+</experiment>

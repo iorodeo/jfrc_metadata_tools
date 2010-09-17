@@ -1,0 +1,17 @@
+{
+    "experiment" : 
+    {
+        "attributes" : 
+        {
+            "assay" : 
+            {
+                "datatype"     : "select_string",
+                "range_basic"  : ["flybowl"],
+            }
+        },
+        "children" :
+        {
+
+
+        }
+}

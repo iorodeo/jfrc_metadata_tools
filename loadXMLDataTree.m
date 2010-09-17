@@ -10,5 +10,15 @@ wPref.ReadSpec = false;
 wPref.Str2Num = 'never';
 [xmlStruct, name_cell] = xml_read(filename,wPref);
 name = name_cell{1};
-parent = XMLDataNode.empty();
-tree = XMLDataNode(name,parent,xmlStruct);
+
+% tree = XMLDataNode();
+% tree.name = name;
+% tree.nodeFromStruct(xmlStruct);
+% tree.assignUniqueNames();
+
+tree = DefaultsNode();
+tree.name = name;
+tree.nodeFromStruct(xmlStruct);
+tree.assignUniqueNames();
+tree.setValuesToDefaults();
+tree.setValueValidator('basic');
