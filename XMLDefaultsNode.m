@@ -1,4 +1,4 @@
-classdef DefaultsNode < XMLDataNode
+classdef XMLDefaultsNode < XMLDataNode
     
     properties
        value = [];
@@ -24,7 +24,7 @@ classdef DefaultsNode < XMLDataNode
       
     methods
         
-        function self = DefaultsNode()
+        function self = XMLDefaultsNode()
             % DefaultsNode constructor
             self.parent = self.createEmptyNode();
             self.children = self.createEmptyNode();
@@ -33,13 +33,13 @@ classdef DefaultsNode < XMLDataNode
         function child = createChild(self)
             % Creates an child node. Required when inherting form
             % XMLDataNode.
-            child = DefaultsNode();
+            child = XMLDefaultsNode();
         end
         
         function node = createEmptyNode(self)
             % Creates an empty node. Rrequired when inheriting from
             % XMLDataNode.
-            node = DefaultsNode.empty();
+            node = XMLDefaultsNode.empty();
         end
         
         function checkAttributes(self)
@@ -112,8 +112,6 @@ classdef DefaultsNode < XMLDataNode
             end
         end
         
-    
-        
         function value = get.value(self)
            %disp(['getting: ', self.uniqueName,'.value']); 
            value = self.value;
@@ -137,15 +135,28 @@ classdef DefaultsNode < XMLDataNode
     end
 end 
 
-
 function setNodeValueToDefault(node)
 % Set a nodes value to the specified default value
 if node.isLeaf()
     if strcmp(node.attribute.default,'$LAST')
-        node.value = node.attribute.last;
+        value = node.attribute.last;
     else
-        node.value = node.attribute.default;
+        value = node.attribute.default;
     end
+    % Check if default value validates
+    [value, flag, msg] = node.valueValidator.validationFunc(value);
+    if flag == false
+        value = node.valueValidator.getValidValue();
+        warning( ...
+            'XMLDefaultsNode:defaultvalidation', ...
+            'default does not validate, for node %s, %s, setting to valid value %s', ...
+            node.getPathString(), ...
+            msg, ...
+            var2str(value) ...
+        ); 
+        
+    end
+    node.value = value;
 end
 end
 
@@ -182,17 +193,21 @@ if node.isLeaf()
     else
         switch lower(dataType)
             case 'integer'
-                disp(['integer datatype',', ', rangeString])
+                %disp('integer datatype');
                 node.valueValidator = IntegerValidator(rangeString);
             case 'float'
-                disp('float datatype')
+                %disp('float datatype');
                 node.valueValidator = NumericValidator(rangeString);
             case 'string'
-                %disp('string datatype')
+                %disp('string datatype');
+                node.valueValidator = StringValidator(rangeString);
             case 'datetime'
-                %disp('datetime datatype')
+                %disp('datetime datatype') 
             case 'time24'
                 %disp('time24 datatype')
+                node.valueValidator = Time24Validator(rangeString);
+            case 'integer_list'
+                %disp('integer_list datatype');
             otherwise
                 %error('unkown datatype %s', dataType);
         end

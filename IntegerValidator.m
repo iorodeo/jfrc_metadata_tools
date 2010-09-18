@@ -1,9 +1,9 @@
 classdef IntegerValidator < NumericValidator
-    % Used for creating validation functions for integer data types from 
-    % range string arguments. Validation consists of checking that the values 
-    % are within a given range which can be inclusive of exclusive of the 
-    % end points. The end points are checked to insure that they are
-    % integers and the value is trucated to an integer during the check.
+    % Used for validating integer data. Range is set using a range string 
+    % argument. Validation consists of checking that the values are within 
+    % a given range which can be inclusive of exclusive of the end points. 
+    % The end points are checked to insure that they are integers and the 
+    % value is trucated to an integer during the check.
     methods
         function self = IntegerValidator(rangeString)
             if nargin > 0
@@ -15,8 +15,7 @@ classdef IntegerValidator < NumericValidator
             % Insure that upper and lower bounds are integers if not throw
             % an error.
             if self.upperBound ~= Inf
-                upperFrac = self.upperBound - floor(self.upperBound);
-                
+                upperFrac = self.upperBound - floor(self.upperBound);     
                 if upperFrac ~= 0
                     error('upper bound of integer range in not an integer');
                 end
@@ -29,9 +28,14 @@ classdef IntegerValidator < NumericValidator
             end
         end
         function [value,flag,msg] = validationFunc(self,value)
-            % Truncate value to integer
+            % Validates the given value
             value = floor(value);
             [value,flag,msg] = validationFunc@NumericValidator(self,value);
+        end
+        
+        function value = getValidValue(self)
+           value = getValidValue@NumericValidator(self);
+           value = floor(value);
         end
     end
 end

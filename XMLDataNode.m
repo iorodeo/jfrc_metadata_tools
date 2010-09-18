@@ -549,7 +549,7 @@ classdef XMLDataNode < handle
         end
         
         function pathString = getPathString(self)
-            % Creates a nested name for use in JIDE Property Grids.
+            % Creates a nested name based on unique path to root node.
             pathFromRoot = self.uniquePathFromRoot;  
             pathString = pathFromRoot{1};
             for i=2:length(self.uniquePathFromRoot)
@@ -667,7 +667,5 @@ classdef XMLDataNode < handle
     end
 end % classdef XMLDataNode
 
-% Utility functions
-% -------------------------------------------------------------------------
 
 

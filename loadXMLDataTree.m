@@ -16,9 +16,10 @@ name = name_cell{1};
 % tree.nodeFromStruct(xmlStruct);
 % tree.assignUniqueNames();
 
-tree = DefaultsNode();
+tree = XMLDefaultsNode();
 tree.name = name;
 tree.nodeFromStruct(xmlStruct);
 tree.assignUniqueNames();
+%tree.setValueValidator('basic');
+tree.setValueValidator('advanced');
 tree.setValuesToDefaults();
-tree.setValueValidator('basic');
