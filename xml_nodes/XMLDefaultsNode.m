@@ -3,6 +3,7 @@ classdef XMLDefaultsNode < XMLDataNode
     properties
        value = [];
        valueValidator = BaseValidator();
+       validation = true;
     end
     
     properties (Constant, Hidden)
@@ -47,14 +48,23 @@ classdef XMLDefaultsNode < XMLDataNode
             self.walk(@checkNodeAttributes);
         end
         
+        function dataType = getDataType(self)
+            % Return dataType string for node from the node attributes
+            if self.isLeaf()
+                dataType = strtrim(self.attribute.datatype);
+            else
+                dataType = '';
+            end
+        end
+        
         function range = getRangeString(self, mode)
             % Get the range string from the node attributes based on the 
             % operating mode.
             if self.isLeaf()
                 if strcmpi(mode,'basic')
-                    range = self.attribute.range_basic;
+                    range = strtrim(self.attribute.range_basic);
                 elseif strcmpi(mode, 'advanced')
-                    range = self.attribute.range_advanced;
+                    range = strtrim(self.attribute.range_advanced);
                 else
                     error('unknown mode string %s', mode);
                 end
@@ -63,40 +73,111 @@ classdef XMLDefaultsNode < XMLDataNode
             end
         end
         
-        function dataType = getDataType(self)
-            % Return dataType string for node from the node attributes
+        function default = getDefaultValue(self)
+            % Get default value for node.
+           if self.isLeaf()
+               default = strtrim(self.attribute.default);
+           else
+               default = '';
+           end
+        end
+        
+        function last = getLastValue(self)
+            % Get last value for node.
             if self.isLeaf()
-                dataType = self.attribute.datatype;
+                last = strtrim(self.attribute.last);
             else
-                dataType = '';
+                last = '';
             end
         end
         
-        function setValueValidator(self, mode)
-            % Sets the value validation function for the node based on the
-            % mode string = 'basic' or 'advanced'
-            self.walk(@setNodeValueValidator,mode);
+        function entryType = getValueEntryType(self)
+            % Get entry type for node value.
+           if self.isLeaf()
+               entryType = strtrim(self.attribute.entry);
+           else
+               entryType = 'none';
+           end
         end
         
-        function setValuesToDefaults(self)
-            % Set all node values to there default values
-            self.walk(@setNodeValueToDefault);
+        function flag = getValueRequired(self)
+            % Returns true is the node contains a required value and false
+            % otherwise.
+            if self.isLeaf()
+                requiredString = strtrim(self.attribute.required);
+                switch lower(requiredString)
+                    case 'true'
+                        flag = true;
+                    case 'false'
+                        flag = false;
+                    otherwise
+                        error('unrecognised required string');
+                end            
+            else
+                flag = false;
+            end
         end
         
-        function printValues(self)
-            % Prints the current values for all of the nodes.
-            self.walk(@printNodeValue);
+        function units = getValueUnits(self)
+           % Returns values units
+           if self.isLeaf()
+               units = strtrim(self.attribute.units);
+           else
+               units = '';
+           end
+        end
+        
+        function flag = getValueAppear(self, mode)
+            % Returns flag indicating whether or not value should appear
+            % in the GUI for the given mode string.
+            switch lower(mode)
+                case 'basic'
+                    appearString = strtrim(self.attribute.appear_basic);
+                case 'advanced'
+                    appearString = strtrim(self.attribute.appear_advanced);
+                otherwise
+                    error('unrecognised mode string %s', mode);
+            end
+            [flag, ~] = parseAppearString(appearString);
+        end
+        
+        function flag = getReadOnly(self, mode)
+            % Returns flag indicating whether or not value should be read
+            % only in GUI for the given mode string.
+            switch lower(mode)
+                case 'basic'
+                    appearString = strtrim(self.attribute.appear_basic);
+                case 'advanced'
+                    appearString = strtrim(self.attribute.appear_advanced);
+                otherwise
+                    error('unrecognised mode string %s', mode);
+            end
+            [~, flag] = parseAppearString(appearString);
+        end
+        
+        function test = hasRequiredValues(self)
+            % Check if all required values of all tree leaves have a value.
+            test = true;
+            leaves = self.getLeaves();
+            for i = 1:length(leaves)
+                leaf = leaves(i);
+                requiredFlag = leaf.getValueRequired();
+                if (requiredFlag == true) && isempty(leaf.value)
+                    %disp(['required value for node, ', leaf.getPathString(), ', not present']);
+                    test = false;
+                end
+            end
         end
         
         function valuesToAcquire = getValuesToAcquire(self)
             % Get cell array containing the unique path string, from the root 
             % node, of all values that need to be acquired.
-            leaves = self.getLeaves();
+            leaves = self.root.getLeaves();
             valuesToAcquire = {};
             cnt = 0;
             for i = 1:length(leaves)
                 node = leaves(i);
-                if strcmpi(node.attribute.entry, 'acquire')
+                if strcmpi(node.getValueEntryType(), 'acquire')
                     cnt = cnt+1;
                     valuesToAcquire{cnt} = node.getPathString();
                 end
@@ -113,12 +194,12 @@ classdef XMLDefaultsNode < XMLDataNode
         end
         
         function value = get.value(self)
-           %disp(['getting: ', self.uniqueName,'.value']); 
+            % get node value
            value = self.value;
         end
         
         function set.value(self, value)
-           %disp(['setting: ', self.uniqueName,'.value']);
+            % Set node value.
            [value,flag, msg] = self.validateValue(value);
            if flag == true
                 self.value = value;
@@ -128,25 +209,54 @@ classdef XMLDefaultsNode < XMLDataNode
         end
         
         function [value, flag, msg] = validateValue(self, value)
-            % Call value validation function.
-            [value,flag,msg] = self.valueValidator.validationFunc(value);
+            % Call value validation function on given value.
+            if self.validation == true
+                [value,flag,msg] = self.valueValidator.validationFunc(value);
+            else
+                flag = true;
+                msg = '';
+            end
+        end
+        
+        function value = getValidValue(self)
+            % Get valid value from value validator.
+            value = self.valueValidator.getValidValue();
+        end
+        
+        function setValueValidators(self, mode)
+            % Sets the value validation function for this node and all nodes 
+            % below it in the tree based on the mode string which can be equal
+            % 'basic' or 'advanced'
+            self.walk(@setNodeValueValidator,mode);
+        end
+        
+        function setValuesToDefaults(self)
+            % Set the values of this node and all nodes below it on the tree
+            % to the defualt value. 
+            self.walk(@setNodeValueToDefault);
+        end
+        
+        function printValues(self)
+            % Prints the current values for all of the nodes.
+            self.walk(@printNodeValue);
         end
      
     end
-end 
+end % classdef XMLDefaultsNode
 
 function setNodeValueToDefault(node)
 % Set a nodes value to the specified default value
-if node.isLeaf()
-    if strcmp(node.attribute.default,'$LAST')
-        value = node.attribute.last;
+if node.isLeaf() && (~strcmpi(node.getValueEntryType(),'acquire'))
+%if node.isLeaf()
+    if strcmp(node.getDefaultValue(),'$LAST')
+        value = node.getLastValue();
     else
-        value = node.attribute.default;
+        value = node.getDefaultValue();
     end
     % Check if default value validates
-    [value, flag, msg] = node.valueValidator.validationFunc(value);
+    [value, flag, msg] = node.validateValue(value);
     if flag == false
-        value = node.valueValidator.getValidValue();
+        value = node.getValidValue();
         warning( ...
             'XMLDefaultsNode:defaultvalidation', ...
             'default does not validate, for node %s, %s, setting to valid value %s', ...
@@ -209,11 +319,49 @@ if node.isLeaf()
             case 'integer_list'
                 %disp('integer_list datatype');
             otherwise
-                %error('unkown datatype %s', dataType);
+                error('unkown datatype %s', dataType);
         end
     end
 else
     node.valueValidator = BaseValidator();
 end
+end
+
+function [appearFlag, readOnlyFlag] = parseAppearString(appearString)
+% Parses the appearString of leaf attributes and return the appearFlag
+% (true or false) and the readOnlyFlag (true or false).
+appearString = strtrim(appearString);
+if isempty(appearString)
+    error('appear string is empty should be false, true or true, readonly');
+end
+commaPos = findstr(appearString,',');
+if length(commaPos) > 1
+    error('too many commas in appear string');
+end
+if isempty(commaPos) 
+    appearFlagString = lower(strtrim(appearString));
+    readOnlyFlagString = '';
+else
+    appearFlagString = lower(strtrim(appearString(1:commaPos-1)));
+    readOnlyFlagString = lower(strtrim(appearString(commasPos+1,end)));
+end
+
+switch (appearFlagString)
+    case 'true'
+        appearFlag = true;
+    case 'false'
+        appearFlag = false;
+    otherwise
+        error('unrecognised value for appear string: %s', appearString);
+end
+
+switch (readOnlyFlagString)
+    case 'readonly'
+        reasOnlyFlag = true;
+    case ''
+        readOnlyFlag = false;
+    otherwise
+end
+
 end
 

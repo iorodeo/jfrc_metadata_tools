@@ -29,13 +29,19 @@ classdef IntegerValidator < NumericValidator
         end
         function [value,flag,msg] = validationFunc(self,value)
             % Validates the given value
-            value = floor(value);
+            value = truncFloatString(value);
             [value,flag,msg] = validationFunc@NumericValidator(self,value);
         end
         
         function value = getValidValue(self)
            value = getValidValue@NumericValidator(self);
-           value = floor(value);
+           value = truncFloatString(value);
         end
     end
+end
+
+function valNew = truncFloatString(valOld)
+val = str2num(valOld);
+val = floor(val);
+valNew = num2str(val);
 end

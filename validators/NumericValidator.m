@@ -88,6 +88,14 @@ classdef NumericValidator < BaseValidator
         end
         
         function [value,flag, msg] = validationFunc(self,value)
+            % Applies validation to the given value.
+            valueFloat = str2num(value);
+            if isempty(valueFloat)
+                flag = false;
+                msg = 'unable to convert value to number';
+                return;
+            end
+                
             % Apply validation function to given value. 
             flag = true;
             msg = '';
@@ -95,36 +103,37 @@ classdef NumericValidator < BaseValidator
             % Check upper bound.
             switch self.lowerBoundType
                 case 'inclusive'
-                    if value < self.lowerBound
+                    if valueFloat < self.lowerBound
                         flag = 'false';
                         msg = 'value less than lower bound';
                         return;
                     end
                 case 'exclusive'
-                    if value <= self.lowerBound
+                    if valueFloat <= self.lowerBound
                         flag = false;
                         msg = 'value less than or equal to upper bound';
                         return;
                     end 
                 otherwise
-                    error('uknown lower bound type');
+                    error('unknown lower bound type');
             end
                 
             % Check lower bound.
             switch self.upperBoundType
                 case 'inclusive'
-                    if value > self.upperBound
+                    if valueFloat > self.upperBound
                         flag = false;
                         msg = 'value greater than upper bound';
                         return;
                     end
                 case 'exclusive'
-                    if value >= self.upperBound
+                    if valueFloat >= self.upperBound
                         flag = false;
                         msg = 'value greater than or equal to upper bound';
                         return;
                     end
                 otherwise
+                    error('unknown upper bound type');
             end
              
         end
@@ -144,7 +153,7 @@ classdef NumericValidator < BaseValidator
                 % neither bound is Inf - pick middle. 
                 value = 0.5*(self.lowerBound + self.upperBound);
             end
-            
+            value = num2str(value);   
         end
         
     end

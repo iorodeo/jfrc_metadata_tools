@@ -32,19 +32,31 @@ classdef Time24Validator < NumericValidator
                 msg = 'value is empty';
                 return;
             end
-            valueFloat = time24ToFloat(value);
-            [valueFloat,flag,msg] = validationFunc@NumericValidator(self,valueFloat);
-            value = floatToTime24(valueFloat);
+            valueFloatString = time24ToFloatString(value);
+            [valueFloatString,flag,msg] = validationFunc@NumericValidator(self,valueFloatString);
+            value = floatStringToTime24(valueFloatString);
         end
         
         function value = getValidValue(self)
             % Returns a valid value.
-            valueFloat = getValidValue@NumericValidator(self);
-            value = floatToTime24(valueFloat);
+            valueFloatString = getValidValue@NumericValidator(self);
+            value = floatStringToTime24(valueFloatString);
         end
         
     end
     
+end
+
+function floatString = time24ToFloatString(time24String)
+% Converts a time24 string to a float string
+t = time24ToFloat(time24String);
+floatString = num2str(t);
+end
+
+function time24String = floatStringToTime24(floatString)
+% Converts a float string to a time24 string
+t = str2num(floatString);
+time24String = floatToTime24(t);
 end
 
 function t = time24ToFloat(timeString)

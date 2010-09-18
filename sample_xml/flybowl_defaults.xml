@@ -47,7 +47,7 @@
           <content datatype="string" range_basic="" range_advanced="" units="" appear_basic="true" appear_advanced="true" entry="manual" description="Observations of behavior by experimenter" required="false" default="" last="" />
         </behavior_notes>
         <technical_notes>
-          <content datatype="string" range_basic="" range_advanced="" units="" appear_basic="true" appear_advanced="" entry="manual" description="Technical notes by experimenter" required="false" default="" last="" />
+          <content datatype="string" range_basic="" range_advanced="" units="" appear_basic="true" appear_advanced="true" entry="manual" description="Technical notes by experimenter" required="false" default="" last="" />
         </technical_notes>
         <redo_flag>
           <content datatype="string" range_basic="None, Rearing problem, Flies look sick, See behavioral notes, See technical notes" range_advanced="None, Rearing problem, Flies look sick, See behavioral notes, See technical notes" units="" appear_basic="true" appear_advanced="true" entry="manual" description="Flag specifying whether or not experiment should be re-done and why." required="true" default="None" last="" />
