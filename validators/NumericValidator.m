@@ -15,58 +15,71 @@ classdef NumericValidator < BaseValidator
         function self = NumericValidator(rangeString)
             % Class Constructor
             if nargin > 0       
-                self.setBounds(rangeString);
+                self.setRange(rangeString);
             end
         end
-        
-        function setBounds(self, rangeString)
-            % Set upper and lower bounds of integer validator based on the
-            % rangeString.
+ 
+        function setRange(self, rangeString)
+            % Set upper and lower bounds of validator based on the rangeString.
             rangeString = strtrim(rangeString);
-            self.setBoundTypes(rangeString);
-            [lowerString, upperString] = self.getBoundStrings(rangeString);
-            lowerValue = str2num(lowerString);
-            if isempty(lowerValue)
-                error('unable to parse range string - lower bound is not a number');
-            end
-            upperValue = str2num(upperString);
-            if isempty(upperValue)
-                error('unable to parse range string - upper bound is not a number');
-            end
-            if lowerValue > upperValue
-                error('lower bound is greater than upper bound');
-            end
-            self.lowerBound = lowerValue;
-            self.upperBound = upperValue;
-            
+            self.setRangeTypes(rangeString);
+            self.setRangeValues(rangeString);
         end
         
-        function setBoundTypes(self,rangeString)
+        function setRangeValues(self,rangeString)
+            % Get lower and upper bound values
+            if isempty(rangeString)
+                self.lowerBound = -Inf;
+                self.upperBound = Inf;
+            else
+                [lowerString, upperString] = self.getRangeStrings(rangeString);
+                lowerValue = str2num(lowerString);
+                if isempty(lowerValue)
+                    error('unable to parse range string - lower bound is not a number');
+                end
+                upperValue = str2num(upperString);
+                if isempty(upperValue)
+                    error('unable to parse range string - upper bound is not a number');
+                end
+                if lowerValue > upperValue
+                    error('lower bound is greater than upper bound');
+                end
+                self.lowerBound = lowerValue;
+                self.upperBound = upperValue;
+            end 
+        end
+        
+        function setRangeTypes(self,rangeString)
             % Get type of upper and lower bounds.
-           rangeString = strtrim(rangeString);
-           % Use first and last characters to determine if bounds are
-            % inclusive or exclusive.
-            firstChar = rangeString(1);
-            switch firstChar
-                case '['
-                    self.lowerBoundType = 'inclusive';
-                case '('
-                    self.lowerBoundType = 'exclusive';
-                otherwise
-                    error('range string has illegal first character %s', firstChar);
-            end
-            lastChar = rangeString(end);
-            switch lastChar
-                case ']'
-                    self.upperBoundType = 'inclusive';
-                case ')'
-                    self.upperBoundType = 'exclusive';
-                otherwise
-                    error('range string has illegal last character %s', lastChar);
+            rangeString = strtrim(rangeString);
+            if isempty(rangeString)
+                self.lowerBoundType = 'inclusive';
+                self.upperBoundType = 'inclusive';
+            else
+                % Use first and last characters to determine if bounds are
+                % inclusive or exclusive.
+                firstChar = rangeString(1);
+                switch firstChar
+                    case '['
+                        self.lowerBoundType = 'inclusive';
+                    case '('
+                        self.lowerBoundType = 'exclusive';
+                    otherwise
+                        error('range string has illegal first character %s', firstChar);
+                end
+                lastChar = rangeString(end);
+                switch lastChar
+                    case ']'
+                        self.upperBoundType = 'inclusive';
+                    case ')'
+                        self.upperBoundType = 'exclusive';
+                    otherwise
+                        error('range string has illegal last character %s', lastChar);
+                end
             end
         end
         
-        function [lowerString, upperString] = getBoundStrings(self, rangeString)
+        function [lowerString, upperString] = getRangeStrings(self, rangeString)
             rangeString = strtrim(rangeString);
             % Find comma position and get lower and upper bound values.
             commaPos = findstr(rangeString,',');

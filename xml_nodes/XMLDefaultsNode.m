@@ -1,7 +1,7 @@
 classdef XMLDefaultsNode < XMLDataNode
     
     properties
-       value = [];
+       value = '';
        valueValidator = BaseValidator();
        validation = true;
     end
@@ -240,33 +240,63 @@ classdef XMLDefaultsNode < XMLDataNode
             % Prints the current values for all of the nodes.
             self.walk(@printNodeValue);
         end
-     
+        
     end
 end % classdef XMLDefaultsNode
 
 function setNodeValueToDefault(node)
 % Set a nodes value to the specified default value
-if node.isLeaf() && (~strcmpi(node.getValueEntryType(),'acquire'))
-%if node.isLeaf()
+if node.isLeaf() && (~strcmpi(node.getValueEntryType(),'acquire'))  
+    % Get default value
     if strcmp(node.getDefaultValue(),'$LAST')
         value = node.getLastValue();
+        if isempty(value)
+            % If last value is empty - set to known valid value.
+            value = node.getValidValue();
+            node.value = value;
+        else
+            % Check to see if last value validates
+            [value, flag, msg] = node.validateValue(value);
+            if flag == false
+                % Last value does not validate - set to known valid value 
+                % and issue warning.
+                value = node.getValidValue();
+                warning( ...
+                    'XMLDefaultsNode:defaultvalidation', ...
+                    'last value does not validate, for node %s, %s, setting to valid value %s', ...
+                    node.getPathString(), ...
+                    msg, ...
+                    var2str(value) ...
+                    );
+            end
+            node.value = value;    
+        end
     else
         value = node.getDefaultValue();
+        if isempty(value)
+            % There is no default specified. Turn validation off and set 
+            % value to empty string. Turn validation back on when done.
+            node.validation = false;
+            node.value = '';
+            node.validation = true;
+        else
+            % There is a default value. Check to see if it validates
+            [value, flag, msg] = node.validateValue(value);
+            if flag == false
+                % Default value does not validate - set to known valid
+                % value and issue warning.
+                value = node.getValidValue();
+                warning( ...
+                    'XMLDefaultsNode:defaultvalidation', ...
+                    'default does not validate, for node %s, %s, setting to valid value %s', ...
+                    node.getPathString(), ...
+                    msg, ...
+                    var2str(value) ...
+                    );
+            end
+            node.value = value;
+        end   
     end
-    % Check if default value validates
-    [value, flag, msg] = node.validateValue(value);
-    if flag == false
-        value = node.getValidValue();
-        warning( ...
-            'XMLDefaultsNode:defaultvalidation', ...
-            'default does not validate, for node %s, %s, setting to valid value %s', ...
-            node.getPathString(), ...
-            msg, ...
-            var2str(value) ...
-        ); 
-        
-    end
-    node.value = value;
 end
 end
 
@@ -296,6 +326,7 @@ function setNodeValueValidator(node, mode)
 % Creates the validation function for a node based on the mode string - 
 % 'basic' or 'advanced'.
 if node.isLeaf()
+    %disp(node.name);
     rangeString = node.getRangeString(mode);
     dataType = node.getDataType();
     if isempty(rangeString)
@@ -312,7 +343,8 @@ if node.isLeaf()
                 %disp('string datatype');
                 node.valueValidator = StringValidator(rangeString);
             case 'datetime'
-                %disp('datetime datatype') 
+                %disp('datetime datatype')
+                node.valueValidator = DateTimeValidator(rangeString);
             case 'time24'
                 %disp('time24 datatype')
                 node.valueValidator = Time24Validator(rangeString);

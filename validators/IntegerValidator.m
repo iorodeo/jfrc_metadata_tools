@@ -7,11 +7,11 @@ classdef IntegerValidator < NumericValidator
     methods
         function self = IntegerValidator(rangeString)
             if nargin > 0
-                self.setBounds(rangeString);
+                self.setRange(rangeString);
             end
         end
-        function setBounds(self, rangeString)
-            setBounds@NumericValidator(self,rangeString);
+        function setRange(self, rangeString)
+            setRange@NumericValidator(self,rangeString);
             % Insure that upper and lower bounds are integers if not throw
             % an error.
             if self.upperBound ~= Inf

@@ -10,15 +10,15 @@ classdef Time24Validator < NumericValidator
         function self = Time24Validator(rangeString)
             % Constructor.
             if nargin > 0
-                self.setBounds(rangeString);
+                self.setRange(rangeString);
             end
         end
           
-        function setBounds(self, rangeString)
+        function setRange(self, rangeString)
             % Parses the range sting to produce boounds for validation. 
             rangeString = strtrim(rangeString);
-            self.setBoundTypes(rangeString);
-            [lowerString, upperString] = self.getBoundStrings(rangeString);
+            self.setRangeTypes(rangeString);
+            [lowerString, upperString] = self.getRangeStrings(rangeString);
             lowerTime = time24ToFloat(lowerString);
             upperTime = time24ToFloat(upperString);
             self.lowerBound = lowerTime;

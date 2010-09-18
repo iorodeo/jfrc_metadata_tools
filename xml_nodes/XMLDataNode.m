@@ -183,6 +183,11 @@ classdef XMLDataNode < handle
             self.attribute = rmfield(self.attribute,name);
         end
         
+        function setContent(self,value)
+            % Sets a nodes content.
+            self.content = value;
+        end
+        
         function rmContent(self)
             % Deletes the nodes content.
             self.content = [];
@@ -229,7 +234,7 @@ classdef XMLDataNode < handle
             % uniqueName allows users to select whether or not unique
             % node names are used for printing the node. 
             if nargin == 1
-                uniqueName = true;
+                uniqueName = false;
             end 
             self.printNode(uniqueName);    
             for i = 1:self.numChildren
@@ -276,7 +281,7 @@ classdef XMLDataNode < handle
                     disp([self.indent,'  Attribute: ', name, ', ', value]);
                 end
             else
-                disp([self.indent,'Attribute: ']);
+                disp([self.indent,'  Attribute: ']);
                 disp(self.attribute);
             end
         end
@@ -285,7 +290,7 @@ classdef XMLDataNode < handle
             % Print the content of a node
             if ~isempty(self.content)
                 content = self.content;
-                disp([self.indent,'Content: ', content]);
+                disp([self.indent,'  Content: ', content]);
             end
         end
         
@@ -471,6 +476,7 @@ classdef XMLDataNode < handle
             [xmlStruct, name] = self.getXMLStruct();
             wPref.StructItem = false;
             wPref.CellItem = false;
+            wPref.XmlEngine = 'Xerces';
             xml_write(filename, xmlStruct, name, wPref);
         end
         
