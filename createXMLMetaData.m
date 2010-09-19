@@ -11,7 +11,7 @@ function metaDataTree = createXMLMetaData(defaultsTree)
 defaultsTree = defaultsTree.root; % Make sure to start from the tree root
 metaDataTree = createXMLDataNode(defaultsTree,XMLDataNode.empty());
 metaDataTree.assignUniqueNames();
-end
+
 
 function dataNode = createXMLDataNode(defaultsNode,parent)
 % Creates a XML metadata node from a defaults data node. This functin calls 
@@ -22,16 +22,11 @@ function dataNode = createXMLDataNode(defaultsNode,parent)
 dataNode = XMLDataNode();
 dataNode.name = defaultsNode.name;
 dataNode.parent = parent;
-
-disp([defaultsNode.indent, defaultsNode.name]);
-
 for i = 1:defaultsNode.numChildren 
     defaultsChild = defaultsNode.children(i);
     if defaultsChild.isLeaf()
-        % Child is attribute or Content
-        disp([defaultsChild.indent, defaultsChild.name]);
-        switch lower(defaultsChild.name)
-            
+        % Child is represents an attribute or Content in metadata.
+        switch lower(defaultsChild.name) 
             case 'content'
                 % defaultsChild represents node content. Add content
                 % to dataNode.
@@ -49,5 +44,4 @@ for i = 1:defaultsNode.numChildren
         dataNode.addChild(dataNodeChild);
     end
     
-end
 end

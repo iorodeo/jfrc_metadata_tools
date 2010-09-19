@@ -1,4 +1,9 @@
 classdef XMLDefaultsNode < XMLDataNode
+    % Encapsulates a node or element of an defaults data XML file. The
+    % nodes can be used to create a tree based on the structure of the
+    % defaults file. 
+    %
+    % More ...
     
     properties
        value = '';
@@ -41,6 +46,17 @@ classdef XMLDefaultsNode < XMLDataNode
             % Creates an empty node. Rrequired when inheriting from
             % XMLDataNode.
             node = XMLDefaultsNode.empty();
+        end
+        
+        function treeFromStruct(self,xmlStruct,mode)
+           % Create an defaults data xml tree from an xml structure read 
+           % using xml_io_tools. Children are assigned unique names.
+           if nargin < 3
+               mode = 'basic';
+           end
+           treeFromStruct@XMLDataNode(self,xmlStruct);
+           self.setValueValidators(mode);
+           self.setValuesToDefaults();
         end
         
         function checkAttributes(self)
@@ -374,8 +390,8 @@ if isempty(commaPos)
     appearFlagString = lower(strtrim(appearString));
     readOnlyFlagString = '';
 else
-    appearFlagString = lower(strtrim(appearString(1:commaPos-1)));
-    readOnlyFlagString = lower(strtrim(appearString(commasPos+1,end)));
+    appearFlagString = lower(strtrim(appearString(1:commaPos-1)));  
+    readOnlyFlagString = lower(strtrim(appearString(commaPos+1:end)));
 end
 
 switch (appearFlagString)
@@ -384,15 +400,16 @@ switch (appearFlagString)
     case 'false'
         appearFlag = false;
     otherwise
-        error('unrecognised value for appear string: %s', appearString);
+        error('unrecognised value for appear string: %s', appearFlagString);
 end
 
 switch (readOnlyFlagString)
     case 'readonly'
-        reasOnlyFlag = true;
+        readOnlyFlag = true;
     case ''
         readOnlyFlag = false;
     otherwise
+        error('recognised value for read only string: %s', readOnlyFlagString);
 end
 
 end

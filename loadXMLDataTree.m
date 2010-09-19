@@ -17,6 +17,4 @@ name = name_cell{1};
 % Create xml tree
 tree = XMLDataNode();
 tree.name = name;
-tree.nodeFromStruct(xmlStruct);
-tree.assignUniqueNames();
-
+tree.treeFromStruct(xmlStruct);

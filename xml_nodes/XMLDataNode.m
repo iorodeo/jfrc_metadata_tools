@@ -1,6 +1,9 @@
 classdef XMLDataNode < handle
-    % XMLDataNode: Encapsultates a node (or element) of xml data and is 
-    % designed to be used to represent an XML file as a tree.
+    % Encapsultates a node (or element) of xml data. The nodes can be used
+    % to create a tree representing the structure of an XML file.
+    % 
+    % More ...
+    
     properties
         name = '';
         parent; 
@@ -55,7 +58,16 @@ classdef XMLDataNode < handle
             node = XMLDataNode.empty();
         end
         
+        function treeFromStruct(self,xmlStruct)
+            % Create an xml data tree from an xml structure, also, assigns
+            % children unique names. 
+           self.nodeFromStruct(xmlStruct);
+           self.assignUniqueNames();
+        end
+        
         function nodeFromStruct(self, xmlStruct)
+            % This function should be made protected.
+            % 
             % Creates nodes given the xml structure loaded via the xml_read
             % function in the xml_io_tools library.
             
@@ -112,6 +124,45 @@ classdef XMLDataNode < handle
                     self.addChild(childNode,false);
                 end
             end
+        end
+        
+        function [xmlStruct, name] = getXMLStruct(self)
+            % Returns a structure (xmlStruct) which represents the tree
+            % consisting of the current node and all nodes which are below
+            % it. The structure xmlStruct is designed to be consistent with
+            % The representation of XML file used by the xml_io_tools
+            % library and specifically the xml_write and xml_read
+            % functions. In addition to xmlStruct the name of the current
+            % node is also returned.
+            
+            % Ensure that children have been given unique names.
+            if self.numChildren ~= length(self.uniqueChildNames)
+                self.root.assignUniquenames();
+            end
+           
+            xmlStruct = struct;
+            name = self.name;
+            % Assign current node's data to xmlStruct
+            if ~isempty(self.attribute)
+                xmlStruct.ATTRIBUTE = self.attribute;
+            end
+            if ~isempty(self.content)
+                xmlStruct.CONTENT = self.content;
+            end
+            % Loop over the current node's children and get thier xml
+            % structures. Note, this function recursively calls itself until
+            % the entire tree below this node has been covered.
+            for i = 1:self.numChildren
+                childNode = self.children(i);
+                child_xmlStruct = childNode.getXMLStruct();
+                if isfield(self.attribute,childNode.name)
+                    n = length(xmlStruct.(childNode.name));
+                    xmlStruct.(childNde.name){n+1} = child_xmlStruct;
+                else
+                    xmlStruct.(childNode.name) = {child_xmlStruct};
+                end
+                
+            end    
         end
                
         function addChild(self,childNode,assignUnique)
@@ -323,10 +374,18 @@ classdef XMLDataNode < handle
             for i = 1:length(childNames)
                 name = self.childNames{i};
                 childrenWithName = self.getChildrenByName(name);
-                for j = 1:length(childrenWithName)
-                    child = childrenWithName(j);
-                    child.uniqueName = sprintf('%s_%d',child.name,j);  
+                if length(childrenWithName) == 1
+                    % Only one child has this name don't number
+                    child = childrenWithName(1);
+                    child.uniqueName = child.name;
                     child.assignChildrenUniqueName();
+                else
+                    % More than one child has this name number children
+                    for j = 1:length(childrenWithName)
+                        child = childrenWithName(j);
+                        child.uniqueName = sprintf('%s_%d',child.name,j);
+                        child.assignChildrenUniqueName();
+                    end
                 end
             end
         end
@@ -437,38 +496,6 @@ classdef XMLDataNode < handle
                 child.walk(fhandle,varargin{:});
             end
         end
-       
-        
-        function [xmlStruct, name] = getXMLStruct(self)
-            % Returns a structure (xmlStruct) which represents the tree
-            % consisting of the current node and all nodes which are below 
-            % it. The structure xmlStruct is designed to be consistent with
-            % The representation of XML file used by the xml_io_tools 
-            % library and specifically the xml_write and xml_read
-            % functions. In addition to xmlStruct the name of the current
-            % node is also returned.
-            xmlStruct = struct;
-            name = self.name;
-            % Assign current node's data to xmlStruct
-            if ~isempty(self.attribute)
-                xmlStruct.ATTRIBUTE = self.attribute;
-            end
-            if ~isempty(self.content)
-                xmlStruct.CONTENT = self.content;
-            end     
-            % Loop over the current node's children and get thier xml
-            % structures. Note, this function recursively calls itself until 
-            % the entire tree below this node has been covered.  
-            for i = 1:length(self.childNames)             
-                childName = self.childNames{i};
-                nodesWithChildName = self.getChildrenByName(childName);               
-                for j = 1:length(nodesWithChildName)
-                    childNode = nodesWithChildName(j);
-                    [child_xmlStruct, dummy] = childNode.getXMLStruct();
-                    xmlStruct.(childName){j} = child_xmlStruct;
-                end  
-            end    
-        end
         
         function write(self,filename)
             % Writes the data tree containing the current node and all
@@ -542,15 +569,21 @@ classdef XMLDataNode < handle
         
         function nestedName = getNestedName(self,name)
             % Creates a nested name for use in JIDE Property Grids.
-            pathFromRoot = self.uniquePathFromRoot;
-            if isempty(name)
-                nameCell = {pathFromRoot{2:end}};
+            if self.isRoot()
+                nestedName = '';
             else
-                nameCell = {pathFromRoot{2:end}, name};
-            end
-            nestedName = nameCell{1};
-            for i=2:length(nameCell)
-                nestedName = [nestedName, '.', nameCell{i}];
+                pathFromRoot = self.uniquePathFromRoot;
+                if isempty(name)
+                    nameCell = {pathFromRoot{2:end}};
+                else
+                    nameCell = {pathFromRoot{2:end}, name};
+                end
+                
+                nestedName = nameCell{1};
+                for i=2:length(nameCell)
+                    nestedName = [nestedName, '.', nameCell{i}];
+                end
+                
             end
         end
         

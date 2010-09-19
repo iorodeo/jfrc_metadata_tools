@@ -126,7 +126,7 @@ end
 function names = dummyGetLineNames()
 % Dummy function for getting line names
 names = {};
-N = 100;
+N = 1000;
 for i = 1:N
     names{i} = sprintf('line_%d', i);
 end
