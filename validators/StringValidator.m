@@ -18,19 +18,20 @@ classdef StringValidator < BaseValidator
         
         function setRange(self,rangeString)
             % Parse range string to get cell array of allowed strings.
-            rangeString = strtrim(rangeString);
             if isempty(rangeString)
                 % Range String is empty - this means allow anything.
-                self.allowedStrings = '';
-            end
-            % Based on first character of range string determine is this is
-            % a list of stings or a special case
-            firstChar = rangeString(1);
-            switch firstChar
-                case '$'
-                    self.setRangeSpecialCase(rangeString);
-                otherwise
-                    self.setRangeSelectList(rangeString);
+                self.allowedStrings = '';     
+            else
+                % Based on first character of range string determine is this is
+                % a list of stings or a special case
+                rangeString = strtrim(rangeString);
+                firstChar = rangeString(1);
+                switch firstChar
+                    case '$'
+                        self.setRangeSpecialCase(rangeString);
+                    otherwise
+                        self.setRangeSelectList(rangeString);
+                end
             end
         end
         
@@ -82,17 +83,28 @@ classdef StringValidator < BaseValidator
         
         function [value, flag, msg] = validationFunc(self,value)
             % Apply validation function to given value.
-            if isempty(self.allowedStrings)
+            
+            if isempty(value)
+                % Value is empty - return true. Only apply validatation if
+                % the user actually sets a value.
                 flag = true;
                 msg = '';
                 return;
-            else
-                flag = false; 
-                msg = 'validation error: sting not found';
-                for i = 1:length(self.allowedStrings)
-                    if strcmp(value,self.allowedStrings{i})
-                        flag = true;
-                    end
+            end
+            
+            if isempty(self.allowedStrings)
+                % Empty allowed strings means we allow anything.
+                flag = true;
+                msg = '';
+                return;
+            end
+            
+            % Check that value is in allow strings.
+            flag = false;
+            msg = 'validation error: sting not found';
+            for i = 1:length(self.allowedStrings)
+                if strcmp(value,self.allowedStrings{i})
+                    flag = true;
                 end
             end
         end

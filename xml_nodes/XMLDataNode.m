@@ -413,53 +413,53 @@ classdef XMLDataNode < handle
             self.setMarks(false);
         end
         
-        function value = getValueByPath(self,path)
-            % Returns the value of either node content or an attribute of a 
-            % node using a path of unique node names. 
-            if isempty(path)
-                % We are at the last node in the list - return its content.
-                value = self.content;
-                return;
-            end
-            
-            % This is not the last node - get next name in list.
-            name = path{1};            
-            % Look for children with this name
-            for i = 1:self.numChildren
-                %disp([name, ', ' self.uniqueChildNames{i}]);
-                if strcmp(name,self.uniqueChildNames{i})
-                    child = self.children(i);
-                    childPath = {path{2:end}};
-                    value = child.getValueByPath(childPath);
-                    return;
-                end
-            end
-            
-            % Couldn't find a child with this name
-            if length(path) > 1
-                % If this isn't the last name it shouldn't be an
-                % attribute - raise an error.
-                error('unable to find child of node %s with name %s',self.uniqueName,name);
-            else
-                % This is the last item in the path - look for Attributes
-                % with this name
-                if isfield(self.attribute,name)
-                    value = self.attribute.(name);
-                    return;
-                else
-                    error('unable to find attribute of node %s with name %s',self.uniqueName,name);
-                end
-            end
-        end
-        
-        function setValueByPath(self,path,value)
-            % Set the value of node content or an attribute using a path 
-            % specified by unique child names.
-            
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            % NOT DONE
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        end
+%         function value = getValueByPath(self,path)
+%             % Returns the value of either node content or an attribute of a 
+%             % node using a path of unique node names. 
+%             if isempty(path)
+%                 % We are at the last node in the list - return its content.
+%                 value = self.content;
+%                 return;
+%             end
+%             
+%             % This is not the last node - get next name in list.
+%             name = path{1};            
+%             % Look for children with this name
+%             for i = 1:self.numChildren
+%                 %disp([name, ', ' self.uniqueChildNames{i}]);
+%                 if strcmp(name,self.uniqueChildNames{i})
+%                     child = self.children(i);
+%                     childPath = {path{2:end}};
+%                     value = child.getValueByPath(childPath);
+%                     return;
+%                 end
+%             end
+%             
+%             % Couldn't find a child with this name
+%             if length(path) > 1
+%                 % If this isn't the last name it shouldn't be an
+%                 % attribute - raise an error.
+%                 error('unable to find child of node %s with name %s',self.uniqueName,name);
+%             else
+%                 % This is the last item in the path - look for Attributes
+%                 % with this name
+%                 if isfield(self.attribute,name)
+%                     value = self.attribute.(name);
+%                     return;
+%                 else
+%                     error('unable to find attribute of node %s with name %s',self.uniqueName,name);
+%                 end
+%             end
+%         end
+%         
+%         function setValueByPath(self,path,value)
+%             % Set the value of node content or an attribute using a path 
+%             % specified by unique child names.
+%             
+%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%             % NOT DONE
+%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         end
         
         function node = getNodeByPath(self,path)
             % Returns a node using the specified path of unique child node 
@@ -507,68 +507,69 @@ classdef XMLDataNode < handle
             xml_write(filename, xmlStruct, name, wPref);
         end
         
-        function properties = getJIDEGridProperties(self)
-            % Creates a JIDE Property Grid contain the informatin in the XML
-            % data tree tree starting from the current node.                  
-            if self.isRoot()
-                properties = PropertyGridField.empty();  
-            else
-                % If this isn't the root node create a entry in the
-                % property grid field containing the nodes content.
-                nestedName = self.getNestedName('');
-                properties = PropertyGridField( ...
-                    nestedName, self.content, ...
-                    'Category', self.root.name, ...
-                    'DisplayName', self.uniqueName, ...
-                    'ReadOnly', false ...
-                    );
-                %disp([self.indent, 'N(', num2str(self.depth), '): ', self.uniqueName, ', ', nestedName]);
-            end
-                   
-            % Add entries for Node attributes.
-            for i = 1:self.numAttribute
-                attributeName = self.attributeNames{i};
-                attributeValue = self.attribute.(attributeName);
-                propertyName = self.getNestedName(attributeName);
-                % DEBUGGING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                if strcmp(attributeName, 'gender')
-                    propType = PropertyType('char', 'row', {'m', 'f', 'b'});
-                    attributeProps = PropertyGridField( ...
-                        propertyName, attributeValue, ...
-                        'Type', propType, ...
-                        'Category', self.root.name, ...
-                        'DisplayName', attributeName, ...
-                        'ReadOnly', false ...
-                        );
-                else
-                    attributeProps = PropertyGridField( ...
-                        propertyName, attributeValue, ...
-                        'Category', self.root.name, ...
-                        'DisplayName', attributeName, ...
-                        'ReadOnly', false ...
-                        );
-                end
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                 attributeProps = PropertyGridField( ...
-%                     propertyName, attributeValue, ...
+%         function properties = getJIDEGridProperties(self)
+%             % Creates a JIDE Property Grid contain the informatin in the XML
+%             % data tree tree starting from the current node.                  
+%             if self.isRoot()
+%                 properties = PropertyGridField.empty();  
+%             else
+%                 % If this isn't the root node create a entry in the
+%                 % property grid field containing the nodes content.
+%                 nestedName = self.getNestedName('');
+%                 properties = PropertyGridField( ...
+%                     nestedName, self.content, ...
 %                     'Category', self.root.name, ...
-%                     'DisplayName', attributeName, ...
+%                     'DisplayName', self.uniqueName, ...
 %                     'ReadOnly', false ...
 %                     );
-                properties = [properties, attributeProps];
-                %disp([self.indent, 'A: ', propertyName]); 
-            end
-            
-            % Created nested entries for all child nodes.
-            for i = 1:self.numChildren
-                child = self.children(i);
-                childProperties = child.getJIDEGridProperties();
-                properties = [properties, childProperties];
-            end
-        end
+%                 %disp([self.indent, 'N(', num2str(self.depth), '): ', self.uniqueName, ', ', nestedName]);
+%             end
+%                    
+%             % Add entries for Node attributes.
+%             for i = 1:self.numAttribute
+%                 attributeName = self.attributeNames{i};
+%                 attributeValue = self.attribute.(attributeName);
+%                 propertyName = self.getNestedName(attributeName);
+%                 % DEBUGGING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                 if strcmp(attributeName, 'gender')
+%                     propType = PropertyType('char', 'row', {'m', 'f', 'b'});
+%                     attributeProps = PropertyGridField( ...
+%                         propertyName, attributeValue, ...
+%                         'Type', propType, ...
+%                         'Category', self.root.name, ...
+%                         'DisplayName', attributeName, ...
+%                         'ReadOnly', false ...
+%                         );
+%                 else
+%                     attributeProps = PropertyGridField( ...
+%                         propertyName, attributeValue, ...
+%                         'Category', self.root.name, ...
+%                         'DisplayName', attributeName, ...
+%                         'ReadOnly', false ...
+%                         );
+%                 end
+%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %                 attributeProps = PropertyGridField( ...
+% %                     propertyName, attributeValue, ...
+% %                     'Category', self.root.name, ...
+% %                     'DisplayName', attributeName, ...
+% %                     'ReadOnly', false ...
+% %                     );
+%                 properties = [properties, attributeProps];
+%                 %disp([self.indent, 'A: ', propertyName]); 
+%             end
+%             
+%             % Created nested entries for all child nodes.
+%             for i = 1:self.numChildren
+%                 child = self.children(i);
+%                 childProperties = child.getJIDEGridProperties();
+%                 properties = [properties, childProperties];
+%             end
+%         end
         
         function nestedName = getNestedName(self,name)
-            % Creates a nested name for use in JIDE Property Grids.
+            % Creates a nested name for use in JIDE Property Grids. Similar
+            % to getPathString but doesn't include the root element.
             if self.isRoot()
                 nestedName = '';
             else

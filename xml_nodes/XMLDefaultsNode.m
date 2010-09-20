@@ -172,7 +172,8 @@ classdef XMLDefaultsNode < XMLDataNode
         end
         
         function test = hasRequiredValues(self)
-            % Check if all required values of all tree leaves have a value.
+            % Check if all value that are require are present for the tree 
+            % consisting of the current node and all nodes below it. 
             test = true;
             leaves = self.getLeaves();
             for i = 1:length(leaves)
@@ -186,9 +187,11 @@ classdef XMLDefaultsNode < XMLDataNode
         end
         
         function valuesToAcquire = getValuesToAcquire(self)
-            % Get cell array containing the unique path string, from the root 
-            % node, of all values that need to be acquired.
-            leaves = self.root.getLeaves();
+            % For the tree consisting of the current node and all nodes
+            % below returns a cell array containing the unique path string, 
+            % from the root node, of all nodes with values that that have
+            % entry type acquire.
+            leaves = self.getLeaves();
             valuesToAcquire = {};
             cnt = 0;
             for i = 1:length(leaves)
@@ -261,63 +264,76 @@ classdef XMLDefaultsNode < XMLDataNode
 end % classdef XMLDefaultsNode
 
 function setNodeValueToDefault(node)
-% Set a nodes value to the specified default value
+% Set a node value to the default specified by the defaults attribute.
 if node.isLeaf() && (~strcmpi(node.getValueEntryType(),'acquire'))  
     % Get default value
-    if strcmp(node.getDefaultValue(),'$LAST')
-        value = node.getLastValue();
-        if isempty(value)
-            % If last value is empty - set to known valid value.
-            value = node.getValidValue();
-            node.value = value;
-        else
-            % Check to see if last value validates
-            [value, flag, msg] = node.validateValue(value);
-            if flag == false
-                % Last value does not validate - set to known valid value 
-                % and issue warning.
-                value = node.getValidValue();
-                warning( ...
-                    'XMLDefaultsNode:defaultvalidation', ...
-                    'last value does not validate, for node %s, %s, setting to valid value %s', ...
-                    node.getPathString(), ...
-                    msg, ...
-                    var2str(value) ...
-                    );
-            end
-            node.value = value;    
-        end
-    else
-        value = node.getDefaultValue();
-        if isempty(value)
-            % There is no default specified. Turn validation off and set 
-            % value to empty string. Turn validation back on when done.
-            node.validation = false;
-            node.value = '';
-            node.validation = true;
-        else
-            % There is a default value. Check to see if it validates
-            [value, flag, msg] = node.validateValue(value);
-            if flag == false
-                % Default value does not validate - set to known valid
-                % value and issue warning.
-                value = node.getValidValue();
-                warning( ...
-                    'XMLDefaultsNode:defaultvalidation', ...
-                    'default does not validate, for node %s, %s, setting to valid value %s', ...
-                    node.getPathString(), ...
-                    msg, ...
-                    var2str(value) ...
-                    );
-            end
-            node.value = value;
-        end   
+    switch node.getDefaultValue()
+        case '$LAST'
+            setNodeValueToLast(node);
+        otherwise
+            setDefaultValueGeneric(node);     
     end
+end
+end
+   
+function setNodeValueToLast(node)
+% Set node to value to the last value used.
+value = node.getLastValue();
+if isempty(value)
+    % If last value is empty - set to known valid value.
+    value = node.getValidValue();
+    node.value = value;
+else
+    % Check to see if last value validates
+    [value, flag, msg] = node.validateValue(value);
+    if flag == false
+        % Last value does not validate - set to known valid value
+        % and issue warning.
+        value = node.getValidValue();
+        warning( ...
+            'XMLDefaultsNode:defaultvalidation', ...
+            'last value does not validate, for node %s, %s, setting to valid value %s', ...
+            node.getPathString(), ...
+            msg, ...
+            var2str(value) ...
+            );
+    end
+    node.value = value;
+end
+end
+
+function setDefaultValueGeneric(node)
+% Generic node to default value - generic case, i.e., not a special case
+% such as $LAST. 
+value = node.getDefaultValue();
+if isempty(value)
+    % There is no default specified. Turn validation off and set
+    % value to empty string. Turn validation back on when done.
+    node.validation = false;
+    node.value = '';
+    node.validation = true;
+else
+    % There is a default value. Check to see if it validates
+    [value, flag, msg] = node.validateValue(value);
+    if flag == false
+        % Default value does not validate - set to known valid
+        % value and issue warning.
+        value = node.getValidValue();
+        warning( ...
+            'XMLDefaultsNode:defaultvalidation', ...
+            'default does not validate, for node %s, %s, setting to valid value %s', ...
+            node.getPathString(), ...
+            msg, ...
+            var2str(value) ...
+            );
+    end
+    node.value = value;
 end
 end
 
 function checkNodeAttributes(node)
-% Check that a node has the required attributes
+% Check that a node has the required attributes. Only leaves are required
+% to have attributes.
 if node.isLeaf()
     for i = 1:length(node.requiredAttributes)
         attributeName = node.requiredAttributes{i};
@@ -325,7 +341,6 @@ if node.isLeaf()
             error('attribute %s missing from node %s',attributeName,node.getPathString());
         end
     end
-    
 else
     for i = 1:node.numChildren
         child = node.children(i);
@@ -345,30 +360,26 @@ if node.isLeaf()
     %disp(node.name);
     rangeString = node.getRangeString(mode);
     dataType = node.getDataType();
-    if isempty(rangeString)
-        node.valueValidator = BaseValidator();
-    else
-        switch lower(dataType)
-            case 'integer'
-                %disp('integer datatype');
-                node.valueValidator = IntegerValidator(rangeString);
-            case 'float'
-                %disp('float datatype');
-                node.valueValidator = NumericValidator(rangeString);
-            case 'string'
-                %disp('string datatype');
-                node.valueValidator = StringValidator(rangeString);
-            case 'datetime'
-                %disp('datetime datatype')
-                node.valueValidator = DateTimeValidator(rangeString);
-            case 'time24'
-                %disp('time24 datatype')
-                node.valueValidator = Time24Validator(rangeString);
-            case 'integer_list'
-                %disp('integer_list datatype');
-            otherwise
-                error('unkown datatype %s', dataType);
-        end
+    switch lower(dataType)
+        case 'integer'
+            %disp('integer datatype');
+            node.valueValidator = IntegerValidator(rangeString);
+        case 'float'
+            %disp('float datatype');
+            node.valueValidator = NumericValidator(rangeString);
+        case 'string'
+            %disp('string datatype');
+            node.valueValidator = StringValidator(rangeString);
+        case 'datetime'
+            %disp('datetime datatype')
+            node.valueValidator = DateTimeValidator(rangeString);
+        case 'time24'
+            %disp('time24 datatype')
+            node.valueValidator = Time24Validator(rangeString);
+        case 'integer_list'
+            %disp('integer_list datatype');
+        otherwise
+            error('unkown datatype %s', dataType);
     end
 else
     node.valueValidator = BaseValidator();
@@ -376,7 +387,7 @@ end
 end
 
 function [appearFlag, readOnlyFlag] = parseAppearString(appearString)
-% Parses the appearString of leaf attributes and return the appearFlag
+% Parses the appearString of leaf attributes and returns the appearFlag
 % (true or false) and the readOnlyFlag (true or false).
 appearString = strtrim(appearString);
 if isempty(appearString)
@@ -394,7 +405,8 @@ else
     readOnlyFlagString = lower(strtrim(appearString(commaPos+1:end)));
 end
 
-switch (appearFlagString)
+% Set value of appear flag based on String
+switch appearFlagString
     case 'true'
         appearFlag = true;
     case 'false'
@@ -403,7 +415,8 @@ switch (appearFlagString)
         error('unrecognised value for appear string: %s', appearFlagString);
 end
 
-switch (readOnlyFlagString)
+% Set value of readOnly flag based on String
+switch readOnlyFlagString
     case 'readonly'
         readOnlyFlag = true;
     case ''

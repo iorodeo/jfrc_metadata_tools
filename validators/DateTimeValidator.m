@@ -55,14 +55,28 @@ classdef DateTimeValidator < NumericValidator
         
         function [value,flag,msg] = validationFunc(self,value)
             % Apply validation to given value
+            
+            if isempty(value)
+                % Value is empty - return true. Only apply validatation if 
+                % the user actually sets a value.
+                flag = true;
+                msg = '';
+                return;
+            end
+            
             try
+                % Convert to date number string
                 floatString = dateStringToFloatString(value,self.format);
             catch ME
                 flag = false;
-                msg = ME.message;
+                msg = sprintf('unable to convert value to date number: %s',ME.message);
                 return;
             end
+            
+            % Apply parent class validation
             [floatString,flag,msg] = validationFunc@NumericValidator(self,floatString);
+            
+            % Convert value back to date string
             value = floatStringToDateString(floatString,self.format);
         end
         

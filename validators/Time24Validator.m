@@ -16,24 +16,44 @@ classdef Time24Validator < NumericValidator
           
         function setRange(self, rangeString)
             % Parses the range sting to produce boounds for validation. 
-            rangeString = strtrim(rangeString);
-            self.setRangeTypes(rangeString);
-            [lowerString, upperString] = self.getRangeStrings(rangeString);
-            lowerTime = time24ToFloat(lowerString);
-            upperTime = time24ToFloat(upperString);
-            self.lowerBound = lowerTime;
-            self.upperBound = upperTime;   
+            if isempty(rangeString)
+                self.hasBounds = false;
+            else
+                rangeString = strtrim(rangeString);
+                self.setRangeTypes(rangeString);
+                [lowerString, upperString] = self.getRangeStrings(rangeString);
+                lowerTime = time24ToFloat(lowerString);
+                upperTime = time24ToFloat(upperString);
+                self.lowerBound = lowerTime;
+                self.upperBound = upperTime;
+                self.hasBounds = true;
+            end
         end
         
         function [value,flag,msg] = validationFunc(self,value)
             % Applies validation to given value.
+            
             if isempty(value)
-                flag = false;
-                msg = 'value is empty';
+                % Value is empty - return true. Only apply validatation if
+                % the user actually sets a value.
+                flag = true;
+                msg = '';
                 return;
             end
-            valueFloatString = time24ToFloatString(value);
+            
+            try
+                % Convert time24 string to float string
+                valueFloatString = time24ToFloatString(value);
+            catch ME
+                flag = false;
+                msg = sprintf('incorrect time24 value %s', ME.message);
+                return;
+            end
+            
+            % Apply parent class validation
             [valueFloatString,flag,msg] = validationFunc@NumericValidator(self,valueFloatString);
+            
+            % Convert float string back to time24 string
             value = floatStringToTime24(valueFloatString);
         end
         

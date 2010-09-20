@@ -8,6 +8,7 @@ classdef NumericValidator < BaseValidator
         upperBoundType; % inclusive, exclusive
         lowerBound; 
         upperBound;
+        hasBounds = false;
     end
     
     methods
@@ -21,9 +22,15 @@ classdef NumericValidator < BaseValidator
  
         function setRange(self, rangeString)
             % Set upper and lower bounds of validator based on the rangeString.
-            rangeString = strtrim(rangeString);
-            self.setRangeTypes(rangeString);
-            self.setRangeValues(rangeString);
+            if isempty(rangeString)
+                % range string is empty - this means there are no bounds.
+                self.hasBounds = false;
+            else             
+                rangeString = strtrim(rangeString);
+                self.setRangeTypes(rangeString);
+                self.setRangeValues(rangeString);
+                self.hasBounds = true;
+            end
         end
         
         function setRangeValues(self,rangeString)
@@ -102,14 +109,23 @@ classdef NumericValidator < BaseValidator
         
         function [value,flag, msg] = validationFunc(self,value)
             % Applies validation to the given value.
+            
+            % Check that we can convert value to number.
             valueFloat = str2num(value);
             if isempty(valueFloat)
                 flag = false;
                 msg = 'unable to convert value to number';
                 return;
             end
+            
+            if self.hasBounds == false
+                % There are no bounds, any number is ok.
+                flag = true;
+                msg = '';
+                return;
+            end
                 
-            % Apply validation function to given value. 
+            % Value is number and we have bounds - check them
             flag = true;
             msg = '';
             
