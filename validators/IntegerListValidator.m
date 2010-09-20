@@ -27,6 +27,7 @@ classdef IntegerListValidator < BaseValidator
             % Returns a valid value
             value = '1,2,3';
         end
+               
     end
     
 end

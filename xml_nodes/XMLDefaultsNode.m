@@ -76,6 +76,9 @@ classdef XMLDefaultsNode < XMLDataNode
         function range = getRangeString(self, mode)
             % Get the range string from the node attributes based on the 
             % operating mode.
+            if nargin == 1
+                mode = 'basic';
+            end
             if self.isLeaf()
                 if strcmpi(mode,'basic')
                     range = strtrim(self.attribute.range_basic);
@@ -146,15 +149,30 @@ classdef XMLDefaultsNode < XMLDataNode
         function flag = getValueAppear(self, mode)
             % Returns flag indicating whether or not value should appear
             % in the GUI for the given mode string.
-            switch lower(mode)
-                case 'basic'
-                    appearString = strtrim(self.attribute.appear_basic);
-                case 'advanced'
-                    appearString = strtrim(self.attribute.appear_advanced);
-                otherwise
-                    error('unrecognised mode string %s', mode);
+            if nargin == 1
+                mode = 'basic';
             end
-            [flag, ~] = parseAppearString(appearString);
+            if self.isLeaf() == true    
+                % Set Leaf appear or not based upon the mode and attribute
+                % settings.
+                switch lower(mode)
+                    case 'basic'
+                        appearString = strtrim(self.attribute.appear_basic);
+                    case 'advanced'
+                        appearString = strtrim(self.attribute.appear_advanced);
+                    otherwise
+                        error('unrecognised mode string %s', mode);
+                end
+                [flag, ~] = parseAppearString(appearString);
+            else
+                % Non-leaf only appears if there is a leaf below it which
+                % appears.
+                flag = false;
+                for i = 1:self.numChildren
+                    childNode = self.children(i);
+                    flag = flag | childNode.getValueAppear();
+                end
+            end
         end
         
         function flag = getReadOnly(self, mode)
@@ -210,6 +228,17 @@ classdef XMLDefaultsNode < XMLDataNode
             for i = 1:length(valuesToAcquire)
                 disp(valuesToAcquire{i});
             end
+        end
+        
+        function test = isContentNode(self)
+           % Test if node represents an element with content. For this to 
+           % be the case the node must have only a single child which is a
+           % leaf whose name is 'content'
+           if self.numChildren == 1 && strcmpi(self.children(1).name, 'content')
+               test = true;
+           else
+               test = false;
+           end
         end
         
         function value = get.value(self)
