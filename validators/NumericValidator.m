@@ -9,6 +9,7 @@ classdef NumericValidator < BaseValidator
         lowerBound; 
         upperBound;
         hasBounds = false;
+        stepSize = eps;
     end
     
     methods
@@ -16,8 +17,19 @@ classdef NumericValidator < BaseValidator
         function self = NumericValidator(rangeString)
             % Class Constructor
             if nargin > 0       
-                self.setRange(rangeString);
+                self.setRangeAndOptions(rangeString);
             end
+        end
+        
+        function setRangeAndOptions(self,rangeString)
+            % Sets upper and lower bounds and the range options base on
+            % range string.
+            if isempty(rangeString)
+                self.hasBounds = false;
+                self.stepSize = eps;
+            end
+            rangeString = self.setOptions(rangeString);
+            self.setRange(rangeString);
         end
  
         function setRange(self, rangeString)
@@ -30,6 +42,13 @@ classdef NumericValidator < BaseValidator
                 self.setRangeTypes(rangeString);
                 self.setRangeValues(rangeString);
                 self.hasBounds = true;
+            end
+        end
+        
+        function rangeString = setOptions(self,rangeString)
+            % Get floating point options such as stepSize.
+            if isempty(rangeString)
+                return;
             end
         end
         

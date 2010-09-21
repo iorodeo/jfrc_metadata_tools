@@ -38,11 +38,14 @@ classdef DateTimeValidator < NumericValidator
         function self = DateTimeValidator(rangeString)
             % Constructor
             if nargin > 0
-                self.setRange(rangeString);
+                self.setRangeAndOptions(rangeString);
             end
         end
         
-        function setRange(self,rangeString)
+        function setRangeAndOptions(self,rangeString)
+            % Sets upper and lower bounds as well as range options based on
+            % the range string.
+            
             % Check if there are any bounds
             if isempty(rangeString)
                 % No bounds set
@@ -52,13 +55,17 @@ classdef DateTimeValidator < NumericValidator
                 % Set options
                 rangeString = self.setOptions(rangeString);
                 % Set the lower and upper bounds based on the range sting.
-                setRange@NumericValidator(self,rangeString);
+                %setRange@NumericValidator(self,rangeString);
+                self.setRange(rangeString);
             end
         end
         
         function rangeString = setOptions(self,rangeString)
             % Check to see if any options such as "days" has been set on
             % the range.
+            if isempty(rangeString)
+                return;
+            end
             rangeString = strtrim(rangeString);     
             % Check to see if any option has been set.
             commaPos = findstr(rangeString,',');

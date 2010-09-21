@@ -97,6 +97,8 @@ classdef PropertyGrid < UIControl
             [control,container] = javacomponent(self.Pane, [0 0 pixelpos(3) pixelpos(4)], panel);
             set(container, 'Units', 'normalized');
             set(self.Table, 'KeyPressedCallback', @PropertyGrid.OnKeyPressed);
+            set(self.Table, 'MouseWheelMovedCallback', @PropertyGrid.MouseWheelMoved);
+            %get(self.Table.CellRendererManager)
         end
         
         function ctrl = get.Control(self)
@@ -141,6 +143,7 @@ classdef PropertyGrid < UIControl
 
             % wire property change event hook
             set(model, 'PropertyChangeCallback', @PropertyGrid.OnPropertyChange);
+            
         end
         
         function item = get.Item(self)
@@ -290,6 +293,17 @@ classdef PropertyGrid < UIControl
                 name = char(selectedfield.getFullName());
             end
         end
+    
+        function MouseWheelMoved(obj,event)
+            % WBD TESTING -------------------------------------------------
+%             val = event.getWheelRotation()
+%             if val > 0
+%                 disp(['pos: ', var2str(val)]);
+%             else
+%                 disp(['neg: ', var2str(val)]);
+%             end
+            % -------------------------------------------------------------
+        end
         
         function OnKeyPressed(obj, event)
         % Fired when a key is pressed when the property grid has the focus.
@@ -297,8 +311,8 @@ classdef PropertyGrid < UIControl
             % -------------------------------------------------------------
             % WBD TESTING 
             % -------------------------------------------------------------
-            % disp(['key = ', key])
-            % disp(PropertyGrid.GetSelectedProperty(obj))
+            %disp(['key = ', key])
+            %disp(PropertyGrid.GetSelectedProperty(obj))
             % -------------------------------------------------------------
             switch key
                 case 'F1'
@@ -333,7 +347,7 @@ classdef PropertyGrid < UIControl
             name = get(event, 'PropertyName');  % JIDE automatically uses a hierarchical naming scheme
             self.UpdateField(name);
             
-            if 1  % debug mode
+            if 0 % debug mode
                 %----------------------------------------------------------
                 % WDB testing
                 %----------------------------------------------------------
