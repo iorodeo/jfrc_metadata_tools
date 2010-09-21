@@ -185,6 +185,13 @@ classdef NumericValidator < BaseValidator
             value = num2str(value);   
         end
         
+        function test = isFiniteRange(self)
+            % Test if range of values is finite. Currently this always
+            % returns false. This could change if we implement some special
+            % options. 
+           test = false; 
+        end
+        
     end
     
 end

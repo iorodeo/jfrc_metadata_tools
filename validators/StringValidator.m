@@ -119,6 +119,24 @@ classdef StringValidator < BaseValidator
                 value = self.allowedStrings{1};
             end
         end
+        
+        function valueArray = getValues(self)
+            % Returns valid values or empty array 
+            if self.isFiniteRange == true
+                valueArray = self.allowedStrings;
+            else
+                valueArray = {};
+            end
+        end
+        
+        function test = isFiniteRange(self)
+            % Returns true if there is finite list of allowed strings.
+            if isempty(self.allowedStrings)
+                test = false;
+            else
+                test = true;
+            end
+        end
     end
 end
 

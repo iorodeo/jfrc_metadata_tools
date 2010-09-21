@@ -90,7 +90,7 @@ classdef PropertyGrid < UIControl
             % create JIDE property pane
             self.Table = handle(com.jidesoft.grid.PropertyTable(), 'CallbackProperties');  % property grid (without table model)
             self.Pane = com.jidesoft.grid.PropertyPane(self.Table);  % property pane (with icons at top and help panel at bottom)
-
+            
             % control = jcontrol(parent, pane, 'Position', [0 0 1 1]);
             panel = self.Container;
             pixelpos = getpixelposition(panel);
@@ -294,6 +294,12 @@ classdef PropertyGrid < UIControl
         function OnKeyPressed(obj, event)
         % Fired when a key is pressed when the property grid has the focus.
             key = char(event.getKeyText(event.getKeyCode()));
+            % -------------------------------------------------------------
+            % WBD TESTING 
+            % -------------------------------------------------------------
+            % disp(['key = ', key])
+            % disp(PropertyGrid.GetSelectedProperty(obj))
+            % -------------------------------------------------------------
             switch key
                 case 'F1'
                     name = PropertyGrid.GetSelectedProperty(obj);
@@ -327,7 +333,7 @@ classdef PropertyGrid < UIControl
             name = get(event, 'PropertyName');  % JIDE automatically uses a hierarchical naming scheme
             self.UpdateField(name);
             
-            if 0  % debug mode
+            if 1  % debug mode
                 %----------------------------------------------------------
                 % WDB testing
                 %----------------------------------------------------------

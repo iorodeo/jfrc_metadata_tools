@@ -111,9 +111,16 @@ classdef IntegerValidator < NumericValidator
                    otherwise
                        error('unknown upperBoundType %s', self.upperBoundType);
                end
-               valueArray = [lowerValue:upperValue];
+               % Create array of floating point values and convert to
+               % strings.
+               valueFloatArray = [lowerValue:upperValue];
+               valueArray = cell(1,length(valueFloatArray));
+               for i = 1:length(valueFloatArray)
+                   valueArray{i} = num2str(valueFloatArray(i));
+               end
            else
-               valueArray = [];
+               %valueArray = [];
+               valueArray = {};
            end
         end
         

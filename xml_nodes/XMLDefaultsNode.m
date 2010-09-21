@@ -146,6 +146,15 @@ classdef XMLDefaultsNode < XMLDataNode
            end
         end
         
+        function descr = getValueDescription(self)
+           % Get the description string for the value
+           if self.isLeaf()
+               descr = strtrim(self.attribute.description);
+           else
+               descr = '';
+           end
+        end
+        
         function flag = getValueAppear(self, mode, hierarchy)
             % Returns flag indicating whether or not value should appear
             % in the GUI for the given mode string. Hierarchy can be set to
