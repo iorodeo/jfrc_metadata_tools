@@ -14,6 +14,8 @@ classdef IntegerValidator < NumericValidator
         end
         
         function setRange(self, rangeString)
+            % Set upper and lower bounds of validator based on the
+            % rangeString.
             setRange@NumericValidator(self,rangeString);
             if self.hasBounds == true
                 % Insure that upper and lower bounds are integers if not throw
@@ -34,7 +36,7 @@ classdef IntegerValidator < NumericValidator
         end
         
         function [value,flag,msg] = validationFunc(self,value)
-            % Validates the given value
+            % Validate the given value
             
             if isempty(value)
                 % Value is empty - return true. Only apply validatation if
@@ -63,17 +65,17 @@ classdef IntegerValidator < NumericValidator
             value = truncFloatString(value);
         end
         
-        function value = getNumValues(self)
+        function numValues = getNumValues(self)
             % Return number of possible values
             if self.hasBounds == false
-                value = Inf;
+                numValues = Inf;
             else
-                value = abs(self.upperBound - self.lowerBound) + 1;
+                numValues = abs(self.upperBound - self.lowerBound) + 1;
                 if strcmp(self.lowerBoundType,'exclusive')
-                    value = value - 1;
+                    numValues = numValues - 1;
                 end
                 if strcmp(self.upperBoundType,'exclusive')
-                    value = value - 1;
+                    numValues = numValues - 1;
                 end
             end
         end

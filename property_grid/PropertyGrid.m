@@ -242,7 +242,7 @@ classdef PropertyGrid < UIControl
         
         function UpdateField(self, name)
         % Updates a property value or reverts changes if value is illegal.
-            field = self.Fields.FindByName(name);
+            field = self.Fields.FindByName(name); 
             value = field.Value;
             if field.CanAccept(value)
                 try
@@ -327,7 +327,7 @@ classdef PropertyGrid < UIControl
             name = get(event, 'PropertyName');  % JIDE automatically uses a hierarchical naming scheme
             self.UpdateField(name);
             
-            if 1  % debug mode
+            if 0  % debug mode
                 %----------------------------------------------------------
                 % WDB testing
                 %----------------------------------------------------------

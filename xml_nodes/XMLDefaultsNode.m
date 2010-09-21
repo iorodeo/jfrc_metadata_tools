@@ -146,11 +146,23 @@ classdef XMLDefaultsNode < XMLDataNode
            end
         end
         
-        function flag = getValueAppear(self, mode)
+        function flag = getValueAppear(self, mode, hierarchy)
             % Returns flag indicating whether or not value should appear
-            % in the GUI for the given mode string.
-            if nargin == 1
+            % in the GUI for the given mode string. Hierarchy can be set to
+            % true or false. The default is true. If hierachy is true all
+            % nodes on branches with leaves that have appear=true will 
+            % themselves return true, i.e., the appear value is propogates 
+            % up branches of the tree in order to create the hierarchy. If 
+            % heirarchy = false only leaves with appear=true will return 
+            % true with the exception of nodes with content that has appear
+            % true.
+            %
+            % This is unfortunately a little convoluted.
+            if nargin < 2
                 mode = 'basic';
+            end
+            if nargin < 3
+                hierarchy = true;
             end
             if self.isLeaf() == true    
                 % Set Leaf appear or not based upon the mode and attribute
@@ -165,12 +177,26 @@ classdef XMLDefaultsNode < XMLDataNode
                 end
                 [flag, ~] = parseAppearString(appearString);
             else
-                % Non-leaf only appears if there is a leaf below it which
-                % appears.
+                % Deterimine is non-leaf node should appear
                 flag = false;
-                for i = 1:self.numChildren
-                    childNode = self.children(i);
-                    flag = flag | childNode.getValueAppear();
+                
+                if self.isContentNode() == true
+                    % Node is content node. Check if only child node (named
+                    % content) is set to appear if so node should also appear.
+                    childNode = self.children(1);
+                    if childNode.getValueAppear() == true
+                        flag = true;
+                    end
+                end
+                
+                if hierarchy == true
+                    % If hierarachy is set to true propogate appear setting
+                    % up branches so that all nodes on branches containing 
+                    % leaves which appear will also appear.
+                    for i = 1:self.numChildren
+                        childNode = self.children(i);
+                        flag = flag | childNode.getValueAppear();
+                    end
                 end
             end
         end
