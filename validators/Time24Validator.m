@@ -46,7 +46,7 @@ classdef Time24Validator < NumericValidator
                 valueFloatString = time24ToFloatString(value);
             catch ME
                 flag = false;
-                msg = sprintf('incorrect time24 value %s', ME.message);
+                msg = sprintf('incorrect time24 value, %s', ME.message);
                 return;
             end
             
@@ -117,7 +117,6 @@ if value > (23+59/60)
     error('cannot convert value to time24 string, value too large');
 end
 hr = floor(value);
-min = 60*(value - hr);
-min = 0.01*(100*min - floor(100*min));
+min = floor(60*(value - hr));
 timeString = sprintf('%02d:%02d',hr,min);
 end

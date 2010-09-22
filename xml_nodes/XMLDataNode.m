@@ -413,74 +413,35 @@ classdef XMLDataNode < handle
             self.setMarks(false);
         end
         
-%         function value = getValueByPath(self,path)
-%             % Returns the value of either node content or an attribute of a 
-%             % node using a path of unique node names. 
-%             if isempty(path)
-%                 % We are at the last node in the list - return its content.
-%                 value = self.content;
-%                 return;
-%             end
-%             
-%             % This is not the last node - get next name in list.
-%             name = path{1};            
-%             % Look for children with this name
-%             for i = 1:self.numChildren
-%                 %disp([name, ', ' self.uniqueChildNames{i}]);
-%                 if strcmp(name,self.uniqueChildNames{i})
-%                     child = self.children(i);
-%                     childPath = {path{2:end}};
-%                     value = child.getValueByPath(childPath);
-%                     return;
-%                 end
-%             end
-%             
-%             % Couldn't find a child with this name
-%             if length(path) > 1
-%                 % If this isn't the last name it shouldn't be an
-%                 % attribute - raise an error.
-%                 error('unable to find child of node %s with name %s',self.uniqueName,name);
-%             else
-%                 % This is the last item in the path - look for Attributes
-%                 % with this name
-%                 if isfield(self.attribute,name)
-%                     value = self.attribute.(name);
-%                     return;
-%                 else
-%                     error('unable to find attribute of node %s with name %s',self.uniqueName,name);
-%                 end
-%             end
-%         end
-%         
-%         function setValueByPath(self,path,value)
-%             % Set the value of node content or an attribute using a path 
-%             % specified by unique child names.
-%             
-%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%             % NOT DONE
-%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         end
-        
-        function node = getNodeByPath(self,path)
-            % Returns a node using the specified path of unique child node 
-            % names.
+        function node = getNodeByRelPath(self,path)
+            % Get a node below the current node  specified by a list of 
+            % unique names relative to that node.
+            
             if isempty(path)
                 node = self;
                 return;
             end
             pathName = path{1};
+            %disp([self.indent, self.name, ', ', pathName])
             for i = 1:self.numChildren
                 childName = self.uniqueChildNames{i};
                 if strcmp(pathName, childName)
                     childNode = self.children(i);
                     childPath = {path{2:end}};
-                    node = childNode.getNodeByPath(childPath);
+                    node = childNode.getNodeByRelPath(childPath);
                     return;
                 end
             end
             error('unable to find child of node %s with name %s',self.uniqueName,pathName);
         end
         
+        function node = getNodeByUniquePath(self,path)
+            % Returns a node using the unique path name from the root node.
+            rootNode = self.root;
+            relPath = {path{2:end}};
+            node = rootNode.getNodeByRelPath({path{2:end}});
+        end
+           
         function indent = indent(self)
             % Returns indentation string based on node depth for pretty
             % printing node information.

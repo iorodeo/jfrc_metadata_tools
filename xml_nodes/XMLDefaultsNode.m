@@ -283,26 +283,22 @@ classdef XMLDefaultsNode < XMLDataNode
             self.setValueByUniquePath(uniquePath,value);
         end
         
-        % TODO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         function setValueByUniquePath(self,uniquePath,value)
            % Set value of node using a cell array containing the unique 
            % path from the root node.   
+           rootNode = self.root;
+           node = rootNode.getNodeByUniquePath(uniquePath);
+           node.value = value;
         end
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+       
         function node = getNodeByPathString(self,pathString)
            % Get a node using the using the path string which specifies the
            % unique path from the root node.
             uniquePath = pathStringToUniquePath(self.root.name, pathString);
             node = self.getNodeByUniquePath(uniquePath);
         end
-        
-        % TODO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function getNodeByUniquePath(self,uniquePath)
-           % Get a node using the unique Path from root. 
-        end
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+       
         function value = get.value(self)
             % get node value
            value = self.value;
@@ -322,6 +318,7 @@ classdef XMLDefaultsNode < XMLDataNode
             % Call value validation function on given value.
             if self.validation == true
                 [value,flag,msg] = self.valueValidator.validationFunc(value);
+                %disp(['* called ', self.name, ' validator']);
             else
                 flag = true;
                 msg = '';
@@ -524,6 +521,7 @@ function  uniquePath = pathStringToUniquePath(rootName,pathString)
 % Converts a path String to a Cell Array of the unique path from the root
 % node.
 uniquePath = {rootName};
+pathString = ['.',pathString,'.'];
 dotPos = findstr(pathString,'.');
 for i = 2:length(dotPos)
     n1 = dotPos(i-1)+1;
@@ -531,3 +529,4 @@ for i = 2:length(dotPos)
     uniquePath{i} = pathString(n1:n2);
 end
 end
+

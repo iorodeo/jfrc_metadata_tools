@@ -349,24 +349,51 @@ classdef PropertyGrid < UIControl
             
             self = PropertyGrid.FindPropertyGrid(obj, 'Model');
             name = get(event, 'PropertyName');  % JIDE automatically uses a hierarchical naming scheme
-            name
-            self
-            self.UpdateField(name);
+            field = self.Fields.FindByName(name);
             
-            if 1 % debug mode
-                %----------------------------------------------------------
-                % WDB testing
-                %----------------------------------------------------------
-                fprintf('OnPropertyChange Called\n');
-                fprintf('PropertyName: %s\n',name); 
-                %get(event)
-                %----------------------------------------------------------
-                oldvalue = var2str(get(event, 'OldValue'));  % old value as a string
-                newvalue = var2str(get(event, 'NewValue'));  % new value as a string
-                %fprintf('Property value of "%s" has changed.\n', name);
-                fprintf('Old value: %s\n', oldvalue);
-                fprintf('New value: %s\n', newvalue);
+            % -------------------------------------------------------------
+            % WBD: added this to hook up validators
+            % -------------------------------------------------------------
+            oldValue = var2str(get(event, 'OldValue'));  
+            newValue = var2str(get(event, 'NewValue'));  
+            node = self.defaultsTree.getNodeByPathString(name);
+            try
+                [newValue,flag,msg] = node.validateValue(newValue);
+            catch ME
+                error('Validator Error: %s',ME.message);
+            end  
+            if flag == false
+               errordlg(msg,'Input Error'); 
+               value = oldValue;
+            else
+                value = newValue;
+            end      
+            if iscell(field.Value)
+                value = StringToCell(value);
             end
+            field.Value = value;
+            % -------------------------------------------------------------
+            self.UpdateField(name);    
         end
     end
+end
+
+function outCell = StringToCell(inString)
+% Convert String with new lines to a cell array where each line
+% of the original string is a row in the cell array.
+inString = sprintf('\n%s\n',inString);
+newline = sprintf('\n');
+newlinePos = findstr(inString,newline);
+outCell = {};
+cnt = 0;
+for i = 2:length(newlinePos)
+   n1 = newlinePos(i-1);
+   n2 = newlinePos(i);
+   tempString = inString(n1:n2);
+   tempString = strtrim(tempString);
+   %if ~isempty(tempString)
+       cnt = cnt + 1;
+       outCell{cnt} = tempString; 
+   %end
+end
 end
