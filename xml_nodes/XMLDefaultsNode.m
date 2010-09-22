@@ -49,8 +49,9 @@ classdef XMLDefaultsNode < XMLDataNode
         end
         
         function treeFromStruct(self,xmlStruct,mode)
-           % Create an defaults data xml tree from an xml structure read 
-           % using xml_io_tools. Children are assigned unique names.
+           % Create a defaults data xml tree from an xml structure read 
+           % using xml_io_tools. Children are assigned unique names during
+           % the call the treeFromStruct@XMLDataNOde
            if nargin < 3
                mode = 'basic';
            end
@@ -59,8 +60,32 @@ classdef XMLDefaultsNode < XMLDataNode
            self.setValuesToDefaults();
         end
         
+        function write(self,filename,savelast)
+            % Writes the tree containing the current node and all nodes below 
+            % it to an xml file. The optional argument savelast determines
+            % if the last value attributes of the leaf nodes are set to the
+            % leaf's current value.
+            if nargin < 3
+                savelast = true;
+            end
+            if savelast == true
+                self.setLastToValue();
+            end
+            write@XMLDataNode(self,filename);
+        end
+        
+        function setLastToValue(self)
+            % For all leaves in the tree below the node self, set the last 
+            % value attribute to the current value.
+            leaves = self.getLeaves();
+            for i = 1:length(leaves)
+                leaf = leaves(i);
+                leaf.attribute.last = leaf.value;
+            end
+        end
+        
         function checkAttributes(self)
-            % Check that all leaves of tree have the required attributes
+            % Check that all leaves of the tree have the required attributes
             self.walk(@checkNodeAttributes);
         end
         
@@ -88,15 +113,17 @@ classdef XMLDefaultsNode < XMLDataNode
                     error('unknown mode string %s', mode);
                 end
             else
+                % If node is not a leaf there is no range string.
                 range = [];
             end
         end
         
         function default = getDefaultValue(self)
-            % Get default value for node.
+            % Get default value for node from the nodes' attributes.
            if self.isLeaf()
                default = strtrim(self.attribute.default);
            else
+               % If node is not a leaf there is no default value.
                default = '';
            end
         end

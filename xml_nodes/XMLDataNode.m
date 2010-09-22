@@ -294,7 +294,7 @@ classdef XMLDataNode < handle
             end
         end
         
-        function printAll(self)
+        function printFromRoot(self)
             % Prints all nodes in the tree.
             self.root.print();
         end
@@ -311,8 +311,7 @@ classdef XMLDataNode < handle
             else
                 name = self.name;
             end
-            msg = sprintf('%s* Node(d%d): %s',self.indent, self.depth, name);
-            disp(msg);
+            fprintf('%s* Node(d%d): %s\n',self.indent, self.depth, name);
             self.printAttribute();
             self.printContent();
         end
@@ -414,15 +413,13 @@ classdef XMLDataNode < handle
         end
         
         function node = getNodeByRelPath(self,path)
-            % Get a node below the current node  specified by a list of 
-            % unique names relative to that node.
-            
+            % Get a node below the current node in the tree specified by a list of 
+            % unique names relative to that node.       
             if isempty(path)
                 node = self;
                 return;
             end
             pathName = path{1};
-            %disp([self.indent, self.name, ', ', pathName])
             for i = 1:self.numChildren
                 childName = self.uniqueChildNames{i};
                 if strcmp(pathName, childName)
@@ -439,7 +436,7 @@ classdef XMLDataNode < handle
             % Returns a node using the unique path name from the root node.
             rootNode = self.root;
             relPath = {path{2:end}};
-            node = rootNode.getNodeByRelPath({path{2:end}});
+            node = rootNode.getNodeByRelPath(relPath);
         end
            
         function indent = indent(self)
@@ -468,9 +465,11 @@ classdef XMLDataNode < handle
             xml_write(filename, xmlStruct, name, wPref);
         end
               
-        function pathString = getPathString(self,name)
-            % Creates a nested name for use in JIDE Property Grids. Similar
-            % to getPathString but doesn't include the root element.
+        function pathString = getPathString(self)
+            % Creates a path name string name for use with JIDE Property 
+            % Grids. The name consists of the unique path from the root
+            % node of the tree to the node self with the name of the root 
+            % node omitted. 
             if self.isRoot()
                 pathString = '';
             else
@@ -484,7 +483,7 @@ classdef XMLDataNode < handle
         end
                 
         function test = isLeaf(self)
-            % Test whether or not a node is a leaf of the tree.
+            % Tests whether or not the node self is a leaf of the tree.
             if self.numChildren == 0
                 test = true;
             else

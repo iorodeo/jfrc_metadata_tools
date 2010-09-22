@@ -5,11 +5,12 @@ classdef StringValidator < BaseValidator
     
     properties
         allowedStrings = '';
-        lineNames;
     end
     
     properties (Hidden)
-        offline = true;
+        offline = false;
+        lineNames;       % Temporary
+        effectorNames;   % Temporary
     end
     
     methods
@@ -74,19 +75,29 @@ classdef StringValidator < BaseValidator
                 case '$LDAP'
                     % DUMMY FUNCTION -------------------------
                     self.allowedStrings = dummyGetLDAP();
+                    
                 case '$LINENAME'
-                    % DUMMY FUNCTION -------------------------
                     if isempty(self.lineNames)
-                        self.getLineNames();
+                        self.setLineNames();
                     end
                     if isempty(self.lineNames)
+                        % DUMMY FUNCTION -------------------------
                         self.allowedStrings = dummyGetLineNames();
                     else
                         self.allowedStrings = self.lineNames;
                     end
+                    
                 case '$EFFECTOR'
-                    % DUMMY FUNCTION -------------------------
-                    self.allowedStrings = dummyGetEffectors();
+                    if isempty(self.effectorNames)
+                        self.setEffectorNames();
+                    end
+                    if isempty(self.effectorNames)
+                        % DUMMY FUNCTION -------------------------
+                        self.allowedStrings = dummyGetEffectors();
+                    else
+                        self.allowedStrings = self.effectorNames;
+                    end
+                    
                 otherwise
                     error('unknown special case range string');
             end
@@ -159,19 +170,41 @@ classdef StringValidator < BaseValidator
             end
         end
         
-        function getLineNames(self)
-            % Test function for pre-loading line names
+        function setLineNames(self)
+            % Test function for pre-loading line names from SAGE.
             if self.offline == true;
                 self.lineNames = {};
                 return;
-            else
-                try
-                    lines = SAGE.Lab('rubin').lines();
-                    self.lineNames = {lines.name};
-                catch ME
-                    self.lineNames = {};
-                end
             end
+            try
+                lines = SAGE.Lab('rubin').lines();
+                self.lineNames = {lines.name};
+            catch ME
+                warning( ...
+                    'StringValidator:getLineNames', ...
+                    'error loading line names form SAGE, %s', ...
+                    ME.message ...
+                    );
+                self.lineNames = {};
+            end
+        end
+        
+        function setEffectorNames(self)
+            % Test function for preloading effector names from SAGE.
+           if self.offline == true
+               self.effectorNames = {};
+               return;
+           end
+           try
+               terms = SAGE.CV('effector').terms();
+               self.effectorNames = {terms.name};
+           catch ME
+               warning('StringValidator:getEffectorNames', ...
+                   'error loading effector names from SAGE, %s', ...
+                   ME.message ...
+                   );
+               self.effectorNames = {};
+           end
             
         end
     end

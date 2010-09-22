@@ -21,6 +21,11 @@ end
 propBuilder = PropertiesBuilder(defaultsTree,mode,hierarchy);
 propBuilder.showTestFigure();
 
+% Test creating metadata and writing to file
+metaData = createXMLMetaData(defaultsTree);
+metaData.write('metadata_test_write.xml');
+defaultsTree.write('defaults_test_write.xml');
+
 
 
 
