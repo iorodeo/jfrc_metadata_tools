@@ -7,6 +7,10 @@ function treeToPropertyGrid(defaultsTree,mode,hierarchy)
 %   hierarchy     = true or false, determines whether tree is shown as
 %                   heirarchy or flat respectively. The default is true.
 %
+% Note, currently the option with hierarchy=false is broken. Or at least I
+% think that it is - I missed some subtlies here. I think I need to
+% generate unique leaf names for this to work.
+%
 % -------------------------------------------------------------------------
 if nargin < 2
     mode = 'basic';

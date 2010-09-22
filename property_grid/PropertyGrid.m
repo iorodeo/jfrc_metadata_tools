@@ -39,6 +39,9 @@
 
 % Copyright 2010 Levente Hunyadi
 classdef PropertyGrid < UIControl
+    properties
+        defaultsTree = XMLDefaultsNode.empty();
+    end
     properties (Dependent)
         % The handle graphics control that wraps the property grid.
         Control;
@@ -66,8 +69,9 @@ classdef PropertyGrid < UIControl
         BoundItem = [];
     end
     methods
-        function self = PropertyGrid(varargin)
+        function self = PropertyGrid(defaultsTree,varargin)
             self = self@UIControl(varargin{:});
+            self.defaultsTree = defaultsTree;
         end
         
         function self = Instantiate(self, parent)
@@ -344,13 +348,12 @@ classdef PropertyGrid < UIControl
         % could be feasible, it leads to a memory leak.
             
             self = PropertyGrid.FindPropertyGrid(obj, 'Model');
-            %get(obj)
-            %self
-            %get(event)
             name = get(event, 'PropertyName');  % JIDE automatically uses a hierarchical naming scheme
+            name
+            self
             self.UpdateField(name);
             
-            if 0 % debug mode
+            if 1 % debug mode
                 %----------------------------------------------------------
                 % WDB testing
                 %----------------------------------------------------------

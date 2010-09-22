@@ -506,97 +506,22 @@ classdef XMLDataNode < handle
             wPref.XmlEngine = 'Xerces';
             xml_write(filename, xmlStruct, name, wPref);
         end
-        
-%         function properties = getJIDEGridProperties(self)
-%             % Creates a JIDE Property Grid contain the informatin in the XML
-%             % data tree tree starting from the current node.                  
-%             if self.isRoot()
-%                 properties = PropertyGridField.empty();  
-%             else
-%                 % If this isn't the root node create a entry in the
-%                 % property grid field containing the nodes content.
-%                 nestedName = self.getNestedName('');
-%                 properties = PropertyGridField( ...
-%                     nestedName, self.content, ...
-%                     'Category', self.root.name, ...
-%                     'DisplayName', self.uniqueName, ...
-%                     'ReadOnly', false ...
-%                     );
-%                 %disp([self.indent, 'N(', num2str(self.depth), '): ', self.uniqueName, ', ', nestedName]);
-%             end
-%                    
-%             % Add entries for Node attributes.
-%             for i = 1:self.numAttribute
-%                 attributeName = self.attributeNames{i};
-%                 attributeValue = self.attribute.(attributeName);
-%                 propertyName = self.getNestedName(attributeName);
-%                 % DEBUGGING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                 if strcmp(attributeName, 'gender')
-%                     propType = PropertyType('char', 'row', {'m', 'f', 'b'});
-%                     attributeProps = PropertyGridField( ...
-%                         propertyName, attributeValue, ...
-%                         'Type', propType, ...
-%                         'Category', self.root.name, ...
-%                         'DisplayName', attributeName, ...
-%                         'ReadOnly', false ...
-%                         );
-%                 else
-%                     attributeProps = PropertyGridField( ...
-%                         propertyName, attributeValue, ...
-%                         'Category', self.root.name, ...
-%                         'DisplayName', attributeName, ...
-%                         'ReadOnly', false ...
-%                         );
-%                 end
-%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %                 attributeProps = PropertyGridField( ...
-% %                     propertyName, attributeValue, ...
-% %                     'Category', self.root.name, ...
-% %                     'DisplayName', attributeName, ...
-% %                     'ReadOnly', false ...
-% %                     );
-%                 properties = [properties, attributeProps];
-%                 %disp([self.indent, 'A: ', propertyName]); 
-%             end
-%             
-%             % Created nested entries for all child nodes.
-%             for i = 1:self.numChildren
-%                 child = self.children(i);
-%                 childProperties = child.getJIDEGridProperties();
-%                 properties = [properties, childProperties];
-%             end
-%         end
-        
-        function nestedName = getNestedName(self,name)
+              
+        function pathString = getPathString(self,name)
             % Creates a nested name for use in JIDE Property Grids. Similar
             % to getPathString but doesn't include the root element.
             if self.isRoot()
-                nestedName = '';
+                pathString = '';
             else
                 pathFromRoot = self.uniquePathFromRoot;
-                if isempty(name)
-                    nameCell = {pathFromRoot{2:end}};
-                else
-                    nameCell = {pathFromRoot{2:end}, name};
-                end
-                
-                nestedName = nameCell{1};
-                for i=2:length(nameCell)
-                    nestedName = [nestedName, '.', nameCell{i}];
-                end
-                
+                pathCell = {pathFromRoot{2:end}};
+                pathString = pathCell{1};
+                for i=2:length(pathCell)
+                    pathString = [pathString, '.', pathCell{i}];
+                end   
             end
         end
-        
-        function pathString = getPathString(self)
-            % Creates a nested name based on unique path to root node.
-            pathFromRoot = self.uniquePathFromRoot;  
-            pathString = pathFromRoot{1};
-            for i=2:length(self.uniquePathFromRoot)
-                pathString = [pathString, '.', self.uniquePathFromRoot{i}];
-            end
-        end
-        
+                
         function test = isLeaf(self)
             % Test whether or not a node is a leaf of the tree.
             if self.numChildren == 0

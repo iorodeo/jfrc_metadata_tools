@@ -276,6 +276,33 @@ classdef XMLDefaultsNode < XMLDataNode
            end
         end
         
+        function setValueByPathString(self,pathString,value)
+            % Set value in defaults tree using the path string which 
+            % specifies the unique path from the root node. 
+            uniquePath = pathStringToUniquePath(self.root.name, pathString);
+            self.setValueByUniquePath(uniquePath,value);
+        end
+        
+        % TODO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function setValueByUniquePath(self,uniquePath,value)
+           % Set value of node using a cell array containing the unique 
+           % path from the root node.   
+        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function node = getNodeByPathString(self,pathString)
+           % Get a node using the using the path string which specifies the
+           % unique path from the root node.
+            uniquePath = pathStringToUniquePath(self.root.name, pathString);
+            node = self.getNodeByUniquePath(uniquePath);
+        end
+        
+        % TODO %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function getNodeByUniquePath(self,uniquePath)
+           % Get a node using the unique Path from root. 
+        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         function value = get.value(self)
             % get node value
            value = self.value;
@@ -450,6 +477,7 @@ else
 end
 end
 
+% -------------------------------------------------------------------------
 function [appearFlag, readOnlyFlag] = parseAppearString(appearString)
 % Parses the appearString of leaf attributes and returns the appearFlag
 % (true or false) and the readOnlyFlag (true or false).
@@ -491,3 +519,15 @@ end
 
 end
 
+% -------------------------------------------------------------------------
+function  uniquePath = pathStringToUniquePath(rootName,pathString)
+% Converts a path String to a Cell Array of the unique path from the root
+% node.
+uniquePath = {rootName};
+dotPos = findstr(pathString,'.');
+for i = 2:length(dotPos)
+    n1 = dotPos(i-1)+1;
+    n2 = dotPos(i)-1;
+    uniquePath{i} = pathString(n1:n2);
+end
+end

@@ -8,6 +8,10 @@ classdef StringValidator < BaseValidator
         lineNames;
     end
     
+    properties (Hidden)
+        offline = true;
+    end
+    
     methods
         
         function self = StringValidator(rangeString)
@@ -157,12 +161,18 @@ classdef StringValidator < BaseValidator
         
         function getLineNames(self)
             % Test function for pre-loading line names
-            try
-                lines = SAGE.Lab('rubin').lines();
-                self.lineNames = {lines.name};
-            catch 
+            if self.offline == true;
                 self.lineNames = {};
+                return;
+            else
+                try
+                    lines = SAGE.Lab('rubin').lines();
+                    self.lineNames = {lines.name};
+                catch ME
+                    self.lineNames = {};
+                end
             end
+            
         end
     end
 end

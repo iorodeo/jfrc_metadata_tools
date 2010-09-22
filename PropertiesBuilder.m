@@ -1,5 +1,12 @@
 classdef PropertiesBuilder
     % Class for Creating a JIDE property grid from a default data xml tree.
+    %
+    % Note, currently the JIDE grid will be broken with the option
+    % hierarchy=false set. I missed some sublties here. Basically I think I
+    % need to generate unique leaf names in this case because the
+    % PropertyGrid class uses the name (assumed to be unique??) to set
+    % update the field.
+    % ---------------------------------------------------------------------
    
     properties
         defaultsTree = XMLDefaultsNode.empty();
@@ -42,7 +49,7 @@ classdef PropertiesBuilder
                 'Name', 'pgridTest', ...
                 'NumberTitle', 'off', ...
                 'Toolbar', 'none');
-            pgrid = PropertyGrid(fig,'Position', [0 0 1 1]);
+            pgrid = PropertyGrid(self.defaultsTree,fig,'Position', [0 0 1 1]);
             pgrid.Properties = properties;
             uiwait(fig);
         end
@@ -69,7 +76,7 @@ classdef PropertiesBuilder
             if node.getValueAppear(self.mode,self.hierarchy) == true
                 % Node is set to appear get properties based on data type.
                 if self.hierarchy == true
-                    name = node.getNestedName('');
+                    name = node.getPathString();
                 else
                     name = node.uniqueName;
                 end
@@ -91,7 +98,7 @@ classdef PropertiesBuilder
             else
                 % Set property name and display name
                 if self.hierarchy == true
-                    name = node.getNestedName('');
+                    name = node.getPathString();
                 else
                     name = node.uniqueName;
                 end
