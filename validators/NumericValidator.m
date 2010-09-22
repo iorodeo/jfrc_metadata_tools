@@ -218,5 +218,4 @@ classdef NumericValidator < BaseValidator
         end
         
     end
-    
-end
+end % classdef NumericValidator

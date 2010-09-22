@@ -295,25 +295,29 @@ classdef DateTimeValidator < NumericValidator
             end
         end  
     end
-end
+end % classdef DateTimeValidator
 
+% -------------------------------------------------------------------------
 function dateString = floatStringToDateString(floatString,format)
 % Converts a float string to a date string
 dateNumber = str2num(floatString);
 dateString = dateNumberToDateString(dateNumber,format);
 end
 
+% -------------------------------------------------------------------------
 function floatString = dateStringToFloatString(dateString,format)
 % Converts a date string to a float string
 dateNumber = dateStringToDateNumber(dateString,format);
 floatString = num2str(dateNumber);
 end
 
+% -------------------------------------------------------------------------
 function dateString = dateNumberToDateString(dateNumber,format)
 % Converts a date number to a date string.
 dateString = datestr(dateNumber,format);
 end
 
+% -------------------------------------------------------------------------
 function dateNumber = dateStringToDateNumber(dateString,format)
 % Converts a date string to a date number.
 try

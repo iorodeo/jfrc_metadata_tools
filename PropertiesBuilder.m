@@ -207,7 +207,6 @@ classdef PropertiesBuilder
                 'Description', node.getValueDescription() ...
                 );
         end
-           
-    end
-    
-end
+       
+    end   
+end % classdef PropertiesBuilder

@@ -109,7 +109,10 @@ classdef IntegerValidator < NumericValidator
                    case 'exclusive'
                        upperValue = self.upperBound-1;
                    otherwise
-                       error('unknown upperBoundType %s', self.upperBoundType);
+                       error( ...
+                           'unknown upperBoundType %s', ...
+                           self.upperBoundType ...
+                           );
                end
                % Create array of floating point values and convert to
                % strings.
@@ -125,8 +128,9 @@ classdef IntegerValidator < NumericValidator
         end
         
     end
-end
+end % classdef IntegerValidator
 
+% -------------------------------------------------------------------------
 function valNew = truncFloatString(valOld)
 % Truncates a floating point number represented as a string
 val = str2num(valOld);

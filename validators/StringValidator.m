@@ -100,8 +100,7 @@ classdef StringValidator < BaseValidator
                     
                 otherwise
                     error('unknown special case range string');
-            end
-            
+            end         
         end
         
         function [value, flag, msg] = validationFunc(self,value)
@@ -210,7 +209,7 @@ classdef StringValidator < BaseValidator
     end
 end
 
-% Dummy function for development ------------------------------------------
+% Dummy functions for development -----------------------------------------
 function names = dummyGetLDAP()
 % Dummy function for getting LDAP names.
 names = {};
@@ -223,6 +222,7 @@ names{N+2} = 'robiea';
 names{N+3} = 'hirokawaj';
 end
 
+% -------------------------------------------------------------------------
 function names = dummyGetLineNames()
 % Dummy function for getting line names
 names = {};
@@ -234,6 +234,7 @@ names{N+1} = 'dummyline';
 
 end
 
+% -------------------------------------------------------------------------
 function names = dummyGetEffectors()
 % Dummy function for getting line names
 names = {};

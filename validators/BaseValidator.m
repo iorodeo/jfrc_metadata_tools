@@ -12,4 +12,4 @@ classdef BaseValidator < handle
            value = '';
        end
    end
-end
+end % classdef BaseValidator

@@ -56,6 +56,7 @@ classdef XMLDefaultsNode < XMLDataNode
                mode = 'basic';
            end
            treeFromStruct@XMLDataNode(self,xmlStruct);
+           self.checkAttributes();
            self.setValueValidators(mode);
            self.setValuesToDefaults();
         end
@@ -87,6 +88,11 @@ classdef XMLDefaultsNode < XMLDataNode
         function checkAttributes(self)
             % Check that all leaves of the tree have the required attributes
             self.walk(@checkNodeAttributes);
+        end
+        
+        function checkContentNodes(self)
+           % Check that content nodes only have one child named "content".
+           self.walk(@checkContentNode);
         end
         
         function dataType = getDataType(self)
@@ -201,8 +207,8 @@ classdef XMLDefaultsNode < XMLDataNode
                 hierarchy = true;
             end
             if self.isLeaf() == true    
-                % Set Leaf appear or not based upon the mode and attribute
-                % settings.
+                % Node is a leaf, set the value of appear flag based upon 
+                % the mode and attribute settings.
                 switch lower(mode)
                     case 'basic'
                         appearString = strtrim(self.attribute.appear_basic);
@@ -213,7 +219,7 @@ classdef XMLDefaultsNode < XMLDataNode
                 end
                 [flag, ~] = parseAppearString(appearString);
             else
-                % Deterimine is non-leaf node should appear
+                % Deterimine if non-leaf node should appear
                 flag = false;
                 
                 if self.isContentNode() == true
@@ -378,6 +384,7 @@ classdef XMLDefaultsNode < XMLDataNode
     end
 end % classdef XMLDefaultsNode
 
+% -------------------------------------------------------------------------
 function setNodeValueToDefault(node)
 % Set a node value to the default specified by the defaults attribute.
 if node.isLeaf() && (~strcmpi(node.getValueEntryType(),'acquire'))  
@@ -391,6 +398,7 @@ if node.isLeaf() && (~strcmpi(node.getValueEntryType(),'acquire'))
 end
 end
    
+% -------------------------------------------------------------------------
 function setNodeValueToLast(node)
 % Set node to value to the last value used.
 value = node.getLastValue();
@@ -417,6 +425,7 @@ else
 end
 end
 
+% -------------------------------------------------------------------------
 function setDefaultValueGeneric(node)
 % Generic node to default value - generic case, i.e., not a special case
 % such as $LAST. 
@@ -446,6 +455,7 @@ else
 end
 end
 
+% -------------------------------------------------------------------------
 function checkNodeAttributes(node)
 % Check that a node has the required attributes. Only leaves are required
 % to have attributes.
@@ -453,21 +463,27 @@ if node.isLeaf()
     for i = 1:length(node.requiredAttributes)
         attributeName = node.requiredAttributes{i};
         if ~isfield(node.attribute,attributeName)
-            error('attribute %s missing from node %s',attributeName,node.getPathString());
+            error( ...
+                'attribute %s missing from node %s', ...
+                attributeName, ...
+                node.getPathString() ...
+                );
         end
     end
 else
     for i = 1:node.numChildren
         child = node.children(i);
-        child.checkAttribute();
+        child.checkAttributes();
     end
 end
 end
 
+% -------------------------------------------------------------------------
 function printNodeValue(node)
 disp([node.indent,node.name, ', ', var2str(node.value)]);
 end
 
+% -------------------------------------------------------------------------
 function setNodeValueValidator(node, mode)
 % Creates the validation function for a node based on the mode string - 
 % 'basic' or 'advanced'.

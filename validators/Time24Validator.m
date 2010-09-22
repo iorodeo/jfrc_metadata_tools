@@ -65,20 +65,23 @@ classdef Time24Validator < NumericValidator
         
     end
     
-end
+end % classdef Time24Validator
 
+% -------------------------------------------------------------------------
 function floatString = time24ToFloatString(time24String)
 % Converts a time24 string to a float string
 t = time24ToFloat(time24String);
 floatString = num2str(t);
 end
 
+% -------------------------------------------------------------------------
 function time24String = floatStringToTime24(floatString)
 % Converts a float string to a time24 string
 t = str2num(floatString);
 time24String = floatToTime24(t);
 end
 
+% -------------------------------------------------------------------------
 function t = time24ToFloat(timeString)
 % Converts a time24 string to a floating point number
 timeString = strtrim(timeString);
@@ -108,6 +111,7 @@ end
 t = hr + min/60.0;
 end
 
+% -------------------------------------------------------------------------
 function timeString = floatToTime24(value)
 % Convert floating point number to time24 string
 if value < 0

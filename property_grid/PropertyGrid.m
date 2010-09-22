@@ -350,7 +350,6 @@ classdef PropertyGrid < UIControl
             self = PropertyGrid.FindPropertyGrid(obj, 'Model');
             name = get(event, 'PropertyName');  % JIDE automatically uses a hierarchical naming scheme
             field = self.Fields.FindByName(name);
-            
             % -------------------------------------------------------------
             % WBD: added this to hook up validators
             % -------------------------------------------------------------
@@ -358,8 +357,21 @@ classdef PropertyGrid < UIControl
             newValue = var2str(get(event, 'NewValue'));  
             node = self.defaultsTree.getNodeByPathString(name);
             try
-                node.value = newValue;
-                value = node.value; % reassing value in case modified by validator
+                node.value = newValue;           
+                if node.isContentNode() == false
+                    % Assign node values and pass through validator
+                    node.value = newValue;
+                     % re-assign value as it might be modified by validator
+                    value = node.value;
+                else
+                    % Special case for content node (as there value is
+                    % stored in the content element below them.
+                    childNode = node.children(1);
+                    % Assign value and pass through validator
+                    childNode.value = newValue;
+                    % re-assign value as it might be modified by validator
+                    value = childNode.value;
+                end
             catch ME
                 errordlg(ME.message, 'Input Error');
                 value = oldValue;
