@@ -358,17 +358,14 @@ classdef PropertyGrid < UIControl
             newValue = var2str(get(event, 'NewValue'));  
             node = self.defaultsTree.getNodeByPathString(name);
             try
-                [newValue,flag,msg] = node.validateValue(newValue);
+                node.value = newValue;
+                value = node.value; % reassing value in case modified by validator
             catch ME
-                error('Validator Error: %s',ME.message);
-            end  
-            if flag == false
-               errordlg(msg,'Input Error'); 
-               value = oldValue;
-            else
-                value = newValue;
-            end      
+                errordlg(ME.message, 'Input Error');
+                value = oldValue;
+            end
             if iscell(field.Value)
+                %node.value = newValue;
                 value = StringToCell(value);
             end
             field.Value = value;
