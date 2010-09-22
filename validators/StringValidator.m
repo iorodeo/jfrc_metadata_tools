@@ -120,9 +120,18 @@ classdef StringValidator < BaseValidator
             end
         end
         
+        function numValues = getNumValues(self)
+            % Return number of possible values
+           if self.isFiniteRange() == true
+               numValues = length(self.allowedStrings);
+           else
+               numValues = Inf;
+           end
+        end
+        
         function valueArray = getValues(self)
             % Returns valid values or empty array 
-            if self.isFiniteRange == true
+            if self.isFiniteRange() == true
                 valueArray = self.allowedStrings;
             else
                 valueArray = {};

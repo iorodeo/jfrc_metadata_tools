@@ -211,6 +211,12 @@ classdef NumericValidator < BaseValidator
            test = false; 
         end
         
+        function numValues = getNumValues(self)
+            % Get number of possible values - current always return Inf.
+            % This could change if we implement some special options.
+            numValues = Inf;
+        end
+        
     end
     
 end

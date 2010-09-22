@@ -344,6 +344,9 @@ classdef PropertyGrid < UIControl
         % could be feasible, it leads to a memory leak.
             
             self = PropertyGrid.FindPropertyGrid(obj, 'Model');
+            %get(obj)
+            %self
+            %get(event)
             name = get(event, 'PropertyName');  % JIDE automatically uses a hierarchical naming scheme
             self.UpdateField(name);
             
