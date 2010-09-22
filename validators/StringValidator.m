@@ -5,6 +5,7 @@ classdef StringValidator < BaseValidator
     
     properties
         allowedStrings = '';
+        lineNames;
     end
     
     methods
@@ -71,7 +72,14 @@ classdef StringValidator < BaseValidator
                     self.allowedStrings = dummyGetLDAP();
                 case '$LINENAME'
                     % DUMMY FUNCTION -------------------------
-                    self.allowedStrings = dummyGetLineNames();
+                    if isempty(self.lineNames)
+                        self.getLineNames();
+                    end
+                    if isempty(self.lineNames)
+                        self.allowedStrings = dummyGetLineNames();
+                    else
+                        self.allowedStrings = self.lineNames;
+                    end
                 case '$EFFECTOR'
                     % DUMMY FUNCTION -------------------------
                     self.allowedStrings = dummyGetEffectors();
@@ -146,6 +154,16 @@ classdef StringValidator < BaseValidator
                 test = true;
             end
         end
+        
+        function getLineNames(self)
+            % Test function for pre-loading line names
+            try
+                lines = SAGE.Lab('rubin').lines();
+                self.lineNames = {lines.name};
+            catch 
+                self.lineNames = {};
+            end
+        end
     end
 end
 
@@ -170,6 +188,7 @@ for i = 1:N
     names{i} = sprintf('line_%d', i);
 end
 names{N+1} = 'dummyline';
+
 end
 
 function names = dummyGetEffectors()
