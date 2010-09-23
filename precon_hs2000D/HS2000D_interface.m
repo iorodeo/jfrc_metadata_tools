@@ -13,9 +13,10 @@ classdef HS2000D_interface < handle
             fopen(obj.Sensor);
             obj.Sensor.DataTerminalReady = 'on';
             Readout = fgetl(obj.Sensor);
-            fclose(obj.Sensor);     
-            H = Readout(3:6);
-            T = Readout(10:13);
+            fclose(obj.Sensor);
+            Readout
+            H = []; %Readout(3:6);
+            T = []; %Readout(10:13);
         end
     end
 end
