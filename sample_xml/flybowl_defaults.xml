@@ -7,14 +7,14 @@
   <shiftflytemp_time datatype="float" range_basic="[0,Inf]" range_advanced="[0,Inf]" units="seconds" appear_basic="false" appear_advanced="false" entry="acquire" description="Time (in seconds) relative to the start of the experiment that flies are brought into the hot room" required="true" default="" last="" />
   <fliesloaded_time datatype="float" range_basic="[0,Inf]" range_advanced="[0,Inf]" units="seconds" appear_basic="false" appear_advanced="false" entry="acquire" description="Time (in seconds) relative to the start of the experimet that flies are loaded into the arena'" required="true" default="" last="" />
   <apparatus>
-    <type datatype="string" range_basic="rig" range_advanced="rig" units="" appear_basic="false" appear_advanced="false" entry="auto" description="Experimental apparatus " required="true" default="rig" last="" />
-    <id datatype="integer" range_basic="[1,Inf]" range_advanced="[1,Inf]" units="" appear_basic="false" appear_advanced="false" entry="auto" description="Apparatus identification number" required="true" default="1" last="" />
+    <type datatype="string" range_basic="rig" range_advanced="rig" units="" appear_basic="false" appear_advanced="false" entry="manual" description="Experimental apparatus " required="true" default="rig" last="" />
+    <id datatype="integer" range_basic="[1,Inf]" range_advanced="[1,Inf]" units="" appear_basic="false" appear_advanced="false" entry="manual" description="Apparatus identification number" required="true" default="1" last="" />
     <apparatus>
-      <type datatype="string" range_basic="plate" range_advanced="plate" units="" appear_basic="false" appear_advanced="false" entry="auto" description="Experimental apparatus " required="true" default="plate" last="" />
-      <id datatype="integer" range_basic="[1,Inf]" range_advanced="[1,Inf]" units="" appear_basic="false" appear_advanced="false" entry="auto" description="Apparatus identification numbe" required="true" default="2" last="" />
+      <type datatype="string" range_basic="plate" range_advanced="plate" units="" appear_basic="false" appear_advanced="false" entry="manual" description="Experimental apparatus " required="true" default="plate" last="" />
+      <id datatype="integer" range_basic="[1,Inf]" range_advanced="[1,Inf]" units="" appear_basic="false" appear_advanced="false" entry="manual" description="Apparatus identification numbe" required="true" default="2" last="" />
       <apparatus>
-        <type datatype="string" range_basic="bowl" range_advanced="bowl" units="" appear_basic="false" appear_advanced="false" entry="auto" description="Experimental apparatus" required="true" default="bowl" last="" />
-        <id datatype="integer" range_basic="[1,Inf]" range_advanced="[1,Inf]" units="na" appear_basic="false" appear_advanced="false" entry="auto" description="Apparatus identification number" required="true" default="3" last=""></id>
+        <type datatype="string" range_basic="bowl" range_advanced="bowl" units="" appear_basic="false" appear_advanced="false" entry="manual" description="Experimental apparatus" required="true" default="bowl" last="" />
+        <id datatype="integer" range_basic="[1,Inf]" range_advanced="[1,Inf]" units="na" appear_basic="false" appear_advanced="false" entry="manual" description="Apparatus identification number" required="true" default="3" last=""></id>
         <environment>
           <temperature datatype="float" range_basic="[-Inf, Inf]" range_advanced="[-Inf, Inf]" units="degrees Celsius" appear_basic="false" appear_advanced="false" entry="acquire" description="Temperature in degrees Celsius at the start of the experiment" required="true" default="" last="" />
           <humidity datatype="float" range_basic="[0,100]" range_advanced="[0,100]" units="percent" appear_basic="false" appear_advanced="false" entry="acquire" description="Humidity at the start of the experiment" required="true" default="" last="" />

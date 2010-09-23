@@ -8,7 +8,7 @@ classdef StringValidator < BaseValidator
     end
     
     properties (Hidden)
-        offline = false;
+        offline = true;
         lineNames;       % Temporary
         effectorNames;   % Temporary
     end

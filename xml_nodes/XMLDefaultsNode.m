@@ -26,6 +26,18 @@ classdef XMLDefaultsNode < XMLDataNode
             'default', ...
             'last'
             };
+        % Allowed values for leaf attributes.
+        allowedDataTypes = { ...
+            'string', ...
+            'float', ...
+            'integer', ...
+            'time24', ...
+            'datetime', ...
+            'integerlist' ...
+            };
+        allowedEntryTypes = {'manual','acquire'}; 
+        allowedRequiedValues = {'true','false'};
+        allowedModes = {'basic', 'advanced'};
     end
       
     methods
@@ -56,9 +68,16 @@ classdef XMLDefaultsNode < XMLDataNode
                mode = 'basic';
            end
            treeFromStruct@XMLDataNode(self,xmlStruct);
-           self.checkAttributes();
+           self.checkNodes();
            self.setValueValidators(mode);
            self.setValuesToDefaults();
+        end
+        
+        function checkNodes(self)
+            % Apply routines which check the structure and values in the
+            % tree consiting of the current node and all nodes below it in
+            % the tree.
+            self.walk(@checkNode);
         end
         
         function write(self,filename,savelast)
@@ -84,23 +103,25 @@ classdef XMLDefaultsNode < XMLDataNode
                 leaf.attribute.last = leaf.value;
             end
         end
-        
-        function checkAttributes(self)
-            % Check that all leaves of the tree have the required attributes
-            self.walk(@checkNodeAttributes);
-        end
-        
-        function checkContentNodes(self)
-           % Check that content nodes only have one child named "content".
-           self.walk(@checkContentNode);
-        end
-        
-        function dataType = getDataType(self)
-            % Return dataType string for node from the node attributes
-            if self.isLeaf()
-                dataType = strtrim(self.attribute.datatype);
+       
+        function dataType = getDataType(self,pathString)
+            % Return dataType string for node from the node attributes. If
+            % the path string argument is not given the data type for the
+            % node self is returned. Otherwise the data type for the node
+            % below self specified by the path string of unique names is
+            % returned.
+            % 
+            % Note, if the node is not a leaf the data type returned is
+            % always the empty string.
+            if nargin == 1
+                if self.isLeaf()
+                    dataType = strtrim(self.attribute.datatype);
+                else
+                    dataType = '';
+                end
             else
-                dataType = '';
+                node = self.getNodeByPathString(pathString);
+                dataType = node.getDataType();
             end
         end
         
@@ -148,7 +169,7 @@ classdef XMLDefaultsNode < XMLDataNode
            if self.isLeaf()
                entryType = strtrim(self.attribute.entry);
            else
-               entryType = 'none';
+               entryType = '';
            end
         end
         
@@ -188,6 +209,22 @@ classdef XMLDefaultsNode < XMLDataNode
            end
         end
         
+        function appearString = getAppearString(self,mode)
+           % Returns the appear string for the node self
+           if self.isLeaf()
+               switch lower(mode)
+                   case 'basic'
+                       appearString = strtrim(self.attribute.appear_basic);
+                   case 'advanced'
+                       appearString = strtrim(self.attribute.appear_advanced);
+                   otherwise
+                       error('unkown mode string %s', mode);
+               end
+           else
+               appearString = '';
+           end
+        end
+        
         function flag = getValueAppear(self, mode, hierarchy)
             % Returns flag indicating whether or not value should appear
             % in the GUI for the given mode string. Hierarchy can be set to
@@ -209,14 +246,7 @@ classdef XMLDefaultsNode < XMLDataNode
             if self.isLeaf() == true    
                 % Node is a leaf, set the value of appear flag based upon 
                 % the mode and attribute settings.
-                switch lower(mode)
-                    case 'basic'
-                        appearString = strtrim(self.attribute.appear_basic);
-                    case 'advanced'
-                        appearString = strtrim(self.attribute.appear_advanced);
-                    otherwise
-                        error('unrecognised mode string %s', mode);
-                end
+                appearString = self.getAppearString(mode);
                 [flag, ~] = parseAppearString(appearString);
             else
                 % Deterimine if non-leaf node should appear
@@ -287,6 +317,13 @@ classdef XMLDefaultsNode < XMLDataNode
                     valuesToAcquire{cnt} = node.getPathString();
                 end
             end
+        end
+        
+        function num = getNumValuesToAcquire(self)
+            % Returns the number of values that have entry type set to
+            % acquire.
+            valuesToAcquire = self.getValuesToAcquire();
+            num = length(valuesToAcquire);
         end
         
         function printValuesToAcquire(self)
@@ -456,7 +493,21 @@ end
 end
 
 % -------------------------------------------------------------------------
-function checkNodeAttributes(node)
+function checkNode(node)
+% Applies basic tests to check that node conforms to the requied format for 
+% a xml defaults tree.
+checkAttribute(node);
+checkDataType(node);
+checkValueAppear(node);
+checkEntryType(node);
+checkValueRequired(node);
+checkRanges(node);
+checkContent(node);
+checkManualEntry(node);
+end
+
+% -------------------------------------------------------------------------
+function checkAttribute(node)
 % Check that a node has the required attributes. Only leaves are required
 % to have attributes.
 if node.isLeaf()
@@ -470,10 +521,146 @@ if node.isLeaf()
                 );
         end
     end
+end
+end
+
+% -------------------------------------------------------------------------
+function checkDataType(node)
+% Checks that the nodes datatype is in the list of allowed data types.
+% Note, this only applies to leaf nodes.
+if node.isLeaf() == true
+   dataType = node.getDataType();
+   try
+       validatestring(dataType,node.allowedDataTypes);
+   catch ME
+       error( ...
+           'unkown data type %s for node %s: %s', ...
+           dataType, ...
+           node.getPathString(), ...
+           ME.message ...
+           );
+   end
+end
+end
+
+% -------------------------------------------------------------------------
+function checkValueAppear(node)
+% Check that the appear values can be parsed
+if node.isLeaf()
+    for i = 1:length(node.allowedModes)
+        mode = node.allowedModes{i};
+        try
+            appearString = node.getAppearString(mode);
+            [~, ~] = parseAppearString(appearString);
+        catch ME
+            error( ...
+                'unable to parse appear string for node %s: %s', ...
+                node.getPathString(), ...
+                ME.message ...
+                );
+        end
+    end
+end
+end
+
+% -------------------------------------------------------------------------
+function checkEntryType(node)
+% Checks that the entry value for the node is in the list of allowed
+% values.
+entryType = node.getValueEntryType();
+if node.isLeaf() == true
+    try
+        validatestring(entryType,node.allowedEntryTypes);
+    catch ME
+        error( ...
+            'unknown entry type, %s, for node %s: %s', ...
+            entryType, ...
+            node.getPathString(), ...
+            ME.message ...
+            );
+    end
 else
-    for i = 1:node.numChildren
-        child = node.children(i);
-        child.checkAttributes();
+    if isempty(entryType) == false
+        error( ...
+            'entry type for non leaf node %s should be empty', ...
+            node.getPathString() ...
+            );
+    end
+end
+end
+
+% -------------------------------------------------------------------------
+function checkValueRequired(node)
+% Check that the value required attribtue can be parsed correctly
+try
+    node.getValueRequired();
+catch ME
+    error( ...
+        'unable to parse value required for node %s: %s', ...
+        node.getPathString(), ...
+        ME.message ...
+        );
+end
+end
+
+% -------------------------------------------------------------------------
+function checkRanges(node)
+% Check that Ranges for all modes can be parsed by the value validators.
+if node.isLeaf() == true
+    for i = 1:length(node.allowedModes)
+       mode = node.allowedModes{i};
+       try
+           setNodeValueValidator(node,mode);
+       catch ME
+           error( ... 
+               'unable to parse range of node %s for mode=%s: %s', ...
+               node.getPathString(), ...
+               mode, ...
+               ME.message ...
+               );
+       end
+    end
+end
+end
+
+% -------------------------------------------------------------------------
+function checkContent(node)
+% Check a content node to see if it has the correct format.
+if node.isContentNode()
+    if node.numChildren ~= 1
+        error( ...
+            'content nodes must only have a single child: node %s', ...
+            node.getPathString() ...
+            );
+    end
+    childNode = node.children(1);
+    if ~strcmpi(childNode.name,'content')
+        error( ...
+            'child element of content node must be named content: node %s', ...
+            node.getPathString() ...
+            );
+    end
+end
+end
+
+% -------------------------------------------------------------------------
+function checkManualEntry(node)
+% Checkes nodes whose value entry type is set to manual. Makes sure that
+% they are either set to appear or have a default set for both basic and
+% advanceed modes. Note, this only applies to leaf elements.
+entryType = node.getValueEntryType();
+if (node.isLeaf() == true) && (strcmpi(entryType,'manual')==true)
+    for i = 1:length(node.allowedModes)
+        mode = node.allowedModes{i};
+        appearValue = node.getValueAppear(mode);
+        defaultValue = node.getDefaultValue();
+        if (appearValue == false) && (isempty(defaultValue) == true)
+           error( ...
+               'node: %s, does not appear for mode %s and has no default value', ...
+               node.getPathString(), ...
+               mode ...
+               );
+        end
     end
 end
 end
