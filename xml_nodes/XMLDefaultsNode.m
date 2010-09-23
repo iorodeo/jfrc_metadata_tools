@@ -67,6 +67,7 @@ classdef XMLDefaultsNode < XMLDataNode
            if nargin < 3
                mode = 'basic';
            end
+           checkModeString(mode,self.allowedModes);
            treeFromStruct@XMLDataNode(self,xmlStruct);
            self.checkNodes();
            self.setValueValidators(mode);
@@ -131,6 +132,7 @@ classdef XMLDefaultsNode < XMLDataNode
             if nargin == 1
                 mode = 'basic';
             end
+            checkModeString(mode,self.allowedModes);
             if self.isLeaf()
                 if strcmpi(mode,'basic')
                     range = strtrim(self.attribute.range_basic);
@@ -211,6 +213,7 @@ classdef XMLDefaultsNode < XMLDataNode
         
         function appearString = getAppearString(self,mode)
            % Returns the appear string for the node self
+           checkModeString(mode,self.allowedModes);
            if self.isLeaf()
                switch lower(mode)
                    case 'basic'
@@ -240,6 +243,7 @@ classdef XMLDefaultsNode < XMLDataNode
             if nargin < 2
                 mode = 'basic';
             end
+            checkModeString(mode,self.allowedModes);
             if nargin < 3
                 hierarchy = true;
             end
@@ -276,6 +280,7 @@ classdef XMLDefaultsNode < XMLDataNode
         function flag = getReadOnly(self, mode)
             % Returns flag indicating whether or not value should be read
             % only in GUI for the given mode string.
+            checkModeString(mode,self.allowedModes);
             switch lower(mode)
                 case 'basic'
                     appearString = strtrim(self.attribute.appear_basic);
@@ -301,6 +306,60 @@ classdef XMLDefaultsNode < XMLDataNode
                 end
             end
         end
+        
+        function valuesNeeded = getValuesNeeded(self,entryType)
+            % Returns a list of path strings to the nodes below the current 
+            % node with required values which still don't have a value. The 
+            % optional argument entryType filters the results by entry type.
+            % entryType may be 'manaul', 'acquire', or 'all'. By default,
+            % if no value is given for entryType it is set to 'all'.
+            if nargin < 2
+                entryType = 'all';
+            end
+                
+            switch lower(entryType)
+                case 'all'
+                    filterCell = {'acquire', 'manual'};
+                case 'manual'
+                    filterCell = {'manual'};
+                case 'acquire'
+                    filterCell = {'acquire'};
+                otherwise
+                    error('unknown value for entryType: %s',entryType);
+            end
+            leaves = self.getLeaves();
+            valuesNeeded = {};
+            cnt = 0;
+            for i=1:length(leaves)
+               leaf = leaves(i);
+               nodeEntryType = leaf.getValueEntryType();
+               if sum(ismember(filterCell,nodeEntryType))> 0
+                   % Node has the correct entry type
+                   requiredFlag = leaf.getValueRequired();
+                   if (requiredFlag == true) && isempty(leaf.value)
+                       % value is required, but node does not have value.
+                       cnt = cnt + 1;
+                       valuesNeeded{cnt} = leaf.getPathString();
+                   end
+               end
+            end
+        end
+        
+        function printValuesNeeded(self, entryType)
+            % Prints path strings of nodes whose values are still needed,
+            % i.e., they are required but have a value yet. The optional
+            % argument entryType can be used to filter the results by the
+            % entry type of the nodes: 'all', 'acquire' or 'manual'. The 
+            % default value for entry type is 'all'. 
+            if nargin < 2
+                entryType = 'all';
+            end
+            valuesNeeded = self.getValuesNeeded(entryType);
+            for i = 1:length(valuesNeeded)
+               disp(valuesNeeded{i}); 
+            end
+        end
+        
         
         function valuesToAcquire = getValuesToAcquire(self)
             % For the tree consisting of the current node and all nodes
@@ -404,6 +463,7 @@ classdef XMLDefaultsNode < XMLDataNode
             % Sets the value validation function for this node and all nodes 
             % below it in the tree based on the mode string which can be equal
             % 'basic' or 'advanced'
+            checkModeString(mode,self.allowedModes);
             self.walk(@setNodeValueValidator,mode);
         end
         
@@ -666,6 +726,16 @@ end
 end
 
 % -------------------------------------------------------------------------
+function checkModeString(mode,allowedModes)
+% Check the mode string to verify that it is in the list of allowed modes.
+try
+    validatestring(mode,allowedModes);
+catch ME
+    error('unkown mode string %s: %s', mode, ME.message);
+end
+end
+
+% -------------------------------------------------------------------------
 function printNodeValue(node)
 disp([node.indent,node.name, ', ', var2str(node.value)]);
 end
@@ -674,6 +744,7 @@ end
 function setNodeValueValidator(node, mode)
 % Creates the validation function for a node based on the mode string - 
 % 'basic' or 'advanced'.
+checkModeString(mode,node.allowedModes);
 if node.isLeaf()
     %disp(node.name);
     rangeString = node.getRangeString(mode);
