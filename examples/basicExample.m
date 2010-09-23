@@ -12,6 +12,7 @@ function basicExample
 %
 % -------------------------------------------------------------------------
 
+
 % Sample defaults xml file in ..\sample_xml\ directory
 defaultsFile = ['..', filesep, 'sample_xml', filesep, 'flybowl_defaults.xml'];
 

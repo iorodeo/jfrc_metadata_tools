@@ -75,8 +75,6 @@ classdef PropertyGrid < UIControl
         
         function self = PropertyGrid(varargin)
             self = self@UIControl(varargin{:});
-            %self.defaultsTree = defaultsTree;
-            %self.Properties = self.defaultsTree.getPGridProperties();
         end
         
         function self = Instantiate(self, parent)
