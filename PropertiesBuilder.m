@@ -174,6 +174,9 @@ classdef PropertiesBuilder
                 switch class(node.valueValidator)
                     
                     case 'StringValidator'
+                        % Special case for strings to get popup edit box.
+                        % Have look thought the PropertyGrid class there
+                        % may be a better way to do this.
                         properties = PropertyGridField( ...
                             name, {node.value, ''}, ...
                             'Category', node.root.name, ...
@@ -183,6 +186,7 @@ classdef PropertiesBuilder
                             );
                         
                     otherwise
+                        % All other types
                         propType = PropertyType('char','row');
                         properties = PropertyGridField( ...
                             name, node.value , ...

@@ -250,6 +250,8 @@ classdef PropertyGrid < UIControl
         function UpdateField(self, name)
         % Updates a property value or reverts changes if value is illegal.
             field = self.Fields.FindByName(name); 
+            %get(self.Table)
+            %get(self.Table, 'Font')
             value = field.Value;
             if field.CanAccept(value)
                 try
