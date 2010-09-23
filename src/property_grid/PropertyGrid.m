@@ -39,8 +39,11 @@
 
 % Copyright 2010 Levente Hunyadi
 classdef PropertyGrid < UIControl
+        
     properties
         defaultsTree = XMLDefaultsNode.empty();
+        mode = 'basic';
+        hierarchy = true;
     end
     properties (Dependent)
         % The handle graphics control that wraps the property grid.
@@ -69,9 +72,11 @@ classdef PropertyGrid < UIControl
         BoundItem = [];
     end
     methods
-        function self = PropertyGrid(defaultsTree,varargin)
+        
+        function self = PropertyGrid(varargin)
             self = self@UIControl(varargin{:});
-            self.defaultsTree = defaultsTree;
+            %self.defaultsTree = defaultsTree;
+            %self.Properties = self.defaultsTree.getPGridProperties();
         end
         
         function self = Instantiate(self, parent)
@@ -105,6 +110,43 @@ classdef PropertyGrid < UIControl
             %get(self.Table.CellRendererManager)
         end
         
+        % WBD - added this to make it easier to set up property grid 
+        %  ----------------------------------------------------------------
+        function setMode(self,mode)
+            self.mode = mode;
+            properties = self.defaultsTree.getPGridProperties( ...
+                self.mode, ...
+                self.hierarchy ...
+                );
+            self.assignProperties(properties);
+        end
+        
+        function setHierarchy(self,hierarchy)
+           self.hierarchy = hierarchy;
+           properties = self.defaultsTree.getPGridProperties( ...
+                self.mode, ...
+                self.hierarchy ...
+                );
+            self.assignProperties(properties);
+        end
+        
+        function setDefaultsTree(self,defaultsTree)
+            % Set the defaults tree and then assign properties.
+            self.defaultsTree = defaultsTree;
+            properties = self.defaultsTree.getPGridProperties( ... 
+                self.mode, ...
+                self.hierarchy ...
+                );
+            self.assignProperties(properties);
+        end
+        
+        function assignProperties(self,properties)
+        % Allows set.defaultsTree to call set.Propeties. Not the best
+        % thing, but it makes using the properties grid easier.
+            self.Properties = properties; 
+        end
+        % -----------------------------------------------------------------
+        
         function ctrl = get.Control(self)
             ctrl = self.Container;
         end
@@ -114,7 +156,7 @@ classdef PropertyGrid < UIControl
             properties = self.Fields.GetProperties();
         end
         
-        function self = set.Properties(self, properties)
+        function self = set.Properties(self, properties) 
         % Explicitly sets properties displayed in the grid.
         % Setting this property clears any object bindings.
             validateattributes(properties, {'PropertyGridField'}, {'vector'});

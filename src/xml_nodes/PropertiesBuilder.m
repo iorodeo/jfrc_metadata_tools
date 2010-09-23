@@ -43,14 +43,14 @@ classdef PropertiesBuilder
         
         function showTestFigure(self)
             % Create figure and add property grid.
-            properties = self.getProperties();
+            %properties = self.getProperties();
             fig = figure( ...
                 'MenuBar', 'none', ...
                 'Name', 'pgridTest', ...
                 'NumberTitle', 'off', ...
                 'Toolbar', 'none');
-            pgrid = PropertyGrid(self.defaultsTree,fig,'Position', [0 0 1 1]);
-            pgrid.Properties = properties;
+            pgrid = PropertyGrid(fig,'Position', [0 0 1 1]);
+            pgrid.defaultsTree = self.defaultsTree;
             uiwait(fig);
         end
         

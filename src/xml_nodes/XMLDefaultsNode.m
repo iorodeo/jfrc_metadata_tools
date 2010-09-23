@@ -8,7 +8,7 @@ classdef XMLDefaultsNode < XMLDataNode
     properties
        value = '';
        valueValidator = BaseValidator();
-       validation = true;
+       validation = true; % true = validation on, false = validation off
     end
     
     properties (Constant, Hidden)
@@ -72,6 +72,20 @@ classdef XMLDefaultsNode < XMLDataNode
            self.checkNodes();
            self.setValueValidators(mode);
            self.setValuesToDefaults();
+        end
+        
+        function properties = getPGridProperties(self,mode,hierarchy)
+            % Gets the array of properties used by the PropertyGrid class for 
+            % creating the JIDE grid table display.
+            if nargin < 2
+                mode = 'basic';
+            end
+            if nargin < 3
+                hierarchy = true;
+            end
+            self.setValueValidators(mode);
+            propBuilder = PropertiesBuilder(self,mode,hierarchy);
+            properties = propBuilder.getProperties();
         end
         
         function checkNodes(self)
