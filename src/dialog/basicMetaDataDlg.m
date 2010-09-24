@@ -71,6 +71,7 @@ defaultsTree = varargin{1};
 % Note, the 'HandleVisilbility' of the figure must be set to 'on' for this 
 % to work properly. For this example I set it to 'on' in guide.
 pgrid = PropertyGrid(handles.dialogFigure,'Position', [0 0.1 1 0.9]);
+
 pgrid.setDefaultsTree(defaultsTree);
 pgrid.setMode(mode);
 

@@ -768,7 +768,7 @@ end
 
 % -------------------------------------------------------------------------
 function printNodeValue(node)
-disp([node.indent,node.name, ', ', var2str(node.value)]);
+disp([node.indent,node.name, ', ', node.value]);
 end
 
 % -------------------------------------------------------------------------

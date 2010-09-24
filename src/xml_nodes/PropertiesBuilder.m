@@ -17,7 +17,7 @@ classdef PropertiesBuilder
    
     methods
         
-        function self = PropertiesBuilder(defaultsTree,mode,hierarchy)
+        function self = PropertiesBuilder(defaultsTree, mode, hierarchy)
             % Constructor
             if nargin > 0
                 self.defaultsTree = defaultsTree.root;
@@ -32,8 +32,12 @@ classdef PropertiesBuilder
         
         function properties = getProperties(self)
             % Set value validators and defaults based on mode.
-            self.defaultsTree.setValueValidators(self.mode);
-            self.defaultsTree.setValuesToDefaults();
+            
+            % DEBUG -------------------------------------------------------
+            % Note, assumes value validators etc agree with mode and
+            % hierarchy setting.
+            % -------------------------------------------------------------
+            
             % Get properties for JIDE property grid  
             properties = self.getNodeProperties(self.defaultsTree);
             if self.hierarchy == true

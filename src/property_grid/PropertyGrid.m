@@ -110,7 +110,7 @@ classdef PropertyGrid < UIControl
         
         % WBD - added this to make it easier to set up property grid 
         %  ----------------------------------------------------------------
-        function setMode(self,mode)
+        function setMode(self,mode)  
             self.mode = mode;
             properties = self.defaultsTree.getPGridProperties( ...
                 self.mode, ...
@@ -397,9 +397,8 @@ classdef PropertyGrid < UIControl
             % -------------------------------------------------------------
             oldValue = var2str(get(event, 'OldValue'));  
             newValue = var2str(get(event, 'NewValue'));  
-            node = self.defaultsTree.getNodeByPathString(name);
+            node = self.defaultsTree.getNodeByPathString(name);           
             try
-                node.value = newValue;           
                 if node.isContentNode() == false
                     % Assign node values and pass through validator
                     node.value = newValue;
@@ -425,6 +424,7 @@ classdef PropertyGrid < UIControl
             field.Value = value;
             % -------------------------------------------------------------
             self.UpdateField(name);    
+            disp([name]);
         end
     end
 end
