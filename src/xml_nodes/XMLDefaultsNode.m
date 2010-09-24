@@ -33,7 +33,7 @@ classdef XMLDefaultsNode < XMLDataNode
             'integer', ...
             'time24', ...
             'datetime', ...
-            'integerlist' ...
+            'integer_list' ...
             };
         allowedEntryTypes = {'manual','acquire'}; 
         allowedRequiedValues = {'true','false'};
@@ -257,10 +257,12 @@ classdef XMLDefaultsNode < XMLDataNode
             if nargin < 2
                 mode = 'basic';
             end
-            checkModeString(mode,self.allowedModes);
             if nargin < 3
                 hierarchy = true;
             end
+            
+            checkModeString(mode,self.allowedModes);
+            
             if self.isLeaf() == true    
                 % Node is a leaf, set the value of appear flag based upon 
                 % the mode and attribute settings.
@@ -374,7 +376,6 @@ classdef XMLDefaultsNode < XMLDataNode
             end
         end
         
-        
         function valuesToAcquire = getValuesToAcquire(self)
             % For the tree consisting of the current node and all nodes
             % below returns a cell array containing the unique path string, 
@@ -412,7 +413,7 @@ classdef XMLDefaultsNode < XMLDataNode
            % Test if node represents an element with content. For this to 
            % be the case the node must have only a single child which is a
            % leaf whose name is 'content'
-           if self.numChildren == 1 && strcmpi(self.children(1).name, 'content')
+           if (self.numChildren == 1) && strcmpi(self.children(1).name, 'content')
                test = true;
            else
                test = false;
@@ -600,7 +601,7 @@ end
 
 % -------------------------------------------------------------------------
 function checkDataType(node)
-% Checks that the nodes datatype is in the list of allowed data types.
+% Checks that the nod's datatype is in the list of allowed data types.
 % Note, this only applies to leaf nodes.
 if node.isLeaf() == true
    dataType = node.getDataType();
@@ -765,22 +766,17 @@ if node.isLeaf()
     dataType = node.getDataType();
     switch lower(dataType)
         case 'integer'
-            %disp('integer datatype');
             node.valueValidator = IntegerValidator(rangeString);
         case 'float'
-            %disp('float datatype');
             node.valueValidator = NumericValidator(rangeString);
         case 'string'
-            %disp('string datatype');
             node.valueValidator = StringValidator(rangeString);
         case 'datetime'
-            %disp('datetime datatype')
             node.valueValidator = DateTimeValidator(rangeString);
         case 'time24'
-            %disp('time24 datatype')
             node.valueValidator = Time24Validator(rangeString);
         case 'integer_list'
-            %disp('integer_list datatype');
+            error('integer_list validator not implemented');
         otherwise
             error('unkown datatype %s', dataType);
     end
