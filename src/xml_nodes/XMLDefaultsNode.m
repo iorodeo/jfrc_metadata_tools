@@ -323,6 +323,22 @@ classdef XMLDefaultsNode < XMLDataNode
             end
         end
         
+        function test = hasValuesNeeded(self,entryType)
+           % Returns true if for tree consisting of the current node and 
+           % nodes below it all required values have a value for the given
+           % entry type where entry type can be 'manual', 'acquire', or
+           % 'all'. The default for entryType is  'all'
+           if nargin < 2
+               entryType = 'all';
+           end
+           valuesNeeded = self.getValuesNeeded(entryType);
+           if isempty(valuesNeeded) == true
+               test = true;
+           else
+               test = false;
+           end
+        end
+        
         function valuesNeeded = getValuesNeeded(self,entryType)
             % Returns a list of path strings to the nodes below the current 
             % node with required values which still don't have a value. The 
