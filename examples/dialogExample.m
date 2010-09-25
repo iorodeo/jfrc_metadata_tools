@@ -22,7 +22,7 @@ function varargout = dialogExample(varargin)
 
 % Edit the above text to modify the response to help dialogExample
 
-% Last Modified by GUIDE v2.5 24-Sep-2010 14:30:06
+% Last Modified by GUIDE v2.5 25-Sep-2010 11:32:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -58,7 +58,7 @@ handles.output = hObject;
 % For this example we either use an example file from the sample_xml
 % directory or we get a file name from the command line.
 if isempty(varargin)
-    % No arguments - set defaults file to flybowl_defaults in sample_xml
+    % No arguments given - set defaults file to flybowl_defaults in sample_xml
     defaultsFile = ['..', filesep, 'sample_xml', filesep, 'flybowl_defaults.xml'];
 else
     % Set defaults file first argument.
@@ -67,6 +67,8 @@ end
 
 % Set initial mode for GUI
 handles = setInitialMode(handles,'basic');
+handles = setInitialEntryTypeFilter(handles,'all');
+handles = setSensorType(handles,'fakeit');
 
 % Load XML defaults file. Creates handles.defaultsTree object and sets
 % handles.defatulsFile
@@ -153,11 +155,9 @@ function modeButtonGroup_SelectionChangeFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
     case 'basicRadioButton'
-        % Code for when radiobutton1 is selected.
         handles.mode = 'basic';
         disp('mode changed to basic');
     case 'advancedRadioButton'
-        % Code for when radiobutton2 is selected.
         handles.mode = 'advanced';
         disp('mode changed to advanced');
     otherwise
@@ -167,6 +167,107 @@ end
 % Update handles structure
 guidata(hObject, handles);
 
+% --- Executes when selected object is changed in entryTypeFilterButtonGroup.
+function entryTypeFilterButtonGroup_SelectionChangeFcn(hObject, eventdata, handles)
+% hObject    handle to the selected object in entryTypeFilterButtonGroup 
+% eventdata  structure with the following fields (see UIBUTTONGROUP)
+%	EventName: string 'SelectionChanged' (read only)
+%	OldValue: handle of the previously selected object or empty if none was selected
+%	NewValue: handle of the currently selected object
+% handles    structure with handles and user data (see GUIDATA)
+switch get(eventdata.NewValue,'Tag') % Get Tag of selected object.
+    case 'allRadioButton'
+        handles.entryTypeFilter = 'all';
+        disp('entry filter changed to all');
+    case 'manualRadioButton'
+        handles.entryTypeFilter = 'manual';
+        disp('entry filter changed to manual');
+    case 'acquireRadioButton'
+        handles.entryTypeFilter = 'acquire';
+        disp('entry filter changed to acquire');
+    otherwise
+        % Code for when there is no match.
+        error('Unknown radio button - this should not happen');
+end
+% Update handles structure
+guidata(hObject, handles);
+
+% --- Executes on button press in valuesNeededPushButton.
+function valuesNeededPushButton_Callback(hObject, eventdata, handles)
+% hObject    handle to valuesNeededPushButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+fprintf('showing values needed, filter = %s\n',handles.entryTypeFilter);
+
+% Get defaults tree and filter type from handles structure
+defaultsTree = handles.defaultsTree;
+entryTypeFilter = handles.entryTypeFilter;
+
+% Can print values to matlab command prompt as follows:
+defaultsTree.printValuesNeeded(entryTypeFilter);
+
+% Can get a list of the path strings to nodes which still need values as
+% follows:
+valuesNeeded = handles.defaultsTree.getValuesNeeded(entryTypeFilter);
+
+% Lets display them is a message box
+msgTitle = sprintf('Values needed (filter=%s)',entryTypeFilter);
+
+if isempty(valuesNeeded)
+    msgString = 'none';
+else
+    msgString = '';
+    for i = 1:length(valuesNeeded)
+        msgString = sprintf('%s%s\n', msgString, valuesNeeded{i});
+    end
+end
+uiwait(msgbox(msgString,msgTitle));
+
+
+% --- Executes on button press in fakeSensorCheckBox.
+function fakeSensorCheckBox_Callback(hObject, eventdata, handles)
+% hObject    handle to fakeSensorCheckBox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of fakeSensorCheckBox
+value = get(handles.fakeSensorCheckBox,'Value');
+if value == true
+    handles = setSensorType(handles,'fakeit');
+else
+    value = get(handles.COMPortPopUpMenu,'Value');
+    COMPorts = get(handles.COMPortPopUpMenu,'String');
+    handles = setSensorType(handles,COMPorts{value});
+end
+% Update handles structure
+guidata(hObject, handles);
+
+
+% --- Executes on selection change in COMPortPopUpMenu.
+function COMPortPopUpMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to COMPortPopUpMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns COMPortPopUpMenu contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from COMPortPopUpMenu
+value = get(handles.COMPortPopUpMenu,'Value');
+COMPorts = get(handles.COMPortPopUpMenu,'String');
+handles = setSensorType(handles,COMPorts{value});
+
+% --- Executes during object creation, after setting all properties.
+function COMPortPopUpMenu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to COMPortPopUpMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
 
 % Utility Functions
 % -------------------------------------------------------------------------
@@ -174,7 +275,7 @@ guidata(hObject, handles);
 % -------------------------------------------------------------------------
 function setCurrentFileText(handles,value)
 % Set value of current file text
-text = sprintf('Current File: %s', value);
+text = sprintf('%s', value);
 set(handles.currentFileText,'String', text);
 
 % -------------------------------------------------------------------------
@@ -203,7 +304,51 @@ switch lower(mode)
         set(handles.basicRadioButton,'Value', true);
         mode = 'basic';
 end
+fprintf('mode set to %s\n',mode);
 handles.mode = mode;
 
+% -------------------------------------------------------------------------
+function handles = setInitialEntryTypeFilter(handles,filterString)
+% Sets intitial entry type filter
+switch lower(filterString)
+    case 'all'
+        set(handles.allRadioButton,'Value',true);
+    case 'manual'
+        set(handles.manualRadioButton,'Value',true);
+    case 'acquire'
+        set(handles.acquireRadioButton,'Value',true);
+    otherwise
+        error('unrecognized entry type filter %s', filterString);
+        set(handles.allRadioButton,'Value',true);
+        filterString = 'all';
+end
+fprintf('entry type set to %s\n',filterString');
+handles.entryTypeFilter = lower(filterString);
+    
 
+function handles = setSensorType(handles,sensorType)
+% Sets the sensor type
+COMPorts = get(handles.COMPortPopUpMenu,'String');
+switch lower(sensorType)
+    case 'fakeit'
+        disp('fake sensor set');
+        set(handles.COMPortPopUpMenu,'Enable','off');
+        set(handles.fakeSensorCheckBox,'Value',true);
+    otherwise
+        sensorType = upper(sensorType);
+        pos = strmatch(sensorType,COMPorts,'exact');
+        if isempty(pos)
+            error('unknown sensorType %s, setting to fakeit',sensorType);
+            set(handles.COMPortPopUpMenu,'Enable','off');
+            set(handles.fakeSensorCheckBox,'Value',true);
+            sensorType= 'fakeit';
+        else
+            fprintf('Port %s set\n',sensorType);
+            set(handles.COMPortPopUpMenu,'Enable','on');
+            set(handles.COMPortPopUpMenu,'Value',pos);
+            set(handles.fakeSensorCheckBox,'Value',false)
+        end
+end
+handles.sensorType = sensorType;
 
+    

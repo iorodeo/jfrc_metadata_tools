@@ -424,7 +424,6 @@ classdef PropertyGrid < UIControl
             field.Value = value;
             % -------------------------------------------------------------
             self.UpdateField(name);    
-            disp([name]);
         end
     end
 end
