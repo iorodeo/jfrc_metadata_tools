@@ -80,7 +80,6 @@ guidata(hObject, handles);
 % UIWAIT makes dialogExample wait for user response (see UIRESUME)
 % uiwait(handles.mainFigure);
 
-
 % --- Outputs from this function are returned to the command line.
 function varargout = dialogExample_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
@@ -99,7 +98,28 @@ function opendDialogPushButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 disp('open dialog')
 dialogHdl = basicMetaDataDlg(handles.defaultsTree,handles.mode);
+
+% Set up temperature and humidity sensing
+if strcmpi(handles.sensorType,'fakeit')
+    sampler = THSampler('fake');
+else
+    port = handles.sensorType;
+    sampler = THSampler('precon',port);
+end
+
+% Set temperature and humidity even listener
+dialogHandles = guidata(dialogHdl);
+THListener = dialogHandles.THListener;
+sampler.addlistener('THSampleAcquired',@THListener.eventHandler);
+
+% Start temperature & humitidy sensor and wait for dialog to exit
+sampler.start();
 uiwait(dialogHdl);
+
+% Stop sensor and delete
+sampler.stop();
+delete(sampler);
+
 % Update handles structure - this is required because handles.defaultsTree
 % had changed.  
 guidata(hObject, handles);
@@ -254,6 +274,7 @@ function COMPortPopUpMenu_Callback(hObject, eventdata, handles)
 value = get(handles.COMPortPopUpMenu,'Value');
 COMPorts = get(handles.COMPortPopUpMenu,'String');
 handles = setSensorType(handles,COMPorts{value});
+guidata(hObject, handles);
 
 % --- Executes during object creation, after setting all properties.
 function COMPortPopUpMenu_CreateFcn(hObject, eventdata, handles)
@@ -352,3 +373,6 @@ end
 handles.sensorType = sensorType;
 
     
+function simpleListener(eventSrc,eventData)
+disp('hello');
+
