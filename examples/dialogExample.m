@@ -22,7 +22,7 @@ function varargout = dialogExample(varargin)
 
 % Edit the above text to modify the response to help dialogExample
 
-% Last Modified by GUIDE v2.5 25-Sep-2010 11:32:27
+% Last Modified by GUIDE v2.5 28-Sep-2010 15:14:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -288,6 +288,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+% --- Executes on button press in printValuesPushButton.
+function printValuesPushButton_Callback(hObject, eventdata, handles)
+% hObject    handle to printValuesPushButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.defaultsTree.printValues
+
+% --- Executes on button press in printTreePushButton.
+function printTreePushButton_Callback(hObject, eventdata, handles)
+% hObject    handle to printTreePushButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.defaultsTree.print
 
 
 % Utility Functions
@@ -375,4 +388,5 @@ handles.sensorType = sensorType;
     
 function simpleListener(eventSrc,eventData)
 disp('hello');
+
 

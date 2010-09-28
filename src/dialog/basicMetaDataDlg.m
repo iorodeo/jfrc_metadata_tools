@@ -126,6 +126,12 @@ if handles.defaultsTree.hasValuesNeeded('manual') == false
 end
 
 % Set temperature and humidity values in xml defaults Tree
+try
+    setTemperatureValue(handles.defaultsTree,handles.T);
+    setHumidityValue(handles.defaultsTree,handles.H);
+catch ME
+    disp(ME.message)
+end
 
 % Hint: delete(hObject) closes the figure
 if exitFlag == true
@@ -146,3 +152,43 @@ if length(inPathString) > length('content')
 else
     outPathString = inPathString;
 end
+
+function setNodeValueByName(defaultsTree,name,value)
+% Sets the value of the first occurrence of a node with name=name in defaults 
+% tree handles.defaultsTree,  given value.
+pathString = getPathStringByNodeName(defaultsTree,name);
+try
+    defaultsTree.setValueByPathString(pathString,num2str(value));
+catch ME
+    errmsg = sprintf('error setting value of node %s: %s',pathString,ME.message);
+    errordlg(errmsg,'Set value error');
+end
+
+function setTemperatureValue(defaultsTree, value)
+% Sets the value of the first occurance of a node with name='temperature'
+% in the defaults tree to the given value.
+setNodeValueByName(defaultsTree,'temperature',value);
+
+function setHumidityValue(defaultsTree, value)
+% Sets the value of the first occurance of a node with name='humidity' in the
+% defaults tree to the given value
+setNodeValueByName(defaultsTree, 'humidity', value);
+
+function pathString = getPathStringByNodeName(defaultsTree,name)
+% Returns the path string, of unique names from the root node, to first leaf
+% node with name=name in the given defaults tree.
+rootNode = defaultsTree.root;
+leaves = rootNode.getLeaves();
+test = false;
+for i = 1:length(leaves)
+   leaf = leaves(i);
+   if strcmpi(leaf.name,name)
+       test = true;
+       break;
+   end
+end
+if test == false
+    error('missing attribute unable to fine node with attribute name = %s', name);
+end
+pathString = leaf.getPathString();
+

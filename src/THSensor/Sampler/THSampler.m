@@ -1,5 +1,5 @@
 classdef THSampler < handle
-    % Perdidic sampling of temperature and humidity data using either a
+    % Periodic sampling of temperature and humidity data using either a
     % fake sensor, or the Precon RS232 temperature and humidity sensors.
     %
     % Emits events of type THSampleAcquired to which listeners can be
