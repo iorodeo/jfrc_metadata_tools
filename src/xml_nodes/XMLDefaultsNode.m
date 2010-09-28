@@ -792,7 +792,7 @@ if node.isLeaf()
         case 'time24'
             node.valueValidator = Time24Validator(rangeString);
         case 'integer_list'
-            error('integer_list validator not implemented');
+            node.valueValidator = IntegerListValidator(rangeString);
         otherwise
             error('unkown datatype %s', dataType);
     end

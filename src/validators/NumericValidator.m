@@ -152,7 +152,7 @@ classdef NumericValidator < BaseValidator
             switch self.lowerBoundType
                 case 'inclusive'
                     if valueFloat < self.lowerBound
-                        flag = 'false';
+                        flag = false;
                         msg = 'value less than lower bound';
                         return;
                     end

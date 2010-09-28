@@ -22,7 +22,7 @@ function varargout = dialogExample(varargin)
 
 % Edit the above text to modify the response to help dialogExample
 
-% Last Modified by GUIDE v2.5 28-Sep-2010 15:14:06
+% Last Modified by GUIDE v2.5 28-Sep-2010 15:40:01
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -386,7 +386,5 @@ end
 handles.sensorType = sensorType;
 
     
-function simpleListener(eventSrc,eventData)
-disp('hello');
-
-
+%function simpleListener(eventSrc,eventData)
+%disp('hello');

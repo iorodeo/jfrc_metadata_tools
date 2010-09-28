@@ -127,10 +127,11 @@ end
 
 % Set temperature and humidity values in xml defaults Tree
 try
-    setTemperatureValue(handles.defaultsTree,handles.T);
     setHumidityValue(handles.defaultsTree,handles.H);
+    setTemperatureValue(handles.defaultsTree,handles.T);
 catch ME
-    disp(ME.message)
+    errmsg = sprintf('unable to set value: %s', ME.message);
+    errordlg(errmsg, 'Missing attribute');
 end
 
 % Hint: delete(hObject) closes the figure
@@ -188,7 +189,7 @@ for i = 1:length(leaves)
    end
 end
 if test == false
-    error('missing attribute unable to fine node with attribute name = %s', name);
+    error('missing attribute, %s, unable to find node', name);
 end
 pathString = leaf.getPathString();
 
