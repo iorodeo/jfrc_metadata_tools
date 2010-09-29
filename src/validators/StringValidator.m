@@ -184,6 +184,11 @@ classdef StringValidator < BaseValidator
                     'error loading line names form SAGE, %s', ...
                     ME.message ...
                     );
+                % WBD development -----------------------------------------
+                %dirPath = getMFileDir();
+                %lineNamesFile = sprintf('%slinenames.txt',dirPath);
+                %disp(lineNamesFile);
+                %----------------------------------------------------------
                 self.lineNames = {};
             end
         end
@@ -202,6 +207,11 @@ classdef StringValidator < BaseValidator
                    'error loading effector names from SAGE, %s', ...
                    ME.message ...
                    );
+               % WBD development ------------------------------------------
+               %dirPath = getMFileDir();
+               %effectorsFile = sprintf('%seffectors.txt',dirPath);
+               %disp(effectorsFile);
+               % ----------------------------------------------------------
                self.effectorNames = {};
            end
             
@@ -243,4 +253,12 @@ for i = 1:N
     names{i} = sprintf('effector_%d', i);
 end
 names{N+1} = 'dummyeffector';
+end
+
+% -------------------------------------------------------------------------
+function dirPath = getMFileDir()
+% Returns the directory of the current mfile.
+filePath = mfilename('fullpath');
+sepPos = findstr(filePath,filesep);
+dirPath = filePath(1:sepPos(end));
 end
