@@ -8,7 +8,6 @@ classdef StringValidator < BaseValidator
     end
     
     properties (Hidden)
-        offline = true;
         lineNames;       % Temporary
         effectorNames;   % Temporary
     end
@@ -80,23 +79,13 @@ classdef StringValidator < BaseValidator
                     if isempty(self.lineNames)
                         self.setLineNames();
                     end
-                    if isempty(self.lineNames)
-                        % DUMMY FUNCTION -------------------------
-                        self.allowedStrings = dummyGetLineNames();
-                    else
-                        self.allowedStrings = self.lineNames;
-                    end
+                    self.allowedStrings = self.lineNames;
                     
                 case '$EFFECTOR'
                     if isempty(self.effectorNames)
                         self.setEffectorNames();
                     end
-                    if isempty(self.effectorNames)
-                        % DUMMY FUNCTION -------------------------
-                        self.allowedStrings = dummyGetEffectors();
-                    else
-                        self.allowedStrings = self.effectorNames;
-                    end
+                    self.allowedStrings = self.effectorNames;
                     
                 otherwise
                     error('unknown special case range string');
@@ -170,53 +159,27 @@ classdef StringValidator < BaseValidator
         end
         
         function setLineNames(self)
-            % Test function for pre-loading line names from SAGE.
-            if self.offline == true;
-                self.lineNames = {};
-                return;
-            end
-            % WBD development -----------------------------------------
-            %dirPath = getMFileDir();
-            %lineNamesFile = sprintf('%slinenames.txt',dirPath);
-            %disp(lineNamesFile);
-            %----------------------------------------------------------
+            cacher = SAGEDataCacher();
             try
-                lines = SAGE.Lab('rubin').lines();
-                self.lineNames = {lines.name};
-                size(self.lineNames)
+                self.lineNames = cacher.readLineNamesFile();
             catch ME
-                warning( ...
-                    'StringValidator:getLineNames', ...
-                    'error loading line names form SAGE, %s', ...
+                error( ...
+                    'StringValidator unable to read linenames file: %s', ...
                     ME.message ...
                     );
-                
-                self.lineNames = {};
             end
         end
         
         function setEffectorNames(self)
-            % Test function for preloading effector names from SAGE.
-           if self.offline == true
-               self.effectorNames = {};
-               return;
-           end
-           try
-               terms = SAGE.CV('effector').terms();
-               self.effectorNames = {terms.name};
-           catch ME
-               warning('StringValidator:getEffectorNames', ...
-                   'error loading effector names from SAGE, %s', ...
-                   ME.message ...
-                   );
-               % WBD development ------------------------------------------
-               %dirPath = getMFileDir();
-               %effectorsFile = sprintf('%seffectors.txt',dirPath);
-               %disp(effectorsFile);
-               % ----------------------------------------------------------
-               self.effectorNames = {};
-           end
-            
+            cacher = SAGEDataCacher();
+            try
+                self.effectorNames = cacher.readEffectorsFile();
+            catch ME
+                error( ...
+                    'StringValidator unable to read effectors file: %s', ...
+                    ME.message ...
+                    );
+            end            
         end
     end
 end
