@@ -226,7 +226,7 @@ classdef PropertiesBuilder
             % Returns the maximum allowed list list for the given node data
             % type. 
             dataType = node.getDataType();
-            switch dataType
+            switch lower(dataType)
                 case 'integer'
                     maxListSize = self.integerMaxListSize;
                 case 'string'
