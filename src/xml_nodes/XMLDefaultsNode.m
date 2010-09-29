@@ -84,10 +84,25 @@ classdef XMLDefaultsNode < XMLDataNode
                 hierarchy = true;
             end
             self.setValueValidators(mode);
+            self.checkValues();
             propBuilder = PropertiesBuilder(self,mode,hierarchy);
             properties = propBuilder.getProperties();
         end
         
+        function checkValues(self,replace)
+            % Push non empty values through the value validators for the tree
+            % consisting of the current node and all nodes belowit. If values
+            % do not validate the action takes in determined by the value
+            % of the optional replace argument. If replace is true then
+            % values are replaced using the valueValidators getValidValue
+            % functions otherwise an error is raised.
+            if nargin < 2
+                replace = true;
+            end
+            self.walk(@checkValues,replace);
+        end
+            
+  
         function checkNodes(self)
             % Apply routines which check the structure and values in the
             % tree consiting of the current node and all nodes below it in
@@ -511,6 +526,31 @@ classdef XMLDefaultsNode < XMLDataNode
         
     end
 end % classdef XMLDefaultsNode
+
+
+% -------------------------------------------------------------------------
+function checkValues(node,replace)
+% Check value of current node w.r.t to value validator. If value does not
+% validate the action taken is determined by the value of the replace flag.
+% If the replace flag is true then the value is replaced by one given by
+% the valueValidator getValidValue function otherwise an error is raised.
+if ~isempty(node.value)
+    [~,flag,msg] = node.validateValue(node.value);
+    if flag == false
+        if replace == true
+            node.value = node.getValidValue();
+        else
+            error( ...
+                'unable to validate value, %s, for node %s: %s', ...
+                node.value,...
+                self.getPathString(), ...
+                msg ...
+                );
+        end
+    end
+end
+end
+
 
 % -------------------------------------------------------------------------
 function setNodeValueToDefault(node)
