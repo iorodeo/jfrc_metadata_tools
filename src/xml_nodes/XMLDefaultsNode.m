@@ -94,8 +94,9 @@ classdef XMLDefaultsNode < XMLDataNode
             % consisting of the current node and all nodes belowit. If values
             % do not validate the action takes in determined by the value
             % of the optional replace argument. If replace is true then
-            % values are replaced using the valueValidators getValidValue
-            % functions otherwise an error is raised.
+            % values are replaced using the defaults (if one exists) or by 
+            % a valid value from the getValidValue function.  If replace is
+            % false an error is raised.
             if nargin < 2
                 replace = true;
             end
@@ -533,13 +534,25 @@ function checkValues(node,replace)
 % Check value of current node w.r.t to value validator. If value does not
 % validate the action taken is determined by the value of the replace flag.
 % If the replace flag is true then the value is replaced by one given by
-% the valueValidator getValidValue function otherwise an error is raised.
+% the default value (if it exists) or by a value from the the valueValidator 
+% getValidValue function. If the replace flag is false an error is raised.
 if ~isempty(node.value)
+    % Check to see if value validates
     [~,flag,msg] = node.validateValue(node.value);
     if flag == false
+        % Value doesn't validate
         if replace == true
-            node.value = node.getValidValue();
+            % Try to replace value with default or with valid value from
+            % getValid value function.
+            default = node.getDefaultValue();
+            [default, flag, ~] = node.validateValue(default);
+            if flag == false || isempty(default)
+                node.value = node.getValidValue();
+            else
+                node.value = default;
+            end
         else
+            % Replace is false - raise and error.
             error( ...
                 'unable to validate value, %s, for node %s: %s', ...
                 node.value,...
