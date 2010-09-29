@@ -135,7 +135,7 @@ classdef XMLDataNode < handle
             % functions. In addition to xmlStruct the name of the current
             % node is also returned.
             
-            disp([self.indent, self.name]);
+            %disp([self.indent, self.name]);
             
             % Ensure that children have been given unique names.
             if self.numChildren ~= length(self.uniqueChildNames)

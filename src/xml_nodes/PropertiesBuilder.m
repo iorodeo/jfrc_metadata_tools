@@ -12,7 +12,12 @@ classdef PropertiesBuilder
         defaultsTree = XMLDefaultsNode.empty();
         mode = 'basic';
         hierarchy = true;
-        maxListSize = 10000;
+    end
+    
+    properties (Constant, Hidden)
+        integerMaxListSize = 100;
+        stringMaxListSize = 10000;
+        otherMaxListSize = 1000;
     end
    
     methods
@@ -152,12 +157,13 @@ classdef PropertiesBuilder
             end
         end
         
-        function properties = getPropertiesList(self, node,name,displayName)
+        function properties = getPropertiesList(self,node,name,displayName)
            % Get JIDE grid properties - make list of values if number 
            % of values is less than maxListSize     
             numValues = node.valueValidator.getNumValues();
             readOnly = node.getReadOnly(self.mode);
-            if numValues < self.maxListSize
+            maxListSize = self.getMaxListSize(node);
+            if numValues < maxListSize
                 % Make drop down list of values
                 valueArray = node.valueValidator.getValues(); 
                 if length(valueArray) == 1
@@ -214,6 +220,20 @@ classdef PropertiesBuilder
                 'ReadOnly', node.getReadOnly(self.mode), ...
                 'Description', node.getValueDescription() ...
                 );
+        end
+        
+        function maxListSize = getMaxListSize(self,node)
+            % Returns the maximum allowed list list for the given node data
+            % type. 
+            dataType = node.getDataType();
+            switch dataType
+                case 'integer'
+                    maxListSize = self.integerMaxListSize;
+                case 'string'
+                    maxListSize = self.stringMaxListSize;
+                otherwise
+                    maxListSize = self.otherMaxListSize;
+            end
         end
        
     end   
