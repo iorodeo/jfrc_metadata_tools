@@ -175,20 +175,22 @@ classdef StringValidator < BaseValidator
                 self.lineNames = {};
                 return;
             end
+            % WBD development -----------------------------------------
+            %dirPath = getMFileDir();
+            %lineNamesFile = sprintf('%slinenames.txt',dirPath);
+            %disp(lineNamesFile);
+            %----------------------------------------------------------
             try
                 lines = SAGE.Lab('rubin').lines();
                 self.lineNames = {lines.name};
+                size(self.lineNames)
             catch ME
                 warning( ...
                     'StringValidator:getLineNames', ...
                     'error loading line names form SAGE, %s', ...
                     ME.message ...
                     );
-                % WBD development -----------------------------------------
-                %dirPath = getMFileDir();
-                %lineNamesFile = sprintf('%slinenames.txt',dirPath);
-                %disp(lineNamesFile);
-                %----------------------------------------------------------
+                
                 self.lineNames = {};
             end
         end
@@ -255,10 +257,4 @@ end
 names{N+1} = 'dummyeffector';
 end
 
-% -------------------------------------------------------------------------
-function dirPath = getMFileDir()
-% Returns the directory of the current mfile.
-filePath = mfilename('fullpath');
-sepPos = findstr(filePath,filesep);
-dirPath = filePath(1:sepPos(end));
-end
+

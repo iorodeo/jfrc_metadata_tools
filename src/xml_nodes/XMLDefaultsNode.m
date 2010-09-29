@@ -1,4 +1,4 @@
-classdef XMLDefaultsNode < XMLDataNode
+ classdef XMLDefaultsNode < XMLDataNode
     % Encapsulates a node or element of an defaults data XML file. The
     % nodes can be used to create a tree based on the structure of the
     % defaults file. 
