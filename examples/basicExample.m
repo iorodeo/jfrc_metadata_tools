@@ -33,8 +33,7 @@ fig = figure( ...
 
 % Create JIDE PropertyGrid and display defaults data in figure
 pgrid = PropertyGrid(fig,'Position', [0 0 1 1]);
-pgrid.setDefaultsTree(defaultsTree);
-pgrid.setMode('advanced');
+pgrid.setDefaultsTree(defaultsTree, 'advanced');
 
 % Block unit figure is destroyed
 uiwait(fig);
