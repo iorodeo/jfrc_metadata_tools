@@ -5,11 +5,12 @@ classdef StringValidator < BaseValidator
     
     properties
         allowedStrings = '';
+        rangeType = 'none';
     end
     
     properties (Hidden)
-        lineNames;       % Temporary
-        effectorNames;   % Temporary
+        lineNames;       
+        effectorNames;   
     end
     
     methods
@@ -25,7 +26,8 @@ classdef StringValidator < BaseValidator
             % Parse range string to get cell array of allowed strings.
             if isempty(rangeString)
                 % Range String is empty - this means allow anything.
-                self.allowedStrings = '';     
+                self.allowedStrings = '';   
+                self.rangeType = 'none';
             else
                 % Based on first character of range string determine is this is
                 % a list of stings or a special case
@@ -43,6 +45,7 @@ classdef StringValidator < BaseValidator
         function setRangeSelectList(self,rangeString)
             % Parse range string for assuming it is a list of strings 
             % speparated by commas.
+            self.rangeType = 'selectList';
             if isempty(rangeString)
                 self.allowedStrings = '';
             end
@@ -89,7 +92,8 @@ classdef StringValidator < BaseValidator
                     
                 otherwise
                     error('unknown special case range string');
-            end         
+            end 
+            self.rangeType = rangeString;
         end
         
         function [value, flag, msg] = validationFunc(self,value)

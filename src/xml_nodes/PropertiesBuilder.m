@@ -1,4 +1,4 @@
-classdef PropertiesBuilder
+classdef PropertiesBuilder < handle
     % Class for Creating a JIDE property grid from a default data xml tree.
     %
     % Note, currently the JIDE grid will be broken with the option
@@ -18,6 +18,12 @@ classdef PropertiesBuilder
         integerMaxListSize = 100;
         stringMaxListSize = 10000;
         otherMaxListSize = 1000;
+    end
+    
+    properties (Access = private)
+       % Used to cache linename property types. As the number of linenames 
+       % can be pretty big, 7000+,  this helps speed things up a bit 
+       lineNameTypeCache = [];                        
     end
    
     methods
@@ -67,6 +73,7 @@ classdef PropertiesBuilder
             % Gets the properties for JIDE Property Grid for given node and
             % all its children for the specified mode string = 'basic' or
             % 'advanced'
+            %disp([node.indent,node.name]);
             if node.isLeaf() == true
                 % Handle nodes which are leaves of the tree
                 properties = self.getLeafProperties(node);
@@ -147,13 +154,70 @@ classdef PropertiesBuilder
         function properties = getPropertiesByType(self,node,name,displayName)
             % Get JIDE grid properties based on leaf node datatype
             % Node is set to appear
-            switch lower(node.getDataType())         
-                case {'string', 'float', 'integer', 'datetime'}
+            switch lower(node.getDataType())    
+                case 'string'
+                    properties = self.getPropertiesString(node,name,displayName);
+                case {'float', 'integer', 'datetime'}
                     properties = self.getPropertiesList(node,name,displayName); 
                 case 'time24'
                     properties = self.getPropertiesBasic(node,name,displayName);
                 otherwise
                     properties = self.getPropertiesBasic(node,name,displayName);     
+            end
+        end
+        
+        function properties = getPropertiesString(self,node,name,displayName)
+            % Get JIDE grid properties for string types - make list of values 
+            % if number of values is less than maxListSize. Provides
+            % caching for linenames. 
+            numValues = node.valueValidator.getNumValues();
+            readOnly = node.getReadOnly(self.mode);
+            maxListSize = self.getMaxListSize(node);
+
+            if numValues < maxListSize
+
+                valueArray = node.valueValidator.getValues();
+                if length(valueArray) == 1
+                    % If only one value set readonly to true.
+                    readOnly = true;
+                end
+                
+                % Get property type 
+                if strcmpi(node.valueValidator.rangeType,'$LINENAME')
+                    % If is linename validator use cached value of
+                    % properties if possible. 
+                    if isempty(self.lineNameTypeCache)
+                        propType = PropertyType('char','row',valueArray);
+                        self.lineNameTypeCache = propType;
+                    else
+                        propType = self.lineNameTypeCache;
+                    end
+                else
+                    % Not a linename validator - just create proptery type 
+                    % as usual
+                    propType = PropertyType('char','row',valueArray);      
+                end
+               
+                properties = PropertyGridField( ...
+                    name, node.value, ...
+                    'Type', propType, ...
+                    'Category', node.root.name, ...
+                    'DisplayName', displayName, ...
+                    'ReadOnly', readOnly, ...
+                    'Description', node.getValueDescription() ...
+                    );        
+             
+            else
+                
+                properties = PropertyGridField( ...
+                    name, {node.value, ''}, ...
+                    'Category', node.root.name, ...
+                    'DisplayName', displayName, ...
+                    'ReadOnly', readOnly, ...
+                    'Description', node.getValueDescription() ...
+                    );
+                
+                
             end
         end
         
@@ -163,14 +227,18 @@ classdef PropertiesBuilder
             numValues = node.valueValidator.getNumValues();
             readOnly = node.getReadOnly(self.mode);
             maxListSize = self.getMaxListSize(node);
-            if numValues < maxListSize
-                % Make drop down list of values
-                valueArray = node.valueValidator.getValues(); 
+            
+            if numValues < maxListSize 
+               
+                valueArray = node.valueValidator.getValues();  
                 if length(valueArray) == 1
                     % If only one value set readonly to true.
                     readOnly = true;
                 end
+                
+                % Create property type.
                 propType = PropertyType('char','row',valueArray);
+               
                 properties = PropertyGridField( ...
                     name, node.value, ...
                     'Type', propType, ...
@@ -235,6 +303,6 @@ classdef PropertiesBuilder
                     maxListSize = self.otherMaxListSize;
             end
         end
-       
+               
     end   
 end % classdef PropertiesBuilder

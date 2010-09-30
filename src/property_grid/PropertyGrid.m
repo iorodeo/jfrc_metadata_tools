@@ -128,9 +128,13 @@ classdef PropertyGrid < UIControl
             self.assignProperties(properties);
         end
         
-        function setDefaultsTree(self,defaultsTree)
+        function setDefaultsTree(self,defaultsTree,mode)
             % Set the defaults tree and then assign properties.
+            if nargin < 3
+                mode = 'basic';
+            end
             self.defaultsTree = defaultsTree;
+            self.mode = mode;
             properties = self.defaultsTree.getPGridProperties( ... 
                 self.mode, ...
                 self.hierarchy ...
