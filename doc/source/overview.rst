@@ -5,12 +5,12 @@ Overview
 The metadata tools package provides a unified software interface for defining,
 handling, and saving metadata. 
 
-Metadata are defined using an XML based defaults file. This file describes the
-all values in the metadata. It sets criteria for the allowed values, determines
-how and whether the data is displayed in the manual entry dialog based on the
+Metadata are defined using an XML based defaults file. This file describes all
+values in the metadata. It sets criteria for the allowed values, determines how
+and whether the data is displayed in the manual entry dialog based on the
 operating mode, sets whether or not a nonempty value is required for a
-particular metadata entry, and provides the control software with clues as 
-to how this data is to be obtained.
+particular metadata entry, and provides the control software with clues as to
+how this data is to be obtained.
 
 The software interface provides functions for loading the defaults file into
 memory as a defaults tree. The defaults tree can then be queried to determine

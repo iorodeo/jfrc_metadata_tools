@@ -1,1 +1,7 @@
-To do ... some instructions etc.
+Installation instructions
+---------------------------
+
+To install jfrc_metadata_tools add the src directory and all subdirectories to
+the Matlab path. 
+
+
