@@ -26,7 +26,7 @@
 % primitive types (logicals, integers, real/complex double/single) as well
 % as cell arrays of strings, structures, and both value and handle MatLab
 % objects with arbitrary level of nesting.
-%
+
 % If a property is selected use F1 to get help (a dialog is displayed with
 % the help text of the property) or F2 to edit a numeric matrix in a pop-up
 % dialog.
@@ -70,6 +70,10 @@ classdef PropertyGrid < UIControl
         Fields = JidePropertyGridField.empty(1,0);
         % The MatLab structure or object bound to the property grid.
         BoundItem = [];
+        
+        % function that executes whenever there is a property change
+        % added by KB
+        PropertyChangeCallback = '';
     end
     methods
         
@@ -140,6 +144,51 @@ classdef PropertyGrid < UIControl
                 self.hierarchy ...
                 );
             self.assignProperties(properties);
+        end
+
+        % pgrid.setValueByPathString(pathString,value)
+        %
+        % Sets the value of the field corresponding to pathString in the
+        % defaultsTree to the input value in such a way that the property
+        % grid reflects this change
+        %
+        % Added by KB
+        %
+        function setValueByPathString(self,pathString,value)
+          
+          field = self.Fields.FindByName(pathString);
+          if ~isempty(field),
+            if iscell(field.Value),
+              value = StringToCell(value);
+            end
+            field.Value = value;
+            self.UpdateField(pathString);
+            self.Table.repaint();
+          end
+          
+        end
+        
+        % pgrid.getSelectedProperty()
+        %
+        % Returns the pathString of the field selected in the property
+        % grid.
+        %
+        % added by KB
+        function name = getSelectedProperty(self)
+            name = PropertyGrid.GetSelectedProperty(self.Table);
+
+        end
+        
+        % pgrid.setPropertyChangeCallback(f)
+        %
+        % Set a function that executes whenever the properties in the
+        % property grid are modified. Set to '' to have no callback. 
+        %
+        % added by KB
+        function setPropertyChangeCallback(self,f)
+          
+          self.PropertyChangeCallback = f;
+          
         end
         
         function assignProperties(self,properties)
@@ -428,6 +477,17 @@ classdef PropertyGrid < UIControl
             field.Value = value;
             % -------------------------------------------------------------
             self.UpdateField(name);    
+            
+            % execute the settable property chance callback
+            % added by KB
+            if ~isempty(self.PropertyChangeCallback),
+              try
+                feval(self.PropertyChangeCallback);
+              catch ME
+                warning('Error executing PropertyChangeCallback: %s. Disabling',getReport(ME,'basic','hyperlinks','off'));
+                self.PropertyChangeCallback = '';
+              end
+            end
         end
     end
 end

@@ -97,6 +97,11 @@ function opendDialogPushButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 disp('open dialog')
+
+% Disable button so that a second dialog can't be started
+set(handles.opendDialogPushButton,'Enable','off');
+
+% Create dialog
 dialogHdl = basicMetaDataDlg(handles.defaultsTree,handles.mode);
 
 % Set up temperature and humidity sensing
@@ -119,6 +124,9 @@ uiwait(dialogHdl);
 % Stop sensor and delete
 sampler.stop();
 delete(sampler);
+
+% Re-enable button
+set(handles.opendDialogPushButton,'Enable', 'on');
 
 % Update handles structure - this is required because handles.defaultsTree
 % had changed.  
