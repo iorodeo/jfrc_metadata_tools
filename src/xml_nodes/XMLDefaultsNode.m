@@ -108,9 +108,11 @@
             % Apply routines which check the structure and values in the
             % tree consiting of the current node and all nodes below it in
             % the tree.
+            checkSessions(self);
             self.walk(@checkNode);
         end
         
+
         function write(self,filename,savelast)
             % Writes the tree containing the current node and all nodes below 
             % it to an xml file. The optional argument savelast determines
@@ -816,6 +818,55 @@ try
     validatestring(mode,allowedModes);
 catch ME
     error('unkown mode string %s: %s', mode, ME.message);
+end
+end
+
+% -------------------------------------------------------------------------
+function checkSessions(node)
+% Checks, for the tree consisting of the current node and all nodes
+% below it, that sessions elements are not nested and that the tree
+% structure beneath each session element has the same structure.
+
+% Check that all session elements have the same depth
+childSessions = node.getNodesWithName('session');  
+if isempty(childSessions)
+    return;
+end
+
+if strcmpi(node.name, 'session') 
+    error('defaults tree contains nested session elements');
+end
+
+for i = 2:length(childSessions)
+    if childSessions(i).depth ~= childSessions(1).depth
+        error('defaults tree contains nested session elements');
+    end
+end
+
+if length(childSessions) > 1
+    % Check that the subtree below all session elements has the same
+    % structure.
+    child_1 = childSessions(1);
+    for i = 2:length(childSessions)
+        child_i = childSessions(i);
+        checkSessionTrees(child_1, child_i);
+    end
+end
+end
+
+% -------------------------------------------------------------------------
+function flag = checkSessionTrees(node1, node2)
+% Compares the tree structures below nodes 1 and 2 to see if they are
+% identical. Returns true if they are and false if they are not.
+flag = true;
+if ~isequal(node1.uniqueChildNames, node2.uniqueChildNames)
+    flag = false;
+    error('defaults tree contains session elements whose subtrees do not have identical structure'); 
+end
+for i = 1:length(node1.children)
+    node1Child = node1.children(i);
+    node2Child = node2.children(i);
+    checkSessionTrees(node1Child,node2Child);
 end
 end
 

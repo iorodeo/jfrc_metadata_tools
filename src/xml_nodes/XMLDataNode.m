@@ -448,13 +448,29 @@ classdef XMLDataNode < handle
         end
         
         function walk(self, fhandle, varargin)
-            % Walks tree in depth first manner apply function fhandle to
+            % Walks tree in depth first manner applying function fhandle to
             % each node in the tree below and including the current node.
             fhandle(self,varargin{:});
             for i=1:self.numChildren
                 child = self.children(i);
                 child.walk(fhandle,varargin{:});
             end
+        end
+        
+        function nodesWithName = getNodesWithName(self,name)
+           % Returns an object array containing all nodes with the given
+           % name in the tree consisting of the current node and all nodes
+           % below it. 
+           if strcmpi(self.name,name)
+               nodesWithName = self;
+           else
+               nodesWithName = self.createEmptyNode();
+           end
+           
+           for i = 1:length(self.children)
+              child = self.children(i);
+              nodesWithName = [nodesWithName, child.getNodesWithName(name)];
+           end
         end
         
         function write(self,filename)
