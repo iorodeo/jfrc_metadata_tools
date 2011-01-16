@@ -482,7 +482,7 @@ classdef PropertyGrid < UIControl
             % added by KB
             if ~isempty(self.PropertyChangeCallback),
               try
-                feval(self.PropertyChangeCallback);
+                feval(self.PropertyChangeCallback,name);
               catch ME
                 warning('Error executing PropertyChangeCallback: %s. Disabling',getReport(ME,'basic','hyperlinks','off'));
                 self.PropertyChangeCallback = '';

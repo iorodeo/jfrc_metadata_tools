@@ -313,8 +313,6 @@ handles.defaultsTree.print
 
 % Utility Functions
 % -------------------------------------------------------------------------
-
-% -------------------------------------------------------------------------
 function setCurrentFileText(handles,value)
 % Set value of current file text
 text = sprintf('%s', value);
