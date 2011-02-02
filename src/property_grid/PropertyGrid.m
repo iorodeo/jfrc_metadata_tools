@@ -164,8 +164,20 @@ classdef PropertyGrid < UIControl
             field.Value = value;
             self.UpdateField(pathString);
             self.Table.repaint();
+            
+            % Check if this genotype element - need to  the value of genotype 
+            % content differently.
+            node = self.defaultsTree.getNodeByPathString(pathString);
+            
+            if node.isContentNode() == true
+                % Special case for content node (as there value is
+                % stored in the content element below them.
+                childNode = node.children(1);
+                % Assign value and pass through validator
+                node.value = '';
+                childNode.value = var2str(value);
+            end
           end
-          
         end
         
         % pgrid.getSelectedProperty()
