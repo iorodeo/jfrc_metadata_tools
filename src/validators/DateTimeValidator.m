@@ -308,7 +308,8 @@ end
 function floatString = dateStringToFloatString(dateString,format)
 % Converts a date string to a float string
 dateNumber = dateStringToDateNumber(dateString,format);
-floatString = num2str(dateNumber);
+% modified by KB: increased precision
+floatString = num2str(dateNumber,20);
 end
 
 % -------------------------------------------------------------------------
