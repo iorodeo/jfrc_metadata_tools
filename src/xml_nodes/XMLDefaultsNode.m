@@ -74,6 +74,38 @@
            self.setValuesToDefaults();
         end
         
+        function setValuesFromMetaData(self,metaDataTree)
+            % Attempts to set defaults tree values form values in metadata.
+            % Note the metadata tree must be an xml file generated from the
+            % defaults tree using createXMLMeta data for have the structure
+            % of one that was - otherwise an error will occur. Value which
+            % cannot be set - which don't validate - are not set.
+            for i=1:metaDataTree.numChildren           
+                metaDataChild = metaDataTree.children(i);
+                pathString = metaDataChild.getPathString();
+                defaultsChild = self.getNodeByPathString(pathString);
+                %disp([metaDataChild.indent, pathString])
+                if defaultsChild.isContentNode() == true
+                    childValue = metaDataChild.getContent();
+                    contentPath = [pathString,'.', 'content'];
+                    try
+                        defaultsChild.setValueByPathString(contentPath,childValue); 
+                    end
+                else
+                    for j = 1:metaDataChild.numAttribute
+                        attribName = metaDataChild.attributeNames{j};
+                        %disp([metaDataChild.indent, '  A:', attribName])
+                        childValue = metaDataChild.attribute.(attribName);
+                        attribPath = [pathString, '.', attribName];
+                        try
+                            defaultsChild.setValueByPathString(attribPath, childValue);
+                        end      
+                    end
+                end
+                defaultsChild.setValuesFromMetaData(metaDataChild);
+            end
+        end
+        
         function properties = getPGridProperties(self,mode,hierarchy)
             % Gets the array of properties used by the PropertyGrid class for 
             % creating the JIDE grid table display.

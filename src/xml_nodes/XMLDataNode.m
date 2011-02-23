@@ -241,6 +241,10 @@ classdef XMLDataNode < handle
             self.content = value;
         end
         
+        function content = getContent(self)
+            content = self.content;
+        end
+        
         function rmContent(self)
             % Deletes the nodes content.
             self.content = [];
