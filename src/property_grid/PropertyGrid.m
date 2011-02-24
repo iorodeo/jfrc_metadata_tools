@@ -176,6 +176,11 @@ classdef PropertyGrid < UIControl
                 % Assign value and pass through validator
                 node.value = '';
                 childNode.value = var2str(value);
+            else
+			  % added by KB: if we are going to set content node values, 
+		      % we should also set non-content node values
+              % Assign node values
+              node.value = value;
             end
           end
         end
