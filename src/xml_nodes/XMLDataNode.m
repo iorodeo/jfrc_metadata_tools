@@ -420,7 +420,7 @@ classdef XMLDataNode < handle
         
         function node = getNodeByRelPath(self,path)
             % Get a node below the current node in the tree specified by a list of 
-            % unique names relative to that node.       
+            % unique names relative to that node.    
             if isempty(path)
                 node = self;
                 return;

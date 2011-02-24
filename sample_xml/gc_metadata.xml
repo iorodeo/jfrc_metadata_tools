@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<experiment assay="Gap Crossing" computer="" exp_datetime="" experimenter="triphant" protocol="EP0001.xml">
+<experiment assay="Gap Crossing" computer="" exp_datetime="" experimenter="korffw" protocol="EP0001.xml">
   <session disk_id="5" rig="">
     <flies count="10" cross_date="2011-01-26T00:00:00" effector="GFP" gender="m" hours_starved="24" line="rubin">
       <genotype>bob</genotype>
