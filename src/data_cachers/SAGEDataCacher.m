@@ -3,6 +3,7 @@ classdef SAGEDataCacher < handle
     properties (Constant)
         labs = {'rubin'};
         lineNamesFile = 'linenames.txt';
+        lineNamesMonthlyFile = 'linenames_monthly.txt';
         effectorsFile = 'effectors.txt';
         dataDir = 'data';
         sourceFileDepth = 2;
@@ -14,6 +15,12 @@ classdef SAGEDataCacher < handle
             % Read line names file in data directory. 
             filePath = self.getLineNamesFilePath();
             lineNames = cellFromTextFile(filePath);
+        end
+        
+        function lineNamesMonthly = readLineNamesMonthlyFile(self)
+            % Read the monthly line names file in the data directory
+            filePath = self.getLineNamesMonthlyFilePath();
+            lineNamesMonthly = cellFromTextFile(filePath);
         end
         
         function effectorNames = readEffectorsFile(self)
@@ -57,6 +64,13 @@ classdef SAGEDataCacher < handle
             % this project. 
             dirPath = self.getDataDirPath();
             filePath = [dirPath, self.lineNamesFile];
+        end
+        
+        function filePath = getLineNamesMonthlyFilePath(self)
+            % Get the full path to the monthly line names file in the data
+            % directory. 
+            dirPath = self.getDataDirPath();
+            filePath = [dirPath, self.lineNamesMonthlyFile];
         end
         
         function dirPath = getDataDirPath(self)

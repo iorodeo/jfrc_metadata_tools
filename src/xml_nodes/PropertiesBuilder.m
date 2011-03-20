@@ -16,7 +16,7 @@ classdef PropertiesBuilder < handle
     
     properties (Constant, Hidden)
         integerMaxListSize = 100;
-        stringMaxListSize = 10000;
+        stringMaxListSize = 100;
         otherMaxListSize = 1000;
     end
     
@@ -155,7 +155,7 @@ classdef PropertiesBuilder < handle
             % Get JIDE grid properties based on leaf node datatype
             % Node is set to appear
             switch lower(node.getDataType())    
-                case 'string'
+                case {'string', 'autoselect_string'}
                     properties = self.getPropertiesString(node,name,displayName);
                 case {'float', 'integer', 'datetime'}
                     properties = self.getPropertiesList(node,name,displayName); 
@@ -167,70 +167,100 @@ classdef PropertiesBuilder < handle
         end
         
         function properties = getPropertiesString(self,node,name,displayName)
-            % Get JIDE grid properties for string types - make list of values 
+            % Get JIDE grid properties for string types - make list of values
             % if number of values is less than maxListSize. Provides
-            % caching for linenames. 
+            % caching for linenames.
             numValues = node.valueValidator.getNumValues();
             readOnly = node.getReadOnly(self.mode);
             maxListSize = self.getMaxListSize(node);
-
-            if numValues < maxListSize
-
-                valueArray = node.valueValidator.getValues();
-                if length(valueArray) == 1
-                    % If only one value set readonly to true.
-                    readOnly = true;
-                end
-                
-                % Get property type 
-                if strcmpi(node.valueValidator.rangeType,'$LINENAME')
-                    % If is linename validator use cached value of
-                    % properties if possible. 
-                    if isempty(self.lineNameTypeCache)
-                        propType = PropertyType('char','row',valueArray);
-                        self.lineNameTypeCache = propType;
-                    else
-                        propType = self.lineNameTypeCache;
-                    end
-                else
-                    % Not a linename validator - just create proptery type 
-                    % as usual
-                    propType = PropertyType('char','row',valueArray);      
-                end
-               
+           
+            if (node.valueValidator.autoSelect == true)
+            
+                % Autoselect is set to on - use it
                 properties = PropertyGridField( ...
-                    name, node.value, ...
-                    'Type', propType, ...
+                    name, node.value,  ...
                     'Category', node.root.name, ...
                     'DisplayName', displayName, ...
                     'ReadOnly', readOnly, ...
-                    'Description', node.getValueDescription() ...
-                    );        
-             
+                    'Description', node.getValueDescription(), ...
+                    'AutoSelect', true ...
+                    );
             else
                 
-                properties = PropertyGridField( ...
-                    name, {node.value, ''}, ...
-                    'Category', node.root.name, ...
-                    'DisplayName', displayName, ...
-                    'ReadOnly', readOnly, ...
-                    'Description', node.getValueDescription() ...
-                    );
+                % Auto select is not set - use dropdown list if possible
                 
-                
+                if numValues < maxListSize
+                    
+                    valueArray = node.valueValidator.getValues();
+                    if length(valueArray) == 1
+                        % If only one value set readonly to true.
+                        readOnly = true;
+                    end
+                    
+                    if strcmpi(node.valueValidator.rangeType,'$LINENAME')
+                        disp(node.valueValidator.rangeType)
+                        % If is linename validator use cached value of
+                        % properties if possible.
+                        % -----------------------------------------------------
+                        % Linename caching - this is old - should be superceded
+                        % by use of autoselect. Will require some testing.
+                        % -----------------------------------------------------
+                        if isempty(self.lineNameTypeCache)
+                            propType = PropertyType('char','row',valueArray);
+                            self.lineNameTypeCache = propType;
+                        else
+                            propType = self.lineNameTypeCache;
+                        end
+                    else
+                        % Not a linename validator - just create proptery type
+                        % as usual
+                        propType = PropertyType('char','row',valueArray);
+                    end
+                    
+                    properties = PropertyGridField( ...
+                        name, node.value, ...
+                        'Type', propType, ...
+                        'Category', node.root.name, ...
+                        'DisplayName', displayName, ...
+                        'ReadOnly', readOnly, ...
+                        'Description', node.getValueDescription() ...
+                        );
+                    
+                else
+                    
+                    if numValues == Inf
+                        % Use text edit window - any value allowed
+                        properties = PropertyGridField( ...
+                            name, {node.value, ''}, ...
+                            'Category', node.root.name, ...
+                            'DisplayName', displayName, ...
+                            'ReadOnly', readOnly, ...
+                            'Description', node.getValueDescription() ...
+                            );
+                    else
+                        % List is too large for drop down list - use autoselect
+                        properties = PropertyGridField(name, node.value,  ...
+                            'Category', node.root.name, ...
+                            'DisplayName', displayName, ...
+                            'ReadOnly', readOnly, ...
+                            'Description', node.getValueDescription(), ...
+                            'AutoSelect', true ...
+                            );
+                    end
+                end
             end
         end
-        
+            
         function properties = getPropertiesList(self,node,name,displayName)
-           % Get JIDE grid properties - make list of values if number 
-           % of values is less than maxListSize     
+            % Get JIDE grid properties - make list of values if number
+            % of values is less than maxListSize
             numValues = node.valueValidator.getNumValues();
             readOnly = node.getReadOnly(self.mode);
             maxListSize = self.getMaxListSize(node);
             
-            if numValues < maxListSize 
-               
-                valueArray = node.valueValidator.getValues();  
+            if numValues < maxListSize
+                
+                valueArray = node.valueValidator.getValues();
                 if length(valueArray) == 1
                     % If only one value set readonly to true.
                     readOnly = true;
@@ -238,7 +268,7 @@ classdef PropertiesBuilder < handle
                 
                 % Create property type.
                 propType = PropertyType('char','row',valueArray);
-               
+                
                 properties = PropertyGridField( ...
                     name, node.value, ...
                     'Type', propType, ...
@@ -246,7 +276,7 @@ classdef PropertiesBuilder < handle
                     'DisplayName', displayName, ...
                     'ReadOnly', readOnly, ...
                     'Description', node.getValueDescription() ...
-                    );        
+                    );
             else
                 % Don't make drop down list
                 switch class(node.valueValidator)
@@ -292,7 +322,7 @@ classdef PropertiesBuilder < handle
         
         function maxListSize = getMaxListSize(self,node)
             % Returns the maximum allowed list list for the given node data
-            % type. 
+            % type.
             dataType = node.getDataType();
             switch lower(dataType)
                 case 'integer'
@@ -303,6 +333,6 @@ classdef PropertiesBuilder < handle
                     maxListSize = self.otherMaxListSize;
             end
         end
-               
-    end   
+        
+    end
 end % classdef PropertiesBuilder

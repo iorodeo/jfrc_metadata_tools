@@ -6,20 +6,33 @@ classdef StringValidator < BaseValidator
     properties
         allowedStrings = '';
         rangeType = 'none';
+        autoSelect = false;
     end
     
     properties (Hidden)
-        lineNames;       
-        effectorNames;   
+        % WBD - old caching method
+        % ------------------------------
+        %lineNames;       
+        %effectorNames;   
     end
-    
+   
     methods
         
-        function self = StringValidator(rangeString)
+        function self = StringValidator(rangeString,autoSelect)
             % Class constructor.
             if nargin > 0
                 self.setRange(rangeString);
             end
+            if nargin > 1
+                self.autoSelect = autoSelect;
+            else
+                self.autoSelect = false;
+            end
+        end
+        
+        function set.autoSelect(self,value)
+            %fprintf('setting autoSelect, old %d, new %d, %s\n',self.autoSelect, value, self.rangeType); 
+            self.autoSelect = value;
         end
         
         function setRange(self,rangeString)
@@ -79,16 +92,42 @@ classdef StringValidator < BaseValidator
                     self.allowedStrings = dummyGetLDAP();
                     
                 case '$LINENAME'
-                    if isempty(self.lineNames)
+                    lineNames = StringValidator.lineNamesCache('get');
+                    if isempty(lineNames)
                         self.setLineNames();
+                        lineNames = StringValidator.lineNamesCache('get');
                     end
-                    self.allowedStrings = self.lineNames;
+                    self.allowedStrings = lineNames;
+                    
+                    % WBD - old caching method
+                    % ---------------------------------
+                    %if isempty(self.lineNames)
+                    %    self.setLineNames();
+                    %end
+                    %self.allowedStrings = self.lineNames;
+                    
+                case '$LINENAME_MONTHLY'
+                    lineNamesMonthly = StringValidator.lineNamesMonthlyCache('get');
+                    if isempty(lineNamesMonthly)
+                       self.setLineNamesMonthly();
+                       lineNamesMonthly = StringValidator.lineNamesMonthlyCache('get');
+                    end
+                    self.allowedStrings = lineNamesMonthly;
                     
                 case '$EFFECTOR'
-                    if isempty(self.effectorNames)
+                    effectorNames = StringValidator.effectorNamesCache('get');
+                    if isempty(effectorNames)
                         self.setEffectorNames();
+                        effectorNames = StringValidator.effectorNamesCache('get');
                     end
-                    self.allowedStrings = self.effectorNames;
+                    self.allowedStrings = effectorNames;
+                    
+                    % WBD - old caching method
+                    % -------------------------------------
+                    %if isempty(self.effectorNames)
+                    %    self.setEffectorNames();
+                    %end
+                    %self.allowedStrings = self.effectorNames;
                     
                 otherwise
                     error('unknown special case range string');
@@ -165,26 +204,87 @@ classdef StringValidator < BaseValidator
         function setLineNames(self)
             cacher = SAGEDataCacher();
             try
-                self.lineNames = cacher.readLineNamesFile();
+                % WBD - old caching method
+                % --------------------------------------------
+                %self.lineNames = cacher.readLineNamesFile();
+                lineNames = cacher.readLineNamesFile();  
             catch ME
                 error( ...
                     'StringValidator unable to read linenames file: %s', ...
                     ME.message ...
                     );
             end
+            StringValidator.lineNamesCache('set', lineNames);
+        end
+        
+        function setLineNamesMonthly(self)
+            cacher = SAGEDataCacher();
+            try
+                lineNamesMonthly = cacher.readLineNamesMonthlyFile();
+            catch ME
+                error( ...
+                    'StringValidator unable to read monthly linenames file: %s', ...
+                    ME.message ...
+                    );
+            end
+            StringValidator.lineNamesMonthlyCache('set', lineNamesMonthly);   
         end
         
         function setEffectorNames(self)
             cacher = SAGEDataCacher();
             try
-                self.effectorNames = cacher.readEffectorsFile();
+                % WBD - old caching method
+                % -----------------------------------------------
+                %self.effectorNames = cacher.readEffectorsFile();
+                effectorNames = cacher.readEffectorsFile();     
             catch ME
                 error( ...
                     'StringValidator unable to read effectors file: %s', ...
                     ME.message ...
                     );
-            end            
+            end   
+            StringValidator.effectorNamesCache('set', effectorNames);
         end
+    end
+    
+    methods (Static)
+        
+        function rval = lineNamesCache(cmd, newLineNames)
+            % Provides a cache for the linenames
+            persistent lineNames;
+            rval = [];
+            switch lower(cmd)
+                case 'get'
+                    rval = lineNames;
+                case 'set'
+                    lineNames = newLineNames;
+            end
+        end
+        
+        function rval = lineNamesMonthlyCache(cmd, newLineNamesMonthly)
+           % Provides a cache for monthly line names
+           persistent lineNamesMonthly;
+           rval = [];
+           switch lower(cmd)
+               case 'get'
+                   rval = lineNamesMonthly;
+               case 'set'
+                   lineNamesMonthly = newLineNamesMonthly;
+           end
+        end
+        
+        function rval = effectorNamesCache(cmd, newEffectorNames)
+            % Provides a cache for the effector names
+            persistent effectorNames;
+            rval = [];
+            switch lower(cmd)
+                case 'get'
+                    rval = effectorNames;
+                case 'set'
+                    effectorNames = newEffectorNames;
+            end
+        end
+        
     end
 end
 

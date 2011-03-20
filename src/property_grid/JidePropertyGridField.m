@@ -25,6 +25,7 @@ classdef JidePropertyGridField < handle
         % JIDE editor context type (if any).
         ContextType;
     end
+    
     methods
         function self = JidePropertyGridField(data)
             if nargin > 0
@@ -36,7 +37,6 @@ classdef JidePropertyGridField < handle
         % Initializes a JIDE property based on a property grid field.
         % May register editor contexts with the global CellEditorManager.
             validateattributes(self, {'JidePropertyGridField'}, {'scalar'});
-        
             self.PropertyData = data;
             field = com.jidesoft.grid.DefaultProperty();
             field.setName(data.Name);  % JIDE automatically uses a hierarchical naming scheme
@@ -175,8 +175,8 @@ classdef JidePropertyGridField < handle
                     switch data.Type.Shape
                         case 'row'
                             field.setType(javaclass('char',1));
-                            if ~isempty(data.Type.Domain)
-                                self.AddComboBoxEditor(field, javaclass('char',1), javaStringArray(data.Type.Domain));
+                            if ~isempty(data.Type.Domain)                                                              
+                                self.AddComboBoxEditor(field, javaclass('char',1),javaStringArray(data.Type.Domain));
                             end
                         otherwise
                             field.setType(javaclass('char',1));  % edit as string and convert with eval

@@ -74,6 +74,7 @@ classdef PropertyGrid < UIControl
         % function that executes whenever there is a property change
         % added by KB
         PropertyChangeCallback = '';
+        FuncKeyPressedCallback = cell(1,7);
     end
     methods
         
@@ -108,8 +109,9 @@ classdef PropertyGrid < UIControl
             [control,container] = javacomponent(self.Pane, [0 0 pixelpos(3) pixelpos(4)], panel);
             set(container, 'Units', 'normalized');
             set(self.Table, 'KeyPressedCallback', @PropertyGrid.OnKeyPressed);
-            set(self.Table, 'MouseWheelMovedCallback', @PropertyGrid.MouseWheelMoved);
-            %get(self.Table.CellRendererManager)
+         
+            %get(self.Table)
+           
         end
         
         % WBD - added this to make it easier to set up property grid 
@@ -155,34 +157,35 @@ classdef PropertyGrid < UIControl
         % Added by KB
         %
         function setValueByPathString(self,pathString,value)
-          
-          field = self.Fields.FindByName(pathString);
-          if ~isempty(field),
-            if iscell(field.Value),
-              value = StringToCell(value);
-            end
-            field.Value = value;
-            self.UpdateField(pathString);
-            self.Table.repaint();
+            %fprintf('%s, %s\n', pathString, value);
             
-            % Check if this genotype element - need to  the value of genotype 
-            % content differently.
-            node = self.defaultsTree.getNodeByPathString(pathString);
-            
-            if node.isContentNode() == true
-                % Special case for content node (as there value is
-                % stored in the content element below them.
-                childNode = node.children(1);
-                % Assign value and pass through validator
-                node.value = '';
-                childNode.value = var2str(value);
-            else
-			  % added by KB: if we are going to set content node values, 
-		      % we should also set non-content node values
-              % Assign node values
-              node.value = value;
+            field = self.Fields.FindByName(pathString);
+            if ~isempty(field),
+                if iscell(field.Value),
+                    value = StringToCell(value);
+                end
+                field.Value = value;
+                self.UpdateField(pathString);
+                self.Table.repaint();
+                
+                % Check if this genotype element - need to  the value of genotype
+                % content differently.
+                node = self.defaultsTree.getNodeByPathString(pathString);
+                
+                if node.isContentNode() == true
+                    % Special case for content node (as there value is
+                    % stored in the content element below them.
+                    childNode = node.children(1);
+                    % Assign value and pass through validator
+                    node.value = '';
+                    childNode.value = var2str(value);
+                else
+                    % added by KB: if we are going to set content node values,
+                    % we should also set non-content node values
+                    % Assign node values
+                    node.value = value;
+                end
             end
-          end
         end
         
         % pgrid.getSelectedProperty()
@@ -196,6 +199,15 @@ classdef PropertyGrid < UIControl
 
         end
         
+        % pgrid.getSelectedRow()
+        %
+        % Returns the number of the currently selected row
+        % 
+        % added by WBD
+        function row = getSelectedRow(self)
+           row = PropertyGrid.GetSelectedRow(self.Table); 
+        end
+        
         % pgrid.setPropertyChangeCallback(f)
         %
         % Set a function that executes whenever the properties in the
@@ -206,6 +218,18 @@ classdef PropertyGrid < UIControl
           
           self.PropertyChangeCallback = f;
           
+        end
+        
+        % WBD
+        % 
+        % Set a function that executes whenever the Fn function key is
+        % pressed. 
+        function setFuncKeyPressedCallback(self,f,n)
+            numCallbacks = length(self.FuncKeyPressedCallback);
+            if (n < 1) || (n>=numCallbacks)
+                error('Can only assign to function keys 1,..,%d', numCallbacks);
+            end
+            self.FuncKeyPressedCallback{n} = f;
         end
         
         function assignProperties(self,properties)
@@ -409,46 +433,38 @@ classdef PropertyGrid < UIControl
                 name = char(selectedfield.getFullName());
             end
         end
-    
-        function MouseWheelMoved(obj,event)
-            % WBD TESTING -------------------------------------------------
-%             val = event.getWheelRotation()
-%             if val > 0
-%                 disp(['pos: ', var2str(val)]);
-%             else
-%                 disp(['neg: ', var2str(val)]);
-%             end
-            % -------------------------------------------------------------
-        end
         
+        function row = GetSelectedRow(obj)
+        % Returns the number of the currently selected row.
+        %
+        % added by WBD
+           row = obj.getSelectedRow(); 
+        end
+               
         function OnKeyPressed(obj, event)
         % Fired when a key is pressed when the property grid has the focus.
+        %
+        % Added by WBD
             key = char(event.getKeyText(event.getKeyCode()));
-            % -------------------------------------------------------------
-            % WBD TESTING 
-            % -------------------------------------------------------------
-            %disp(['key = ', key])
-            %disp(PropertyGrid.GetSelectedProperty(obj))
-            % -------------------------------------------------------------
-            switch key
-                case 'F1'
-                    name = PropertyGrid.GetSelectedProperty(obj);
-                    self = PropertyGrid.FindPropertyGrid(obj, 'Table');
-                    if ~isempty(name) && ~isempty(self.BoundItem)  % help
-                        nameparts = strsplit(name, '.');
-                        if numel(nameparts) > 1
-                            helpobject = nestedfetch(self.BoundItem, strjoin('.', nameparts(1:end-1)));
-                        else
-                            helpobject = self.BoundItem;
-                        end
-                        helpdialog([class(helpobject) '.' nameparts{end}]);
+            
+            self = PropertyGrid.FindPropertyGrid(obj, 'Table');
+            row = PropertyGrid.GetSelectedRow(obj);
+            if row == 0
+                selectedProperty = '';
+            else
+                selectedProperty = PropertyGrid.GetSelectedProperty(obj);
+            end
+           
+            if key(1) == 'F'
+                n = str2num(key(2:end));
+                if n <= length(self.FuncKeyPressedCallback)
+                    callback = self.FuncKeyPressedCallback{n};
+                    if ~isempty(callback)
+                        callback(selectedProperty);
+                    else
+                        fprintf('%s callback empty\n',key);
                     end
-                case 'F2'
-                    name = PropertyGrid.GetSelectedProperty(obj);
-                    if ~isempty(name)  % edit property value
-                        self = PropertyGrid.FindPropertyGrid(obj, 'Table');
-                        self.EditMatrix(name);
-                    end
+                end
             end
         end
         
@@ -462,14 +478,23 @@ classdef PropertyGrid < UIControl
             self = PropertyGrid.FindPropertyGrid(obj, 'Model');
             name = get(event, 'PropertyName');  % JIDE automatically uses a hierarchical naming scheme
             field = self.Fields.FindByName(name);
+            
             % -------------------------------------------------------------
             % WBD: added this to hook up validators
             % -------------------------------------------------------------
             oldValue = var2str(get(event, 'OldValue'));  
             newValue = var2str(get(event, 'NewValue'));  
-            node = self.defaultsTree.getNodeByPathString(name);           
+             
+            node = self.defaultsTree.getNodeByPathString(name);      
+            autoSelect = field.PropertyData.AutoSelect;
             try
+               
                 if node.isContentNode() == false
+                    if isa(node.valueValidator, 'StringValidator') && (autoSelect == true)
+                        allowedValues = node.valueValidator.getValues();
+                        infoStr = ['Enter: ', node.name];
+                        newValue = autoCompleteDlg(allowedValues, newValue, infoStr);
+                    end
                     % Assign node values and pass through validator
                     node.value = newValue;
                      % re-assign value as it might be modified by validator

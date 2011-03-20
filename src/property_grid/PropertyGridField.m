@@ -26,6 +26,8 @@ classdef PropertyGridField < hgsetget
         Dependent = false;
         % Direct descendants of this property.
         Children = PropertyGridField.empty(1,0);
+        % Whether autoselct should be used
+        AutoSelect = false;     
     end
     methods
         function self = PropertyGridField(name, value, varargin)
