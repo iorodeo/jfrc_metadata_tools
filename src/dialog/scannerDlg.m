@@ -22,7 +22,7 @@ function varargout = scannerDlg(varargin)
 
 % Edit the above text to modify the response to help scannerDlg
 
-% Last Modified by GUIDE v2.5 20-Mar-2011 14:18:20
+% Last Modified by GUIDE v2.5 21-Mar-2011 11:37:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -168,7 +168,6 @@ if isempty(scanNum)
     uiwait(h);
     handles.scanValues = [];
 else
-    
     % Query database for barcode
     try
         handles.scanValues = FlyFQuery(scanNum);
@@ -179,8 +178,12 @@ else
         handles.scanValues = [];
     end
 end
-
 updateInfo(handles);
+
+% Highlight text
+javaEdit = findjobj(handles.scanEditText);
+set(javaEdit,'SelectionStart', 0);
+set(javaEdit,'SelectionEnd', length(scanStr)); 
 
 % Update handles structure
 guidata(hObject, handles);
@@ -221,3 +224,36 @@ set(handles.infoTable,'Data', tableData);
 function val = getPropagateValue(handles)
 % Returns the current propagation checkbox value
 val = get(handles.propagateCheckbox,'Value');
+
+
+% --- Executes when scanFigure is resized.
+function scanFigure_ResizeFcn(hObject, eventdata, handles)
+% hObject    handle to scanFigure (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% try
+%     uicontrol(handles.scanEditText);
+% end
+
+try
+    % Use java to set focus as uicontrol function doesn't seem to be
+    % working properly.
+    obj = findjobj(handles.scanEditText);
+    obj.requestFocus();
+end
+ 
+
+
+% --- Executes on key press with focus on scanEditText and none of its controls.
+function scanEditText_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to scanEditText (see GCBO)
+% eventdata  structure with the following fields (see UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+
+% if eventdata.Key == 'insert'
+%    close(handles.scanFigure); 
+% end
