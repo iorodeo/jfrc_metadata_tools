@@ -53,7 +53,6 @@ function autoCompleteDlg_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to autoCompleteDlg (see VARARGIN)
 
 % Choose default command line output for autoCompleteDlg
-handles.output = hObject;
 handles.uiwait_flag = 1;
 handles.output = '';
 
@@ -62,7 +61,7 @@ if length(varargin) > 0
     handles.allowedValues = varargin{1};
 else
     % Temporary
-    handles.allowedValues = textread('linenames.txt', '%s');
+    handles.allowedValues = {'bob', 'alan', 'steve'};
 end
 if length(varargin) > 1
     curText = varargin{2};
@@ -132,9 +131,7 @@ if keyCode == 10 % Enter pressed
     guidata(fig, handles);
     close(handles.autoCompFigure);
 else 
-%     % Find matching values in allowed values - ignoring case
-%     testVals = strncmp(handles.allowedValuesLower,curTextLower,length(curTextLower));
-%     matching = handles.allowedValues(testVals);
+   % Find matching values in allowed values - ignoring case
     matching = getMatchingValues(handles, curText);
     
     % Set listbox String and edit box text based on matching
@@ -165,7 +162,6 @@ if handles.uiwait_flag ~=0
 end
 
 
-
 % --- Executes when user attempts to close autoCompFigure.
 function autoCompFigure_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to autoCompFigure (see GCBO)
@@ -175,11 +171,16 @@ function autoCompFigure_CloseRequestFcn(hObject, eventdata, handles)
 %Hint: delete(hObject) closes the figure
 if handles.uiwait_flag ~=0  
     if isequal(get(hObject, 'waitstatus'), 'waiting')
+        % I was getting wierd crashes matlab lockups ... setting
+        % windowstyle back to normal before closing the figure 
+        % seems to stop this.
+        set(handles.autoCompFigure,'WindowStyle', 'normal');
+        delete(handles.javaEdit); 
         % The GUI is still in UIWAIT, us UIRESUME
         uiresume(hObject);
     else
         % The GUI is no longer waiting, just close it
-        delete(handles.javaEdit); 
+        delete(handles.javaEdit);
         delete(hObject);
     end
 else
@@ -229,7 +230,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
 % --- Executes when autoCompFigure is resized.
 function autoCompFigure_ResizeFcn(hObject, eventdata, handles)
 % hObject    handle to autoCompFigure (see GCBO)
@@ -257,7 +257,7 @@ if strcmpi(eventdata.Key, 'return')
     curText = listBoxStr{listBoxVal};
     handles.javaEdit.setText(curText);
     handles.output = curText;
-    pause(0.2);
+    pause(0.1);
     close(handles.autoCompFigure);
 end
 % Update handles structure

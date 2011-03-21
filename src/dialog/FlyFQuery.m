@@ -36,7 +36,8 @@ function output = FlyFQuery( barcode )
 %   If you need help or have comments, send me an email
     
     bc = int2str(barcode);
-    jarpath = strcat(pwd,filesep,'sljc.jar');
+    %jarpath = strcat(pwd,filesep,'sljc.jar'); 
+    jarpath = getJarPath();
     
     if isempty(ismember(javaclasspath, jarpath))
         javaaddpath(jarpath, '-end');
@@ -73,4 +74,29 @@ function output = FlyFQuery( barcode )
         output.(fieldName) = char(output.(fieldName));
      end
      
+end
+
+% -------------------------------------------------------------------------
+function jarPath = getJarPath()
+% Returns path to jdbc sljc.jar file. 
+dirPath = getMFileDir();
+for i = 1:2
+    dirPath = stripLastDir(dirPath);
+end
+jarPath = sprintf('%sjdbc%sdriver%slib%s%s',dirPath,filesep,filesep,filesep,'sljc.jar');
+end
+
+% -------------------------------------------------------------------------
+function dirPath = getMFileDir()
+% Returns the directory of the current mfile.
+filePath = mfilename('fullpath');
+sepPos = findstr(filePath,filesep);
+dirPath = filePath(1:sepPos(end));
+end
+
+% -------------------------------------------------------------------------
+function newDirPath = stripLastDir(origDirPath)
+% Strip the last directory from the given directory path
+sepPos = findstr(origDirPath,filesep);
+newDirPath = origDirPath(1:sepPos(end-1));
 end

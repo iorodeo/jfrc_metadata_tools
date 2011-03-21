@@ -55,13 +55,18 @@ function scannerDlg_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for scannerDlg
 handles.uiwait_flag = 1;
 handles.scanValues = [];
-set(handles.scanFigure,'WindowStyle', 'normal');
+set(handles.scanFigure,'WindowStyle', 'modal');
 
+% Get 1st argument propagateValue (true or false) determines whether or not
+% the propagte checkbox is selected.
 if length(varargin) > 0
    propagateValue = varargin{1}; 
 else
     propagateValue = true;
 end
+
+% Get the second argument propagateEnable ('on' or 'off') determines
+% whether or not the propagate checkbox is enabled.
 if length(varargin) > 1
     propagateEnable = varargin{2};
 else
@@ -106,6 +111,7 @@ function scanFigure_CloseRequestFcn(hObject, eventdata, handles)
 if handles.uiwait_flag ~=0  
     if isequal(get(hObject, 'waitstatus'), 'waiting')
         % The GUI is still in UIWAIT, us UIRESUME
+        set(handles.scanFigure,'WindowStyle', 'normal');
         uiresume(hObject);
     else
         % The GUI is no longer waiting, just close it
@@ -129,7 +135,6 @@ function okPushButton_Callback(hObject, eventdata, handles)
 % hObject    handle to okPushButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-fprintf('okPushButton\n');
 close(handles.scanFigure);
 
 
@@ -138,7 +143,6 @@ function cancelPushButton_Callback(hObject, eventdata, handles)
 % hObject    handle to cancelPushButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-fprintf('cancelPushButton\n');
 handles.scanValues = [];
 % Update handles structure
 guidata(hObject, handles);

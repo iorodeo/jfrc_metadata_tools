@@ -2,5 +2,9 @@ syntax: glob
 *.asv
 *.svn
 *.*~
+jdbc/driver/
+jdbc/sun/
+jdbc/help/
+jdbc/testforjdbc/
 examples/*.xml
 
