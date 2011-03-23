@@ -77,8 +77,9 @@ end
 set(handles.text,'String', nameStr);
 handles.allowedValuesLower = lower(handles.allowedValues);
 
-% Setup java text edit bix.
-javaEditPos =  [50, 282, 270, 27];
+% Setup java text edit box.
+editPos = get(handles.edit, 'Position');
+javaEditPos = editPos;
 javaEdit = javacomponent(javax.swing.JTextField, javaEditPos);
 javaEdit.setFocusable(true);
 set( ...
