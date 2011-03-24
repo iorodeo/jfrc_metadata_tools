@@ -44,10 +44,9 @@ function output = FlyFQuery( barcode )
     end    
     
      drv = com.ddtek.jdbc.sequelink.SequeLinkDriver;
-     url = 'jdbc:sequelink://10.41.4.26:2399;serverDataSource=FLYF_2;user=flyf;password=janelia';
+     url = 'jdbc:sequelink://10.41.4.26:2399;serverDataSource=FLYF_2;user=Janelia;password=read';
      con = drv.connect(url,'');
      stm = con.createStatement;
-
      qry = strcat('select PC.RobotID,SF.Stock_Name,Date_Crossed,Reporter,Wish_List',...
         ' from Project_Crosses PC,StockFinder SF',...
         ' where PC.RobotID=SF.RobotID and PC.project=''Fly Olympiad''',...

@@ -242,6 +242,7 @@ function autoCompFigure_ResizeFcn(hObject, eventdata, handles)
 % end
 try
     uicontrol(handles.listbox)
+    %handles.javaEdit.requestFocus();
 end
 
 % --- Executes on key press with focus on listbox and none of its controls.
