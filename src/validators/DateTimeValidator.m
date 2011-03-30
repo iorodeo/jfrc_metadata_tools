@@ -10,10 +10,10 @@ classdef DateTimeValidator < NumericValidator
     end
     
     properties (Constant, Hidden) 
-        fullFormatString = 'yyyy-mm-ddTHH:MM:SS';
-        daysFormatString = 'yyyy-mm-ddT00:00:00';
-        hoursFormatString = 'yyyy-mm-ddT:HH:00:00'
-        minutesFormatString = 'yyyy-mm-ddT:HH:MM:00';
+        fullFormatString = 'yyyymmddTHHMMSS';
+        daysFormatString = 'yyyymmddT000000';
+        hoursFormatString = 'yyyymmddTHH0000'
+        minutesFormatString = 'yyyymmddTHHMM00';
         fullFormat = 0;
         daysFormat = 1;
         hoursFormat = 2;
