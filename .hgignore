@@ -7,4 +7,5 @@ jdbc/sun/
 jdbc/help/
 jdbc/testforjdbc/
 examples/*.xml
+data/*
 
