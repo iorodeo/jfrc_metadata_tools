@@ -454,7 +454,7 @@ classdef PropertyGrid < UIControl
             else
                 selectedProperty = PropertyGrid.GetSelectedProperty(obj);
             end
-           
+            
             if key(1) == 'F'
                 n = str2num(key(2:end));
                 if n <= length(self.FuncKeyPressedCallback)
