@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Using the JIDE grid control &mdash; JFRC metadata tools v0.1 documentation</title>
+    <title>Using the JIDE grid control &mdash; JFRC metadata tools 0.1 documentation</title>
+    
     <link rel="stylesheet" href="_static/agogo.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -22,18 +25,18 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="JFRC metadata tools v0.1 documentation" href="index.html" />
-    <link rel="next" title="Trees, nodes and other objects" href="xmlnodes.html" />
-    <link rel="prev" title="Metadata dialog" href="dialog.html" /> 
+    <link rel="top" title="JFRC metadata tools 0.1 documentation" href="index.html" />
+    <link rel="next" title="Barcode scanner dialog" href="scannerdlg.html" />
+    <link rel="prev" title="Basic operations" href="operations.html" /> 
   </head>
   <body>
     <div class="header-wrapper">
       <div class="header">
-        <h1><a href="index.html">JFRC metadata tools v0.1 documentation</a></h1>
+        <h1><a href="index.html">JFRC metadata tools 0.1 documentation</a></h1>
         <div class="rel">
-          <a href="dialog.html" title="Metadata dialog"
+          <a href="operations.html" title="Basic operations"
              accesskey="P">previous</a> |
-          <a href="xmlnodes.html" title="Trees, nodes and other objects"
+          <a href="scannerdlg.html" title="Barcode scanner dialog"
              accesskey="N">next</a> |
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a>
@@ -51,8 +54,11 @@
             
   <div class="section" id="using-the-jide-grid-control">
 <h1>Using the JIDE grid control<a class="headerlink" href="#using-the-jide-grid-control" title="Permalink to this headline">¶</a></h1>
-<p>This example demonstrates how to add the JIDE grid control to your user
-interface.</p>
+<div class="section" id="basic-example">
+<h2>Basic Example<a class="headerlink" href="#basic-example" title="Permalink to this headline">¶</a></h2>
+<p>The example demonstrates how to add the JIDE grid control to your user
+interface. Note, The source code for this and other examples can be found in
+the examples directory of the jfrc_metedata_tools project directory.</p>
 <div class="highlight-matlab"><div class="highlight"><pre><span class="c">% This example shows some very basic usage of the metadata tools. In it I</span>
 <span class="c">% show  how to:</span>
 <span class="c">%</span>
@@ -104,6 +110,69 @@ interface.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="setting-values">
+<h2>Setting Values<a class="headerlink" href="#setting-values" title="Permalink to this headline">¶</a></h2>
+<p>When the values in a given metadata defaults tree are being displayed using a
+JIDE property grid and you wish to change some of the displayed values it is
+best to do this via the <em>setValueByPathString</em> method of the Property Grid
+object. The developer may wish do this when, for example, propagating the
+linename and effectors. The <em>setValueByPathString</em> method will change the value
+in both the property grid and in the defaults tree object.</p>
+<p>The <em>setValuesByPathString</em> method is used as follows:</p>
+<div class="highlight-matlab"><div class="highlight"><pre><span class="n">pgrid</span><span class="p">.</span><span class="n">setValueByPathString</span><span class="p">(</span><span class="n">pathString</span><span class="p">,</span> <span class="n">newValue</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <em>pathString</em> is the unique path string in the defaults tree to the
+desired attribute and <em>newValue</em> is the desired new value for this attribute.</p>
+</div>
+<div class="section" id="callbacks">
+<h2>Callbacks<a class="headerlink" href="#callbacks" title="Permalink to this headline">¶</a></h2>
+<p>The Property Grid object has several callback which can used by the developer
+in order modify its default behaviour. These include the <em>PropertyChange</em>
+callback and the <em>FuncKeyPressed</em> callbacks. The <em>PropertyChange</em> callback is
+called whenever the value of a property changes and the <em>FuncKeyPressed</em>
+callback is called whenever the function key associated with the given callback
+is pressed.</p>
+<p>Note, when using these callbacks it is important that the figure&#8217;s handle
+visibility be set to &#8216;on&#8217; otherwise the callback will not function properly.</p>
+<div class="section" id="setpropertychangecallback">
+<h3>setPropertyChangeCallback<a class="headerlink" href="#setpropertychangecallback" title="Permalink to this headline">¶</a></h3>
+<p>The <em>PropertyChange</em> callback can be set using the <em>setPropertyChangeCallback</em> method
+as follows:</p>
+<div class="highlight-matlab"><div class="highlight"><pre><span class="n">pgrid</span><span class="p">.</span><span class="n">setPropertyChangeCallback</span><span class="p">(@(</span><span class="n">x</span><span class="p">)</span><span class="n">propertyChange_Callback</span><span class="p">(</span><span class="n">userData</span><span class="p">,</span><span class="n">x</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>Note, in this example <em>userData</em> is any data which the user desires to pass to
+the function.  An example <em>PropertyChange</em> callback function might look as
+follows:</p>
+<div class="highlight-matlab"><div class="highlight"><pre><span class="k">function</span><span class="w"> </span><span class="nf">propertyChange_Callback</span><span class="p">(</span>userData, propName<span class="p">)</span><span class="w"></span>
+<span class="c">% Get node, node name, and new node value</span>
+<span class="n">node</span> <span class="p">=</span> <span class="n">handles</span><span class="p">.</span><span class="n">defaultsTree</span><span class="p">.</span><span class="n">getNodeByPathString</span><span class="p">(</span><span class="n">propName</span><span class="p">);</span>
+<span class="n">nodeName</span> <span class="p">=</span> <span class="n">node</span><span class="p">.</span><span class="n">name</span><span class="p">;</span>
+<span class="n">newValue</span> <span class="p">=</span> <span class="n">handles</span><span class="p">.</span><span class="n">defaultsTree</span><span class="p">.</span><span class="n">getValueByPathString</span><span class="p">(</span><span class="n">propName</span><span class="p">);</span>
+<span class="c">% Take desired action ...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="setfunckeypressedcallback">
+<h3>setFuncKeyPressedCallback<a class="headerlink" href="#setfunckeypressedcallback" title="Permalink to this headline">¶</a></h3>
+<p>The <em>FuncKeyPressed</em> callback can be set using the <em>setFuncKeyPressed</em> methods as follows:</p>
+<div class="highlight-matlab"><div class="highlight"><pre><span class="n">pgrid</span><span class="p">.</span><span class="n">setFuncKeyPressedCallback</span><span class="p">(@(</span><span class="n">x</span><span class="p">)</span><span class="n">F1KeyPressed_Callback</span><span class="p">(</span><span class="n">userData</span><span class="p">,</span><span class="n">x</span><span class="p">),</span><span class="n">n</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>where <em>userData</em> is any data the user wished to pass to the callback function
+and <em>n</em> is the number of the function key to associate with the callback.
+Currently, function key 1 through 7 may be assigned a callback function.
+An example <em>FuncKeyPressed</em> callbeck might look as follows:</p>
+<div class="highlight-matlab"><div class="highlight"><pre><span class="k">function</span><span class="w"> </span><span class="nf">F1KeyPressed_Callback</span><span class="p">(</span>userData, selectedProperty<span class="p">)</span><span class="w"></span>
+<span class="c">% Open barcode scanner dialog.</span>
+<span class="p">[</span><span class="n">scanValues</span><span class="p">,</span> <span class="o">~</span><span class="p">]</span> <span class="p">=</span> <span class="n">scannerDlg</span><span class="p">(</span><span class="n">true</span><span class="p">,</span><span class="s">&#39;off&#39;</span><span class="p">);</span>
+<span class="c">% Take action based on results ...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
 
 
           </div>
@@ -116,8 +185,20 @@ interface.</p>
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="defaults.html">The XML defaults file</a></li>
 <li class="toctree-l1"><a class="reference internal" href="operations.html">Basic operations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dialog.html">Metadata dialog</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Using the JIDE grid control</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Using the JIDE grid control</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-example">Basic Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setting-values">Setting Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#callbacks">Callbacks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#setpropertychangecallback">setPropertyChangeCallback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setfunckeypressedcallback">setFuncKeyPressedCallback</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="scannerdlg.html">Barcode scanner dialog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scanner_example.html">Barcode scanner example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="propagation_example.html">Propagation example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dialog.html">Basic metadata dialog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="xmlnodes.html">Trees, nodes and other objects</a></li>
 </ul>
 
@@ -139,9 +220,9 @@ interface.</p>
     <div class="footer-wrapper">
       <div class="footer">
         <div class="left">
-          <a href="dialog.html" title="Metadata dialog"
+          <a href="operations.html" title="Basic operations"
              >previous</a> |
-          <a href="xmlnodes.html" title="Trees, nodes and other objects"
+          <a href="scannerdlg.html" title="Barcode scanner dialog"
              >next</a> |
           <a href="genindex.html" title="General Index"
              >index</a>
@@ -154,7 +235,7 @@ interface.</p>
           
     <div class="footer">
         &copy; Copyright 2010, HHMI.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre.
     </div>
         </div>
         <div class="clearer"></div>

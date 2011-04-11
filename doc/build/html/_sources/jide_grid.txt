@@ -1,8 +1,12 @@
 Using the JIDE grid control
 ===========================
 
-This example demonstrates how to add the JIDE grid control to your user
-interface. 
+Basic Example
+-------------
+
+The example demonstrates how to add the JIDE grid control to your user
+interface. Note, The source code for this and other examples can be found in
+the examples directory of the jfrc_metedata_tools project directory.
 
 .. code-block:: matlab
 
@@ -54,3 +58,81 @@ interface.
     
     % Save meta tree as xml file
     metaData.write('metadata_test_write.xml');
+
+Setting Values
+--------------
+When the values in a given metadata defaults tree are being displayed using a
+JIDE property grid and you wish to change some of the displayed values it is
+best to do this via the *setValueByPathString* method of the Property Grid
+object. The developer may wish do this when, for example, propagating the
+linename and effectors. The *setValueByPathString* method will change the value
+in both the property grid and in the defaults tree object.
+
+The *setValuesByPathString* method is used as follows: 
+
+.. code-block:: matlab
+    
+    pgrid.setValueByPathString(pathString, newValue)
+
+where *pathString* is the unique path string in the defaults tree to the
+desired attribute and *newValue* is the desired new value for this attribute.
+    
+
+Callbacks
+---------
+The Property Grid object has several callback which can used by the developer
+in order modify its default behaviour. These include the *PropertyChange*
+callback and the *FuncKeyPressed* callbacks. The *PropertyChange* callback is
+called whenever the value of a property changes and the *FuncKeyPressed*
+callback is called whenever the function key associated with the given callback
+is pressed.
+
+Note, when using these callbacks it is important that the figure's handle
+visibility be set to 'on' otherwise the callback will not function properly. 
+
+setPropertyChangeCallback
+~~~~~~~~~~~~~~~~~~~~~~~~~
+The *PropertyChange* callback can be set using the *setPropertyChangeCallback* method
+as follows:
+
+.. code-block:: matlab
+
+    pgrid.setPropertyChangeCallback(@(x)propertyChange_Callback(userData,x));
+
+Note, in this example *userData* is any data which the user desires to pass to
+the function.  An example *PropertyChange* callback function might look as
+follows:
+
+.. code-block:: matlab
+
+    function propertyChange_Callback(userData, propName)
+    % Get node, node name, and new node value
+    node = handles.defaultsTree.getNodeByPathString(propName);
+    nodeName = node.name;
+    newValue = handles.defaultsTree.getValueByPathString(propName);
+    % Take desired action ...
+
+
+
+setFuncKeyPressedCallback
+~~~~~~~~~~~~~~~~~~~~~~~~~
+The *FuncKeyPressed* callback can be set using the *setFuncKeyPressed* methods as follows:
+
+.. code-block:: matlab
+
+    pgrid.setFuncKeyPressedCallback(@(x)F1KeyPressed_Callback(userData,x),n);
+
+where *userData* is any data the user wished to pass to the callback function
+and *n* is the number of the function key to associate with the callback.
+Currently, function key 1 through 7 may be assigned a callback function. 
+An example *FuncKeyPressed* callbeck might look as follows:
+
+.. code-block:: matlab
+
+    function F1KeyPressed_Callback(userData, selectedProperty) 
+    % Open barcode scanner dialog. 
+    [scanValues, ~] = scannerDlg(true,'off');
+    % Take action based on results ...
+
+
+

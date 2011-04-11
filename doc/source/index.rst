@@ -24,8 +24,11 @@ help unify the handling of metadata.  This package provides:
    overview.rst
    defaults.rst
    operations.rst
-   dialog.rst
    jide_grid.rst
+   scannerdlg.rst
+   scanner_example.rst
+   propagation_example.rst
+   dialog.rst
    xmlnodes.rst
 
 

@@ -191,6 +191,7 @@ be of the correct type.
     The meaning of the special symbols is as follows:
 
     * $LINENAME:  list of line names downloaded from SAGE 
+    * $LINENAME_MONTHLY: list of monthly line names (must be manually updated)
     * $EFFECTOR: list of effectors downloaded from SAGE 
     * $LDAP: list of all LDAP user names
 

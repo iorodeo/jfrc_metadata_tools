@@ -2,10 +2,6 @@ function varargout = propertyChangedExample(varargin)
 % propertyChangedExample - this example demonstrates how to propogate
 % values in the property grid by setting up a propertyChange callback. 
 %
-% Usage:
-% 
-%
-% Will Dickson, IO Rodeo Inc
 % -------------------------------------------------------------------------
 
 % Edit the above text to modify the response to help propertyChangedExample

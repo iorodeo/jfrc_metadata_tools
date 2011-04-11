@@ -6,13 +6,8 @@ function varargout = scannerExample(varargin)
 %
 % Select any item on the lefthand side of the property grid and press the
 % F1 key to open the barcode scanner dialog. 
-%
-% Will Dickson, IO Rodeo Inc.
 % -------------------------------------------------------------------------
 
-% Edit the above text to modify the response to help scannerExample
-
-% Last Modified by GUIDE v2.5 08-Apr-2011 15:41:58
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;

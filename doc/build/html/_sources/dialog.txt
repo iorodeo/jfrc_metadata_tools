@@ -1,5 +1,5 @@
-Metadata dialog
-===============
+Basic metadata dialog 
+=====================
 
 A basic dialog, *basicMetaDataDlg*, is included with the metadata tools package
 in order to make it easy to add unified metalata entry to existing device
