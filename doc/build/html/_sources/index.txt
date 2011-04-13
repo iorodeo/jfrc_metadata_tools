@@ -29,6 +29,7 @@ help unify the handling of metadata.  This package provides:
    scanner_example.rst
    propagation_example.rst
    dialog.rst
+   data_files.rst
    xmlnodes.rst
 
 

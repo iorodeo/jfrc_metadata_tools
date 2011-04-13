@@ -219,15 +219,21 @@ be of the correct type.</p>
 <ol class="arabic simple">
 <li>the empty string &#8220;&#8221; - meaning no restriction</li>
 <li>a comma separated list of allowed values such as &#8220;rig1, rig2, rig3, rig4&#8221;</li>
-<li>one of the following special symbols: $LINENAME, $EFFECTOR, or $LDAP</li>
+<li>one of the following special symbols: $LINENAME, $LINENAME_MONTHLY, $EFFECTOR, or $LDAP</li>
 </ol>
 <p>The meaning of the special symbols is as follows:</p>
-<ul class="last simple">
+<ul class="simple">
 <li>$LINENAME:  list of line names downloaded from SAGE</li>
 <li>$LINENAME_MONTHLY: list of monthly line names (must be manually updated)</li>
 <li>$EFFECTOR: list of effectors downloaded from SAGE</li>
-<li>$LDAP: list of all LDAP user names</li>
+<li>$LDAP: list of LDAP user names (must be downloaded manually)</li>
 </ul>
+<p class="last">Note, the list of line names and effectors can be downloaded from SAGE
+using the <em>updateLinenames</em> and <em>updateEffectors</em> functions from the Matlab
+command line. These function will create the linenames.txt and
+effectors.txt files in the jfrc_metadata_tools/data directory. For entries
+which must be updated manually, such as $LDAP or $LINENAME_MONTHLY, the
+user must place a ldap.txt file in the jfrc_metadata_tools/data directory.</p>
 </dd>
 <dt><strong>float and integer</strong></dt>
 <dd><p class="first">For float and integer data types range_basic may be given by:</p>
@@ -420,6 +426,7 @@ XML files on Microsoft Windows is XML Notepad which can be downloaded from
 <li class="toctree-l1"><a class="reference internal" href="scanner_example.html">Barcode scanner example</a></li>
 <li class="toctree-l1"><a class="reference internal" href="propagation_example.html">Propagation example</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dialog.html">Basic metadata dialog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_files.html">Data files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="xmlnodes.html">Trees, nodes and other objects</a></li>
 </ul>
 

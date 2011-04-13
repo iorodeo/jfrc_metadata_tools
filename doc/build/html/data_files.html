@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Trees, nodes and other objects &mdash; JFRC metadata tools 0.1 documentation</title>
+    <title>Data files &mdash; JFRC metadata tools 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/agogo.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,15 +26,18 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="JFRC metadata tools 0.1 documentation" href="index.html" />
-    <link rel="prev" title="Data files" href="data_files.html" /> 
+    <link rel="next" title="Trees, nodes and other objects" href="xmlnodes.html" />
+    <link rel="prev" title="Basic metadata dialog" href="dialog.html" /> 
   </head>
   <body>
     <div class="header-wrapper">
       <div class="header">
         <h1><a href="index.html">JFRC metadata tools 0.1 documentation</a></h1>
         <div class="rel">
-          <a href="data_files.html" title="Data files"
+          <a href="dialog.html" title="Basic metadata dialog"
              accesskey="P">previous</a> |
+          <a href="xmlnodes.html" title="Trees, nodes and other objects"
+             accesskey="N">next</a> |
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a>
         </div>
@@ -49,21 +52,28 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="trees-nodes-and-other-objects">
-<h1>Trees, nodes and other objects<a class="headerlink" href="#trees-nodes-and-other-objects" title="Permalink to this headline">¶</a></h1>
-<p>To do ... describe the low level interface.</p>
-<div class="section" id="xmldefaultsnode">
-<h2>XMLDefaultsNode<a class="headerlink" href="#xmldefaultsnode" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="xmldatanode">
-<h2>XMLDataNode<a class="headerlink" href="#xmldatanode" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="propertiesbuilder">
-<h2>PropertiesBuilder<a class="headerlink" href="#propertiesbuilder" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="validators">
-<h2>Validators<a class="headerlink" href="#validators" title="Permalink to this headline">¶</a></h2>
-</div>
+  <div class="section" id="data-files">
+<h1>Data files<a class="headerlink" href="#data-files" title="Permalink to this headline">¶</a></h1>
+<p>The JFRC metadata tools rely on several data files in order to function
+properly. These should be placed in the jfrc_metadata_tools/data sub-directory.</p>
+<p><strong>linenames.txt</strong>
+A list of all line names. This file is used when the range_basic or
+range_advanced attribute of string is set to $LINENAME. This file can be
+created/updated automatically using the <em>updateLinenames</em> function from the
+Matlab command prompt - which will pull the latest values from the database.</p>
+<p><strong>effectors.txt</strong>
+A list of all effectors. This file  is used when the range_basic or
+range_advanced attribute of a string is set to $EFFECTOR. This file can be
+created/updated automatically using the <em>updateEffectors</em> function from the
+Matlab command prompt which will pull the latest values from the database.</p>
+<p><strong>ldap.txt</strong>
+A list of LDAP user names. This file is used when the range_basic or
+range_advanced attribute of a string is set to $LDAP. Currently, this file must
+be updated manually.</p>
+<p><strong>linenames_monthly.txt</strong>
+A list of line names for the current month. This file is used when the
+range_basic of range_advanced attribute of a string is set to
+$LINENAMES_MONTHLY. Currently, this file must be updated manually.</p>
 </div>
 
 
@@ -82,14 +92,8 @@
 <li class="toctree-l1"><a class="reference internal" href="scanner_example.html">Barcode scanner example</a></li>
 <li class="toctree-l1"><a class="reference internal" href="propagation_example.html">Propagation example</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dialog.html">Basic metadata dialog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_files.html">Data files</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Trees, nodes and other objects</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#xmldefaultsnode">XMLDefaultsNode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#xmldatanode">XMLDataNode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#propertiesbuilder">PropertiesBuilder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#validators">Validators</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Data files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="xmlnodes.html">Trees, nodes and other objects</a></li>
 </ul>
 
           <h3 style="margin-top: 1.5em;">Search</h3>
@@ -110,12 +114,14 @@
     <div class="footer-wrapper">
       <div class="footer">
         <div class="left">
-          <a href="data_files.html" title="Data files"
+          <a href="dialog.html" title="Basic metadata dialog"
              >previous</a> |
+          <a href="xmlnodes.html" title="Trees, nodes and other objects"
+             >next</a> |
           <a href="genindex.html" title="General Index"
              >index</a>
             <br/>
-            <a href="_sources/xmlnodes.txt"
+            <a href="_sources/data_files.txt"
                rel="nofollow">Show Source</a>
         </div>
 

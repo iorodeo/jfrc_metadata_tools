@@ -186,14 +186,21 @@ be of the correct type.
 
     #. the empty string "" - meaning no restriction
     #. a comma separated list of allowed values such as "rig1, rig2, rig3, rig4" 
-    #. one of the following special symbols: $LINENAME, $EFFECTOR, or $LDAP
+    #. one of the following special symbols: $LINENAME, $LINENAME_MONTHLY, $EFFECTOR, or $LDAP
     
     The meaning of the special symbols is as follows:
 
     * $LINENAME:  list of line names downloaded from SAGE 
     * $LINENAME_MONTHLY: list of monthly line names (must be manually updated)
     * $EFFECTOR: list of effectors downloaded from SAGE 
-    * $LDAP: list of all LDAP user names
+    * $LDAP: list of LDAP user names (must be downloaded manually)
+
+    Note, the list of line names and effectors can be downloaded from SAGE
+    using the *updateLinenames* and *updateEffectors* functions from the Matlab
+    command line. These function will create the linenames.txt and
+    effectors.txt files in the jfrc_metadata_tools/data directory. For entries
+    which must be updated manually, such as $LDAP or $LINENAME_MONTHLY, the
+    user must place a ldap.txt file in the jfrc_metadata_tools/data directory.
 
 **float and integer**
     For float and integer data types range_basic may be given by: 
