@@ -8,13 +8,6 @@ classdef StringValidator < BaseValidator
         rangeType = 'none';
         autoSelect = false;
     end
-    
-    properties (Hidden)
-        % WBD - old caching method
-        % ------------------------------
-        %lineNames;       
-        %effectorNames;   
-    end
    
     methods
         
@@ -88,8 +81,12 @@ classdef StringValidator < BaseValidator
             % Parse range srting for special cases.
             switch upper(rangeString)
                 case '$LDAP'
-                    % DUMMY FUNCTION -------------------------
-                    self.allowedStrings = dummyGetLDAP();
+                    LDAPNames = StringValidator.LDAPNamesCache('get');
+                    if isempty(LDAPNames)
+                        self.setLDAPNames();
+                        LDAPNames = StringValidator.LDAPNamesCache('get');
+                    end
+                    self.allowedStrings = LDAPNames;
                     
                 case '$LINENAME'
                     lineNames = StringValidator.lineNamesCache('get');
@@ -98,14 +95,7 @@ classdef StringValidator < BaseValidator
                         lineNames = StringValidator.lineNamesCache('get');
                     end
                     self.allowedStrings = lineNames;
-                    
-                    % WBD - old caching method
-                    % ---------------------------------
-                    %if isempty(self.lineNames)
-                    %    self.setLineNames();
-                    %end
-                    %self.allowedStrings = self.lineNames;
-                    
+                          
                 case '$LINENAME_MONTHLY'
                     lineNamesMonthly = StringValidator.lineNamesMonthlyCache('get');
                     if isempty(lineNamesMonthly)
@@ -121,13 +111,6 @@ classdef StringValidator < BaseValidator
                         effectorNames = StringValidator.effectorNamesCache('get');
                     end
                     self.allowedStrings = effectorNames;
-                    
-                    % WBD - old caching method
-                    % -------------------------------------
-                    %if isempty(self.effectorNames)
-                    %    self.setEffectorNames();
-                    %end
-                    %self.allowedStrings = self.effectorNames;
                     
                 otherwise
                     error('unknown special case range string');
@@ -204,15 +187,13 @@ classdef StringValidator < BaseValidator
         function setLineNames(self)
             cacher = SAGEDataCacher();
             try
-                % WBD - old caching method
-                % --------------------------------------------
-                %self.lineNames = cacher.readLineNamesFile();
                 lineNames = cacher.readLineNamesFile();  
             catch ME
-                error( ...
+                warning( ...
                     'StringValidator unable to read linenames file: %s', ...
                     ME.message ...
                     );
+                lineNames = dummyGetLineNames();
             end
             StringValidator.lineNamesCache('set', lineNames);
         end
@@ -222,10 +203,11 @@ classdef StringValidator < BaseValidator
             try
                 lineNamesMonthly = cacher.readLineNamesMonthlyFile();
             catch ME
-                error( ...
+                warning( ...
                     'StringValidator unable to read monthly linenames file: %s', ...
                     ME.message ...
                     );
+                lineNamesMonthly = dummyGetLineNames();
             end
             StringValidator.lineNamesMonthlyCache('set', lineNamesMonthly);   
         end
@@ -233,18 +215,31 @@ classdef StringValidator < BaseValidator
         function setEffectorNames(self)
             cacher = SAGEDataCacher();
             try
-                % WBD - old caching method
-                % -----------------------------------------------
-                %self.effectorNames = cacher.readEffectorsFile();
                 effectorNames = cacher.readEffectorsFile();     
             catch ME
-                error( ...
+                waring( ...
                     'StringValidator unable to read effectors file: %s', ...
                     ME.message ...
                     );
+                effectorNames = dummyGetEffectors();
             end   
             StringValidator.effectorNamesCache('set', effectorNames);
         end
+        
+        function setLDAPNames(self)
+            cacher = SAGEDataCacher();
+            try
+                LDAPNames = cacher.readLDAPFile();     
+            catch ME
+                warning( ...
+                    'StringValidator unable to read ldap file: %s', ...
+                    ME.message ...
+                    );
+                LDAPNames = dummyGetLDAP();
+            end   
+            StringValidator.LDAPNamesCache('set', LDAPNames);
+        end
+            
     end
     
     methods (Static)
@@ -285,6 +280,18 @@ classdef StringValidator < BaseValidator
             end
         end
         
+        function rval = LDAPNamesCache(cmd, newLDAPNames)
+           % Provides a cache for the ldap names
+           persistent LDAPNames;
+           rval = [];
+           switch lower(cmd)
+                case 'get'
+                    rval = LDAPNames;
+                case 'set'
+                    LDAPNames = newLDAPNames;
+           end     
+        end
+        
     end
 end
 
@@ -292,20 +299,17 @@ end
 function names = dummyGetLDAP()
 % Dummy function for getting LDAP names.
 names = {};
-N = 100;
+N = 10;
 for i = 1:N
     names{i} = sprintf('ldap_user_%d', i);
 end
-names{N+1} = 'bransonk';
-names{N+2} = 'robiea';
-names{N+3} = 'hirokawaj';
 end
 
 % -------------------------------------------------------------------------
 function names = dummyGetLineNames()
 % Dummy function for getting line names
 names = {};
-N = 1000;
+N = 20;
 for i = 1:N
     names{i} = sprintf('line_%d', i);
 end
@@ -317,7 +321,7 @@ end
 function names = dummyGetEffectors()
 % Dummy function for getting line names
 names = {};
-N = 100;
+N = 20;
 for i = 1:N
     names{i} = sprintf('effector_%d', i);
 end

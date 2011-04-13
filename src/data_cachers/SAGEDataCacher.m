@@ -5,6 +5,7 @@ classdef SAGEDataCacher < handle
         lineNamesFile = 'linenames.txt';
         lineNamesMonthlyFile = 'linenames_monthly.txt';
         effectorsFile = 'effectors.txt';
+        LDAPFile = 'ldap.txt';
         dataDir = 'data';
         sourceFileDepth = 2;
     end
@@ -29,6 +30,12 @@ classdef SAGEDataCacher < handle
            effectorNames = cellFromTextFile(filePath);
         end
         
+        function LDAPNames = readLDAPFile(self)
+            % Reads the ldap user names
+            filePath = self.getLDAPFilePath();
+            LDAPNames = cellFromTextFile(filePath);
+        end
+        
         function updateLineNamesFile(self)
             % Update the line names file by downloading new values from
             % SAGE.
@@ -46,6 +53,12 @@ classdef SAGEDataCacher < handle
             filePath = self.getEffectorsFilePath();
             cellToTextFile(filePath,effectorNames);
             %fprintf('done\n');
+        end
+        
+        function filePath = getLDAPFilePath(self)
+           % Get the full path the the ldap.txt file in the data directory.
+           dirPath = self.getDataDirPath();
+           filePath = [dirPath,self.LDAPFile];
         end
         
         function filePath = getEffectorsFilePath(self)
