@@ -11,7 +11,7 @@ function list = cvs()
     persistent cvs;
     
     if isempty(cvs)
-        xmlDoc = xmlread([SAGE.urlBase 'cvs.janelia-sage']);
+        xmlDoc = xmlread([SAGE.urlbase 'cvs.janelia-sage']);
         cvElems = xmlDoc.getElementsByTagName('cv');
         cvs = SAGE.CV.empty(cvElems.getLength(), 0);
         for i = 0:cvElems.getLength()-1

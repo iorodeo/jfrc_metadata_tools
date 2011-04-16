@@ -62,7 +62,7 @@ classdef CV < handle
             % The list of terms is cached, call the refreshTerms method to update the list.
             
             if ~obj.termsFetched
-                xmlDoc = xmlread([SAGE.urlBase 'cvs/' obj.name '/with-object-related-cvs.janelia-sage?relationshipType=is_sub_cv_of']);
+                xmlDoc = xmlread([SAGE.urlbase 'cvs/' obj.name '/with-object-related-cvs.janelia-sage?relationshipType=is_sub_cv_of']);
                 termElems = xmlDoc.getElementsByTagName('term');
                 obj.cvTerms = SAGE.CVTerm.empty(termElems.getLength(), 0);
                 for i = 0:termElems.getLength()-1

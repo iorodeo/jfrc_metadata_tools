@@ -11,7 +11,7 @@ function list = labs()
     persistent labs;
     
     if isempty(labs)
-        xmlDoc = xmlread([SAGE.urlBase 'lines.janelia-sage']);
+        xmlDoc = xmlread([SAGE.urlbase 'lines.janelia-sage']);
         labElems = xmlDoc.getElementsByTagName('lineLab');
         labs = SAGE.Lab.empty(labElems.getLength(), 0);
         for i = 0:labElems.getLength()-1
