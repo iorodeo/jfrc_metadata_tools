@@ -5,6 +5,7 @@ classdef SAGEDataCacher < handle
         lineNamesFile = 'linenames.txt';
         lineNamesMonthlyFile = 'linenames_monthly.txt';
         effectorsFile = 'effectors.txt';
+        notesKeywordsFile = 'notes_keywords.txt';
         LDAPFile = 'ldap.txt';
         dataDir = 'data';
         sourceFileDepth = 2;
@@ -47,12 +48,20 @@ classdef SAGEDataCacher < handle
         end
         
         function updateEffectorsFile(self)
-            % Update the effector names by download new values from SAGE
+            % Update the effector names by downloading new values from SAGE
             %fprintf('updating effector names ...');
             effectorNames = getEffectorNames();
             filePath = self.getEffectorsFilePath();
             cellToTextFile(filePath,effectorNames);
             %fprintf('done\n');
+        end
+        
+        function updateNotesKeywordsFile(self)
+           % Update the notes/keywords files by downloading new values from
+           % SAGE. 
+           notesKeywords = getNotesKeywords();
+           filePath = self.getNotesKeywordsFilePath();
+           cellToTextFile(filePath,notesKeywords);
         end
         
         function filePath = getLDAPFilePath(self)
@@ -84,6 +93,11 @@ classdef SAGEDataCacher < handle
             % directory. 
             dirPath = self.getDataDirPath();
             filePath = [dirPath, self.lineNamesMonthlyFile];
+        end
+        
+        function filePath = getNotesKeywordsFilePath(self)
+           dirPath = self.getDataDirPath();
+           filePath = [dirPath, self.notesKeywordsFile];
         end
         
         function dirPath = getDataDirPath(self)
@@ -132,6 +146,17 @@ end
 end
 
 % -------------------------------------------------------------------------
+function notesKeywords = getNotesKeywords()
+% Get the notes keywords from SAGE
+try
+    terms = SAGE.CV('fly_olympiad_keyword').terms();
+    notesKeywords = {terms.name};
+catch ME
+    error('unable to get notes keywords from SAGE: %s', ME.message);
+end
+end
+
+% -------------------------------------------------------------------------
 function dirPath = getMFileDir()
 % Returns the directory of the current mfile.
 filePath = mfilename('fullpath');
@@ -166,7 +191,7 @@ end
 
 % Write contents of cell array to file and close file when done.
 for i = 1:length(cellArray)
-    fprintf(fid,'%s\n', cellArray{i});
+    fprintf(fid,'%s\r\n', cellArray{i});
 end
 fclose(fid);
 end

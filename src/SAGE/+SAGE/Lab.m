@@ -76,11 +76,11 @@ classdef Lab < handle
             
             if nargin == 2
                 % TBD: if we have already fetched the complete list of lines is it faster to query locally?
-                xmlDoc = xmlread([SAGE.urlBase 'lines/' obj.name '.janelia-sage?q=name%3D' char(java.net.URLEncoder.encode(query, 'UTF-8'))]);
+                xmlDoc = xmlread([SAGE.urlbase 'lines/' obj.name '.janelia-sage?q=name%3D' char(java.net.URLEncoder.encode(query, 'UTF-8'))]);
                 list = obj.linesFromXML(obj, xmlDoc);
             else
                 if ~obj.linesFetched
-                    xmlDoc = xmlread([SAGE.urlBase 'lines/' obj.name '.janelia-sage']);
+                    xmlDoc = xmlread([SAGE.urlbase 'lines/' obj.name '.janelia-sage']);
                     obj.labLines = obj.linesFromXML(obj, xmlDoc);
                     obj.linesFetched = true;
                 end
