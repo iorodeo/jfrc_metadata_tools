@@ -32,9 +32,15 @@ classdef SAGEDataCacher < handle
         end
         
         function LDAPNames = readLDAPFile(self)
-            % Reads the ldap user names
+            % Reads the ldap user names from the data directory
             filePath = self.getLDAPFilePath();
             LDAPNames = cellFromTextFile(filePath);
+        end
+        
+        function notesKeywords = readNotesKeywordsFile(self)
+            % Read the notes keywords from the file in the data directory
+            filePath = self.getNotesKeywordsFilePath();
+            notesKeywords = cellFromTextFile(filePath);   
         end
         
         function updateLineNamesFile(self)

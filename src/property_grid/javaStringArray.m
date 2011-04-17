@@ -16,7 +16,14 @@ function arr = javaStringArray(str)
 assert(iscellstr(str) && isvector(str), ...
     'java:StringArray:InvalidArgumentType', ...
     'Cell row or column vector of strings expected.');
-arr = javaArray('java.lang.String', length(str));
-for k = 1 : numel(str);
-    arr(k) = java.lang.String(str{k});
+
+% WBD - fix for noselection case ------------------------------------------
+if isempty(str)
+    arr = javaArray('java.lang.String', 1);
+else
+    arr = javaArray('java.lang.String', length(str));
+    for k = 1 : numel(str);
+        arr(k) = java.lang.String(str{k});
+    end
 end
+% -------------------------------------------------------------------------

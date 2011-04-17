@@ -15,10 +15,20 @@
 % Copyright 2010 Levente Hunyadi
 function ind = strsetmatch(strset, struniversal)
 
+
+% WBD - fix for noselection case ------------------------------------------
+if isempty(strset) || isempty(strset{1})
+    ind = false(1,length(struniversal));
+    return;
+end
+% -------------------------------------------------------------------------
+
 assert(iscellstr(strset), 'strsetmatch:ArgumentTypeMismatch', ...
     'The particular set is expected to be a cell array of strings.');
 assert(iscellstr(struniversal), 'strsetmatch:ArgumentTypeMismatch', ...
     'The particular set is expected to be a cell array of strings.');
+
+
 
 ind = false(size(struniversal));
 for k = 1 : numel(struniversal)

@@ -60,7 +60,7 @@ handles.output = '';
 if length(varargin) > 0
     handles.allowedValues = varargin{1};
 else
-    % Temporary
+    % Temporary - for development purposes.
     handles.allowedValues = {'bob', 'alan', 'steve'};
 end
 if length(varargin) > 1

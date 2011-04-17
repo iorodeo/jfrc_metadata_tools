@@ -161,9 +161,26 @@ classdef PropertiesBuilder < handle
                     properties = self.getPropertiesList(node,name,displayName); 
                 case 'time24'
                     properties = self.getPropertiesBasic(node,name,displayName);
+                case 'multiselect'
+                    properties = self.getPropertiesMultiSelect(node,name,displayName);
                 otherwise
                     properties = self.getPropertiesBasic(node,name,displayName);     
             end
+        end
+        
+        function properties = getPropertiesMultiSelect(self,node,name,displayName)
+            % Get JIDE grid properties for multiselect types. 
+            allowedValues = node.valueValidator.getValues();
+            pType = PropertyType('logical', 'row', allowedValues);
+            logicalVector = node.valueValidator.getLogicalVector(node.value);  
+            properties = PropertyGridField( ...
+                name, logicalVector, ...
+                'Type', pType, ...
+                'Category', node.root.name, ...
+                'DisplayName', displayName, ...
+                'ReadOnly', node.getReadOnly(self.mode), ...
+                'Description', node.getValueDescription() ...
+                );
         end
         
         function properties = getPropertiesString(self,node,name,displayName)

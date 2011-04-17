@@ -281,6 +281,7 @@ classdef PropertyGrid < UIControl
 
             % wire property change event hook
             set(model, 'PropertyChangeCallback', @PropertyGrid.OnPropertyChange);
+            %get(model)
             
         end
         
@@ -482,32 +483,34 @@ classdef PropertyGrid < UIControl
             % -------------------------------------------------------------
             % WBD: added this to hook up validators
             % -------------------------------------------------------------
-            oldValue = var2str(get(event, 'OldValue'));  
+            oldValue = var2str(get(event, 'OldValue')); 
             newValue = var2str(get(event, 'NewValue'));  
              
-            node = self.defaultsTree.getNodeByPathString(name);      
+            node = self.defaultsTree.getNodeByPathString(name);     
+            if node.isContentNode() == true
+                % Special case for content nodes (value is stoured in
+                % content element below the node itself.
+                node = node.children(1);
+            end
+            
             autoSelect = field.PropertyData.AutoSelect;
-            try
-               
-                if node.isContentNode() == false
-                    if isa(node.valueValidator, 'StringValidator') && (autoSelect == true)
-                        allowedValues = node.valueValidator.getValues();
-                        infoStr = ['Enter: ', node.name];
-                        newValue = autoCompleteDlg(allowedValues, newValue, infoStr);
-                    end
-                    % Assign node values and pass through validator
-                    node.value = newValue;
-                     % re-assign value as it might be modified by validator
-                    value = node.value;
-                else
-                    % Special case for content node (as there value is
-                    % stored in the content element below them.
-                    childNode = node.children(1);
-                    % Assign value and pass through validator
-                    childNode.value = newValue;
-                    % re-assign value as it might be modified by validator
-                    value = childNode.value;
+            try 
+                % Special case dialogs
+                if isa(node.valueValidator, 'StringValidator') && (autoSelect == true)
+                    % Autoselect dialog for strings.
+                    allowedValues = node.valueValidator.getValues();
+                    infoStr = ['Enter: ', node.name];
+                    newValue = autoCompleteDlg(allowedValues, newValue, infoStr);
                 end
+                if isa(node.valueValidator, 'MultiSelectValidator')
+                    newValue = convertMultiSelectValue(newValue, node.valueValidator.delimiter);
+                   
+                end
+                % Assign node values and pass through validator
+                node.value = newValue;
+                % re-assign value as it might be modified by validator
+                value = node.value;
+                
             catch ME
                 errordlg(ME.message, 'Input Error');
                 value = oldValue;
@@ -516,9 +519,15 @@ classdef PropertyGrid < UIControl
                 %node.value = newValue;
                 value = StringToCell(value);
             end
-            field.Value = value;
+            if ~isa(node.valueValidator, 'MultiSelectValidator')
+               field.Value = value;
+            else
+                % Special case for multiselect boxes
+                logicalVector = node.valueValidator.getLogicalVector(value);
+                field.Value = logicalVector;
+            end
             % -------------------------------------------------------------
-            self.UpdateField(name);    
+             self.UpdateField(name);    
             
             % execute the settable property chance callback
             % added by KB
@@ -553,3 +562,18 @@ for i = 2:length(newlinePos)
    %end
 end
 end
+
+function newValue = convertMultiSelectValue(value, delimiter)
+    newValue = charArrayToCell(value);
+    newValue = cell2delimitedStr(newValue, delimiter);
+end
+
+function outCell = charArrayToCell(inArray)
+% Converts character array of strings to a cell array of strings
+sz = size(inArray);
+outCell = {};
+for i = 1:sz(1)
+    outCell{i} = inArray(i,:);
+end
+end
+
