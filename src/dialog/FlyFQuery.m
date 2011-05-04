@@ -73,6 +73,9 @@ function output = FlyFQuery( barcode )
         output.(fieldName) = char(output.(fieldName));
      end
      
+     % Add barcode to output fields
+     output.Bar_Code = bc;
+     
 end
 
 % -------------------------------------------------------------------------
