@@ -158,33 +158,47 @@ classdef PropertyGrid < UIControl
         %
         function setValueByPathString(self,pathString,value)
             %fprintf('%s, %s\n', pathString, value);
-            
+            node = self.defaultsTree.getNodeByPathString(pathString);
             field = self.Fields.FindByName(pathString);
             if ~isempty(field),
                 if iscell(field.Value),
                     value = StringToCell(value);
                 end
-                field.Value = value;
-                self.UpdateField(pathString);
-                self.Table.repaint();
-                
-                % Check if this genotype element - need to  the value of genotype
-                % content differently.
-                node = self.defaultsTree.getNodeByPathString(pathString);
                 
                 if node.isContentNode() == true
                     % Special case for content node (as there value is
                     % stored in the content element below them.
                     childNode = node.children(1);
+                       
                     % Assign value and pass through validator
                     node.value = '';
                     childNode.value = var2str(value);
+                    
+                    if isa(childNode.valueValidator, 'MultiSelectValidator')
+                        % Special-special case for multiselect content nodes.
+                        logicalVector = childNode.valueValidator.getLogicalVector(value);
+                        field.Value = logicalVector;
+                    else
+                        field.Value = value;
+                    end
+                    
                 else
                     % added by KB: if we are going to set content node values,
                     % we should also set non-content node values
                     % Assign node values
                     node.value = value;
+                    if isa(node.valueValidator, 'MultiSelectValidator')
+                        logicalVector = node.valueValidator.getLogicalVector(value);
+                        field.Value = logicalVector;
+                    else
+                        field.Value = value;
+                    end
+                    
                 end
+                
+                self.UpdateField(pathString);
+                self.Table.repaint();
+                
             end
         end
         
