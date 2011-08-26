@@ -186,7 +186,7 @@ classdef PropertyGrid < UIControl
                     % added by KB: if we are going to set content node values,
                     % we should also set non-content node values
                     % Assign node values
-                    node.value = value;
+                    node.value = var2str(value);
                     if isa(node.valueValidator, 'MultiSelectValidator')
                         logicalVector = node.valueValidator.getLogicalVector(value);
                         field.Value = logicalVector;
@@ -499,7 +499,7 @@ classdef PropertyGrid < UIControl
             % -------------------------------------------------------------
             oldValue = var2str(get(event, 'OldValue')); 
             newValue = var2str(get(event, 'NewValue'));  
-             
+              
             node = self.defaultsTree.getNodeByPathString(name);     
             if node.isContentNode() == true
                 % Special case for content nodes (value is stoured in
@@ -542,16 +542,16 @@ classdef PropertyGrid < UIControl
             end
             % -------------------------------------------------------------
              self.UpdateField(name);    
-            
+             
             % execute the settable property chance callback
             % added by KB
             if ~isempty(self.PropertyChangeCallback),
-              try
-                feval(self.PropertyChangeCallback,name);
-              catch ME
-                warning('Error executing PropertyChangeCallback: %s. Disabling',getReport(ME,'basic','hyperlinks','off'));
-                self.PropertyChangeCallback = '';
-              end
+                try
+                    feval(self.PropertyChangeCallback,name);
+                catch ME
+                    warning('Error executing PropertyChangeCallback: %s. Disabling',getReport(ME,'basic','hyperlinks','off'));
+                    self.PropertyChangeCallback = '';
+                end
             end
         end
     end

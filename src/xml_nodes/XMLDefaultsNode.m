@@ -541,10 +541,10 @@
         end
         
         function set.value(self, value)
-            % Set node value.
+           % Set node value.
            [value,flag, msg] = self.validateValue(value);
-           if flag == true
-                self.value = value;
+           if flag == true 
+               self.value = value;
            else
                error('set.value error: %s', msg);
            end
